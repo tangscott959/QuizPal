@@ -11,13 +11,13 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema mydb
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8 ;
-USE `mydb` ;
+-- CREATE SCHEMA IF NOT EXISTS `my_db` DEFAULT CHARACTER SET utf8 ;
+USE `my_db` ;
 
 -- -----------------------------------------------------
 -- Table `mydb`.`feedback`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`feedback` (
+CREATE TABLE IF NOT EXISTS `my_db`.`feedback` (
   `feedback_id` INT NOT NULL,
   `message` VARCHAR(255) NULL,
   `rating` INT NULL,
@@ -29,7 +29,7 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `mydb`.`contact`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`contact` (
+CREATE TABLE IF NOT EXISTS `my_db`.`contact` (
   `contact_id` INT NOT NULL,
   `firstname` VARCHAR(45) NULL,
   `lastname` VARCHAR(45) NULL,
@@ -42,7 +42,7 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `mydb`.`category`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`category` (
+CREATE TABLE IF NOT EXISTS `my_db`.`category` (
   `category_id` INT NOT NULL,
   `category_name` VARCHAR(45) NULL,
   PRIMARY KEY (`category_id`))
@@ -52,7 +52,7 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `mydb`.`question`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`question` (
+CREATE TABLE IF NOT EXISTS `my_db`.`question` (
   `question_id` INT NOT NULL,
   `category_id` INT NOT NULL,
   `quiz_description` VARCHAR(45) NULL,
@@ -70,7 +70,7 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `mydb`.`choice`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`choice` (
+CREATE TABLE IF NOT EXISTS `my_db`.`choice` (
   `choice_id` INT NOT NULL,
   `question_id` INT NOT NULL,
   `choice_description` VARCHAR(45) NULL,
@@ -88,10 +88,10 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `mydb`.`user`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`user` (
+CREATE TABLE IF NOT EXISTS `my_db`.`user` (
   `user_id` INT NOT NULL,
   `user_name` VARCHAR(45) NULL,
-  `user_password` VARCHAR(45) GENERATED ALWAYS AS () VIRTUAL,
+  `user_password` VARCHAR(45) ,
   `firstname` VARCHAR(45) NULL,
   `lastname` VARCHAR(45) NULL,
   `email` VARCHAR(45) NULL,
@@ -105,7 +105,7 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `mydb`.`quiz`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`quiz` (
+CREATE TABLE IF NOT EXISTS `my_db`.`quiz` (
   `quiz_id` INT NOT NULL,
   `user_id` INT NOT NULL,
   `category_id` INT NOT NULL,
@@ -131,7 +131,7 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `mydb`.`quizquestion`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`quizquestion` (
+CREATE TABLE IF NOT EXISTS `my_db`.`quizquestion` (
   `quizquestion_id` INT NOT NULL,
   `quiz_id` INT NOT NULL,
   `question_id` INT NOT NULL,
