@@ -20,7 +20,7 @@ public class RegisterController {
         this.userDao=userDao;
         this.userService=userService;
     }
-    @GetMapping("/reg")
+    @GetMapping("/register")
     public String regi(){
         return "register";
     }

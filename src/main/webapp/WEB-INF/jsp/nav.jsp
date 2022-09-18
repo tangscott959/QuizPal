@@ -36,9 +36,9 @@
     <div class="container-fluid">
         <div class="topnav">
             <a href="${pageContext.request.contextPath}/home">Home</a>
-            <a href="${pageContext.request.contextPath}/fed">Feed Back</a>
+            <a href="${pageContext.request.contextPath}/feedback">Feed Back</a>
 
-            <a href="${pageContext.request.contextPath}/con">Contact Us</a>
+            <a href="${pageContext.request.contextPath}/contact">Contact Us</a>
             <a href="${pageContext.request.contextPath}/logout">Logout</a>
         </div>
     </div>
