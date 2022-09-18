@@ -64,7 +64,11 @@
                                                          pattern="yyyy-MM-dd HH:mm"/></td>
                     <td class="col-2"><fmt:formatDate value="${result.getQuizTimeEnd()}" type="date"
                                                   pattern="yyyy-MM-dd HH:mm"/></td>
-                    <td class="col-md-1">NA.</td>
+                    <td class="col-md-1">NA.
+                    <c:forEach var="score" items="${scoreList}">
+                        ${score.containsKey(String.valueOf(result.getQuizId())) ? score.get(String.valueOf(result.getQuizId())) :"" }
+                    </c:forEach>
+                    </td>
                     <td class="col-md-2"><a class="btn btn-default"
                                             href="${pageContext.request.contextPath}/quizdetail?resultId=${result.getQuizId()}"
                                             role="button">Details</a></td>

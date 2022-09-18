@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class QuizQuestionService {
@@ -21,5 +22,7 @@ public class QuizQuestionService {
         quizQuestionDao.addBatch(qqList);
     }
 
-
+    public List<Map<String,Object>> calScore(int uid) {
+        return quizQuestionDao.getScoreByQuiz(uid);
+    }
 }

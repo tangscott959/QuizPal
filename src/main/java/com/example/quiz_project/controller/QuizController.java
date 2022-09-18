@@ -16,7 +16,7 @@ import javax.servlet.http.HttpSession;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Map;
 
 
 @Controller
@@ -40,6 +40,9 @@ public class QuizController {
         User currentUser = (User) session.getAttribute("user");
         List<Category> categories = categoryService.getALl();
         List<Quiz> quizList = quizService.getByUser(currentUser.getId());
+        List<Map<String,Object>> scores = quizQuestionService.calScore(currentUser.getId());
+        scores.get(0).get("ewrf");
+        model.addAttribute("scoreList",scores);
         model.addAttribute("quizList",quizList);
         model.addAttribute("quizTypeList",categories);
         return "home";
@@ -128,10 +131,7 @@ public class QuizController {
                 case "finish":
                     int key = (int) session.getAttribute("quizKey");
                     Timestamp endTime = new Timestamp(System.currentTimeMillis());
-
-                    Quiz quiz = quizService.getById(key);
-                    quiz.setQuizTimeEnd(endTime);
-                    quizService.saveQuiz(quiz);
+                    quizService.updateQuiz(key,endTime);
                     quizQuestionService.saveQQ(qqList);
                     mv.setViewName("forward:/quizindex");
                     break;

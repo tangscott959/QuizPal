@@ -7,6 +7,7 @@ import com.example.quiz_project.domain.QuizQuestion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Service
@@ -31,4 +32,7 @@ public class QuizService {
         return quizDao.addQuiz(q);
     }
 
+    public int updateQuiz(int quizId, Timestamp ts) {
+        return quizDao.updateQuiz(quizId,ts);
+    }
 }

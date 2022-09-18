@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,5 +55,10 @@ public class QuizDao {
             return ps;
         }, keyHolder);
         return Optional.ofNullable(keyHolder.getKey()).orElse(0).intValue();
+    }
+
+    public int updateQuiz(int quizId, Timestamp ts) {
+        String query = "Update quiz SET quiz_time_end =? WHERE quiz_id = ? ";
+        return jdbcTemplate.update(query,ts,quizId);
     }
 }
