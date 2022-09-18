@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,8 +42,12 @@ public class QuizController {
         List<Category> categories = categoryService.getALl();
         List<Quiz> quizList = quizService.getByUser(currentUser.getId());
         List<Map<String,Object>> scores = quizQuestionService.calScore(currentUser.getId());
-        scores.get(0).get("ewrf");
-        model.addAttribute("scoreList",scores);
+        Map<String,String> scoreMap =new HashMap<>();
+        scores.forEach(s-> {
+            scoreMap.put(s.get("quiz_id").toString(), s.get("score").toString());
+        });
+        logger.info("------{}",scoreMap);
+        model.addAttribute("scoreMap",scoreMap);
         model.addAttribute("quizList",quizList);
         model.addAttribute("quizTypeList",categories);
         return "home";
