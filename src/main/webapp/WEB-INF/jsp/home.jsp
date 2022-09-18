@@ -43,6 +43,7 @@
         <div class="justify-content-center">
             <h3>${rows.get(0).getUser().getName()} Past Quizzes</h3>
         </div>
+
         <table class="table table-striped">
             <thead>
             <tr>
@@ -56,6 +57,7 @@
             </tr>
             </thead>
             <c:forEach items="${quizList}" var="result">
+                <c:set var="Key" value='${result.getQuizId().toString()}' />
                 <tr>
                     <td class="col-1">${result.getQuizId()}</td>
                     <td class="col-2">${result.getQuizName()}</td>
@@ -64,11 +66,7 @@
                                                          pattern="yyyy-MM-dd HH:mm"/></td>
                     <td class="col-2"><fmt:formatDate value="${result.getQuizTimeEnd()}" type="date"
                                                   pattern="yyyy-MM-dd HH:mm"/></td>
-                    <td class="col-md-1">NA.
-                    <c:forEach var="score" items="${scoreList}">
-                        ${score.containsKey(String.valueOf(result.getQuizId())) ? score.get(String.valueOf(result.getQuizId())) :"" }
-                    </c:forEach>
-                    </td>
+                    <td class="col-md-1">${scoreMap.get(Key)!=null ? scoreMap.get(Key) : 0}/5</td>
                     <td class="col-md-2"><a class="btn btn-default"
                                             href="${pageContext.request.contextPath}/quizdetail?resultId=${result.getQuizId()}"
                                             role="button">Details</a></td>
