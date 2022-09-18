@@ -8,6 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 
 @SpringBootTest
 class QuizProjectApplicationTests {
@@ -31,5 +33,12 @@ class QuizProjectApplicationTests {
 		qqList.add(qq1);
 
 		//quizQuestionDao.addBatch(qqList);
+	}
+
+	@Test
+	public void test02() {
+		List<Map<String,Object>> r =quizQuestionDao.getScoreByQuiz(1);
+		System.out.println(r.size());
+		System.out.println(r);
 	}
 }

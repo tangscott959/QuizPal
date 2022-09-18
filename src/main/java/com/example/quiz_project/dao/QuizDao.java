@@ -29,17 +29,28 @@ public class QuizDao {
         return jdbcTemplate.query(query,rowMapper);
     }
 
+    public List<Quiz> getByUser(int id) {
+        String query = "SELECT * FROM quiz WHERE user_id = ? ORDER BY quiz_time_start DESC";
+        return jdbcTemplate.query(query,rowMapper,id);
+    }
+
+    public Quiz getById(int id) {
+        String query = "SELECT * FROM quiz WHERE quiz_id = ? ";
+        return jdbcTemplate.queryForObject(query,rowMapper,id);
+    }
+
     public int addQuiz(Quiz q) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con ->  {
             String sql="INSERT INTO quiz " +
                     "(user_id,category_id,quiz_name,quiz_time_start,quiz_time_end) " +
-                    "VALUES(?,?,?,?)";
+                    "VALUES(?,?,?,?,?)";
             PreparedStatement ps = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
             ps.setInt(1, q.getUserId());
             ps.setInt(2, q.getCategoryId());
             ps.setString(3,q.getQuizName());
             ps.setTimestamp(4,q.getQuizTimeStart());
+            ps.setTimestamp(5,q.getQuizTimeEnd());
             return ps;
         }, keyHolder);
         return Optional.ofNullable(keyHolder.getKey()).orElse(0).intValue();
