@@ -30,5 +30,9 @@ public class QuestionDao {
         return  this.jdbcTemplate.query(query,rowMapper,cid);
     }
 
-
+    public Question getById(int id) {
+        String query ="SELECT * FROM  question " +
+                "WHERE  question_id = ?  " ;
+        return  this.jdbcTemplate.queryForObject(query,rowMapper,id);
+    }
 }

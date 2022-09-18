@@ -15,7 +15,7 @@
         p {
             margin-left: 15px;
             margin-top: 20px;
-            font-size: 20px;
+            font-size: 16px;
         }
 
         label:hover {
@@ -33,35 +33,37 @@
         }
     </style>
 </head>
+<jsp:include page="nav.jsp" flush="true" />
 <body onload=setTimer(${leftTime})>
 
 <div class="container">
     <div class="row">
         <div class="col-md-4">
-            <h1>
+            <h2>
                 Question ${currentPage+1} / ${pageSize}
-            </h1>
+            </h2>
         </div>
         <div class="col-md-8 text-right text-warning">
-            <h3>Time Left <span id="leftTime"></span></h3>
+            <h3>Time Remaining: <span id="leftTime"></span></h3>
         </div>
 
-        <form action="${pageContext.request.contextPath}/questions" method="GET">
+        <form action="${pageContext.request.contextPath}/doquiz" method="GET">
             <div class="col-md-12 questionbox">
-                <h2>${questionAnswer.getQuestion().getDescription()}</h2>
+                <h3 class="pl-2">${question.getQuiz_description()}</h3>
                 <input type="hidden" name="qtid" value="0"/>
                 <input id="Timer" type="hidden" name="lefttime" value="0"/>
                 <input type="hidden" name="page" value="${currentPage}"/>
-                <c:forEach var="choice" items="${questionAnswer.getOptions().entrySet()}">
-                    <p><input type="radio" class="form-check-input" name="optradio" id=O${choice.getKey()}
-                              value="${choice.getKey()}"
-                        ${questionAnswer.getUserSelection() == choice.getKey()  ? "checked=\"checked\"" : ""} >
-                        <label for="O${choice.getKey()}">
-                                ${choice.getKey()}.${choice.getValue()}
+                <c:forEach var="choice" items="${choices}">
+                    <p><input type="radio" class="form-check-input pl-2" name="optradio" id=O${choice.getChoice_id()}
+                              value="${choice.getChoice_id()}"
+                        ${qq.getChoiceId() == choice.getChoice_id()  ? "checked=\"checked\"" : ""} >
+                        <label for="O${choice.getChoice_id()}">
+                                ${choice.getChoice_description()}
                         </label>
                     </p>
                 </c:forEach>
-                <div style="margin-top: 20px ;margin-left: 20px" class="btn-group btn-group-lg">
+            </div>
+                <div style="margin-top: 20px ;margin-left: 20px" class="btn-group btn-group col-4">
                     <c:if test="${currentPage != 0}">
                         <button name="action" value="prev" class="btn btn-Info " type="submit">Prev</button>
                     </c:if>
@@ -70,25 +72,25 @@
                     </c:if>
                     <c:if test="${currentPage == pageSize -1}">
                         <button name="action" value="finish" class="btn btn-Info " type="submit">Finish</button>
-                        <!-- a style="margin-left: 20px" class="btn btn-default btn-Success" href="${pageContext.request.contextPath}/finish">Finish</a -->
                     </c:if>
                 </div>
-            </div>
+
         </form>
     </div>
+
 </div>
 <script type="text/javascript">
 
     function  setTimer(leftSeconds) {
-        $("#leftTime").text(Math.trunc(leftSeconds/60).toString() + ":" + (leftSeconds%60).toString());
+        document.getElementById("leftTime").innerText =Math.trunc(leftSeconds/60).toString() + ":" + (leftSeconds%60).toString().padStart(2,"0");
         window.setInterval(function () {
-            leftSeconds = leftSeconds - 5;
+            leftSeconds = leftSeconds - 1;
             if ( leftSeconds === 0) {
                 alert("Time is Over")
             }
-            $("#leftTime").text(Math.trunc(leftSeconds/60).toString() + ":" + (leftSeconds%60).toString());
-            $("#Timer").val(leftSeconds);
-        }, 5000);
+            document.getElementById("leftTime").innerText = Math.trunc(leftSeconds/60).toString() + ":" + (leftSeconds%60).toString().padStart(2,"0");
+            document.getElementById("Timer").value = leftSeconds;
+        }, 1000);
     }
 </script>
 </body>

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class QuizQuestionDao {
@@ -36,5 +37,13 @@ public class QuizQuestionDao {
             ba.add(arr);
         }
         jdbcTemplate.batchUpdate(query,ba);
+    }
+
+    public List<Map<String,Object>> getScoreByQuiz(int uid) {
+        String query ="SELECT quiz_id,count(*) AS score FROM quizquestion " +
+                "WHERE quiz_id IN (select quiz_id from quiz where user_id =?)   " +
+                "AND choice_id IN (SELECT choice_id FROM choice WHERE is_correct =1) " +
+                "GROUP BY quiz_id";
+        return jdbcTemplate.queryForList(query,uid);
     }
 }

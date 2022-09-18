@@ -32,7 +32,7 @@
     }</style>
 </head>
 <body>
-<nav class="navbar navbar-default">
+<nav class="navbar navbar-default justify-content-center">
     <div class="container-fluid">
         <div class="topnav">
             <a href="${pageContext.request.contextPath}/home">Home</a>

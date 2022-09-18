@@ -20,4 +20,6 @@ public class QuizQuestionService {
     public void saveQQ(List<QuizQuestion> qqList) {
         quizQuestionDao.addBatch(qqList);
     }
+
+
 }

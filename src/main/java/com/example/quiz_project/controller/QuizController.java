@@ -1,14 +1,9 @@
 package com.example.quiz_project.controller;
 
-import com.example.quiz_project.dao.CategoryDao;
 import com.example.quiz_project.domain.*;
-import com.example.quiz_project.service.CategoryService;
-import com.example.quiz_project.service.QuestionService;
-import com.example.quiz_project.service.QuizQuestionService;
-import com.example.quiz_project.service.QuizService;
+import com.example.quiz_project.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+
 @Controller
 public class QuizController {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -30,29 +26,26 @@ public class QuizController {
     private final QuizService quizService;
     private final QuizQuestionService quizQuestionService;
     private final QuestionService questionService;
-    public QuizController(CategoryService categoryService, QuizService quizService, QuizQuestionService quizQuestionService, QuestionService questionService){
+    private final ChoiceService choiceService;
+    public QuizController(CategoryService categoryService, QuizService quizService, QuizQuestionService quizQuestionService, QuestionService questionService,ChoiceService choiceService){
         this.categoryService=categoryService;
         this.quizService=quizService;
         this.quizQuestionService=quizQuestionService;
         this.questionService=questionService;
+        this.choiceService = choiceService;
     }
-//    @Autowired
-//    private CategoryService categoryService;
-//    @Autowired
-//    private QuizService quizService;
-//    @Autowired
-//    private QuizQuestionService quizQuestionService;
-//    @Autowired
-//    private QuestionService questionService;
-
     @GetMapping("/quizindex")
-    public String quizindex(Model model) {
+    public String quizindex(HttpServletRequest req,Model model) {
+        HttpSession session = req.getSession(false);
+        User currentUser = (User) session.getAttribute("user");
         List<Category> categories = categoryService.getALl();
+        List<Quiz> quizList = quizService.getByUser(currentUser.getId());
+        model.addAttribute("quizList",quizList);
         model.addAttribute("quizTypeList",categories);
         return "home";
     }
 
-    private void initQuiz(User u,Category c) {
+    private int initQuiz(User u,Category c) {
         Timestamp startTime = new Timestamp(System.currentTimeMillis());
 
         Quiz quiz = new Quiz();
@@ -60,10 +53,11 @@ public class QuizController {
         quiz.setUserId(u.getId());
         quiz.setCategoryId(c.getCategoryId());
         quiz.setQuizTimeStart(startTime);
-        quizService.saveQuiz(quiz);
+        return quizService.saveQuiz(quiz);
     }
 
     @GetMapping(value ="/doquiz")
+    @SuppressWarnings("unchecked")
     protected ModelAndView pageQuestions(HttpServletRequest req, @RequestParam("action") String action,
                                          @RequestParam(name="qtid" ,required=false) int cid,
                                          @RequestParam(name="page") int page,
@@ -72,79 +66,78 @@ public class QuizController {
         ModelAndView mv =new ModelAndView();
         String sel =req.getParameter("optradio");
         User u = (User) session.getAttribute("user");
-        Category category = categoryService.getById(cid);
 
+        List<QuizQuestion> qqList;
         if(action.equals("init")) {
-            List<QuizQuestion> qList = new ArrayList<>();
-            initQuiz(u,category);
+            qqList = new ArrayList<>();
+            Category category = categoryService.getById(cid);
+            int quizid = initQuiz(u,category);
+
             List<Question> questionList = questionService.getRandom5(cid);
             questionList.forEach(q->{
                QuizQuestion qq = new QuizQuestion();
                qq.setQuestionId(q.getQuestion_id());
-               qq.setChoiceId(99);
-               qq.setQuizId(cid);
-               qList.add(qq);
+               qq.setChoiceId(0);
+               qq.setQuizId(quizid);
+               qqList.add(qq);
             });
-
-            quizQuestionService.saveQQ(qList);
-            mv.addObject("resultlist",qList.get(0));
-            mv.addObject("pageSize", qList.size());
+            session.setAttribute("qqlist",qqList);
+            session.setAttribute("quizKey",quizid);
+            Question q = questionList.get(0);
+            mv.addObject("leftTime",leftTime*60);
+            mv.addObject("qq",qqList.get(0));
+            mv.addObject("question",q);
+            mv.addObject("choices",choiceService.getByQid(q.getQuestion_id()));
+            mv.addObject("pageSize", qqList.size());
             mv.addObject("currentPage", page );
             mv.setViewName("paper");
-            return mv;
         }
         else {
-//            List<QuestionAnswer> rList = (List<QuestionAnswer>) session.getAttribute("questionlist");
-//            List<Result> savedList = (List<Result>) session.getAttribute("resultlist");
-//            QuestionAnswer qa = rList.get(page);
-//
-//            Result r = savedList.get(page);
-//            if (sel != null) {
-//                String userAnswer = qa.getOptions().get(sel);
-//                String answer = qa.getAnswer();
-//                int selection = 0;
-//                switch (sel) {
-//                    case "a":
-//                        break;
-//                    case "b":
-//                        selection = 1;
-//                        break;
-//                    case "c":
-//                        selection = 2;
-//                        break;
-//                    case "d":
-//                        selection = 3;
-//                }
-//                r.setSelAnswer(selection);
-//                r.setChoice(qa.getQuestion().getChoice().get(selection));
-//                if (Objects.equals(r.getQuestion().getId(), qa.getQuestion().getId())) {
-//                    if (userAnswer.equals(answer))
-//                        r.setIsAnswer(1);
-//                }
-//                qa.setUserSelection(sel);
-//            }
-//            session.setAttribute("resultlist", savedList);
-//            mv.addObject("leftTime",leftTime);
-//            mv.addObject("pageSize", rList.size());
-//            switch (action) {
-//                case "next":
-//                    page = page + 1;
-//                    mv.addObject("currentPage", page );
-//                    mv.addObject("questionAnswer", rList.get(page));
-//                    mv.setViewName("paper");
-//                    break;
-//                case "prev":
-//                    page = page - 1;
-//                    mv.addObject("currentPage", page );
-//                    mv.addObject("questionAnswer", rList.get(page));
-//                    mv.setViewName("paper");
-//                    break;
-//                case "finish":
-//                    resultService.save(savedList);
-//                    mv.setViewName("forward:/home");
-//                    break;
-//            }
-            return mv;
+            qqList = (List<QuizQuestion>) session.getAttribute("qqlist");
+
+            QuizQuestion qq = qqList.get(page);
+            if(sel!=null) {
+                qq.setChoiceId(Integer.parseInt(sel));
+                session.setAttribute("qqlist", qqList);
+            }
+            mv.addObject("leftTime",leftTime);
+            mv.addObject("pageSize", qqList.size());
+            switch (action) {
+                case "next":
+                    page = page + 1;
+                    Question q = questionService.getById(qqList.get(page).getQuestionId());
+                    List<Choice> c = choiceService.getByQid(q.getQuestion_id());
+                    mv.addObject("leftTime",leftTime);
+                    mv.addObject("qq",qqList.get(page));
+                    mv.addObject("currentPage", page );
+                    mv.addObject("question", q);
+                    mv.addObject("choices",c);
+                    mv.setViewName("paper");
+                    break;
+                case "prev":
+                    page = page - 1;
+                    Question q1 = questionService.getById(qqList.get(page).getQuestionId());
+                    List<Choice> c1 = choiceService.getByQid(q1.getQuestion_id());
+                    mv.addObject("leftTime",leftTime);
+                    mv.addObject("qq",qqList.get(page));
+                    mv.addObject("currentPage", page );
+                    mv.addObject("question", q1);
+                    mv.addObject("choices",c1);
+                    mv.setViewName("paper");
+                    break;
+                case "finish":
+                    int key = (int) session.getAttribute("quizKey");
+                    Timestamp endTime = new Timestamp(System.currentTimeMillis());
+
+                    Quiz quiz = quizService.getById(key);
+                    quiz.setQuizTimeEnd(endTime);
+                    quizService.saveQuiz(quiz);
+                    quizQuestionService.saveQQ(qqList);
+                    mv.setViewName("forward:/quizindex");
+                    break;
+            }
         }
+        return mv;
     }
+
 }
