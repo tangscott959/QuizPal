@@ -19,7 +19,7 @@ public class ContactController {
         this.contactDao=contactDao;
     }
 
-    @GetMapping("/con")
+    @GetMapping("/contact")
     public String con(){
         return "contact";
     }

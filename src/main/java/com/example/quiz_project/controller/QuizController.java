@@ -26,14 +26,24 @@ import java.util.List;
 @Controller
 public class QuizController {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-    @Autowired
-    private CategoryService categoryService;
-    @Autowired
-    private QuizService quizService;
-    @Autowired
-    private QuizQuestionService quizQuestionService;
-    @Autowired
-    private QuestionService questionService;
+    private final CategoryService categoryService;
+    private final QuizService quizService;
+    private final QuizQuestionService quizQuestionService;
+    private final QuestionService questionService;
+    public QuizController(CategoryService categoryService, QuizService quizService, QuizQuestionService quizQuestionService, QuestionService questionService){
+        this.categoryService=categoryService;
+        this.quizService=quizService;
+        this.quizQuestionService=quizQuestionService;
+        this.questionService=questionService;
+    }
+//    @Autowired
+//    private CategoryService categoryService;
+//    @Autowired
+//    private QuizService quizService;
+//    @Autowired
+//    private QuizQuestionService quizQuestionService;
+//    @Autowired
+//    private QuestionService questionService;
 
     @GetMapping("/quizindex")
     public String quizindex(Model model) {

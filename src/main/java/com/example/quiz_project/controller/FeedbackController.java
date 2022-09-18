@@ -20,7 +20,7 @@ public class FeedbackController {
         this.feedbackDao=feedbackDao;
     }
 
-    @GetMapping("/fed")
+    @GetMapping("/feedback")
     public String fed(){
         return "feedback";
     }
