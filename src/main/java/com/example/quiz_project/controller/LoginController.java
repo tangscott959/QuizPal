@@ -26,7 +26,7 @@ public class LoginController {
     public String getLogin(HttpServletRequest request, Model model){
         HttpSession session = request.getSession(false);
         if(session!=null && session.getAttribute("user")!=null){
-            return "redirect:/quiz";
+            return "redirect:/quizindex";
         }
         return "login";
     }
@@ -42,7 +42,7 @@ public class LoginController {
             }
             HttpSession newSession = request.getSession(true);
             newSession.setAttribute("user",user.get());
-            return "redirect:/home";
+            return "redirect:/quizindex";
         }
         else {
 

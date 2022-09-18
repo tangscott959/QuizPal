@@ -33,6 +33,9 @@ public class UserDao {
         System.out.println("User added");
     }
 
-
+    public User getById(int uid) {
+        String query = "SELECT * FROM USER WHERE user_id = ?";
+        return this.jdbcTemplate.queryForObject(query,rowMapper,uid);
+    }
 
 }

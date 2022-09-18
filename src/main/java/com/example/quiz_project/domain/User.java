@@ -17,4 +17,8 @@ public class User {
     private String phone;
     private int is_active;
     private int is_admin;
+
+    public String getFullName() {
+        return firstname+"."+lastname;
+    }
 }
