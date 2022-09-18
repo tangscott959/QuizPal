@@ -45,6 +45,7 @@ public class LoginController {
             return "redirect:/home";
         }
         else {
+
             return "login";
         }
     }
@@ -55,6 +56,7 @@ public class LoginController {
         if(oldSession != null) oldSession.invalidate();
         return "login";
     }
+
 
 
 }

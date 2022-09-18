@@ -53,6 +53,7 @@
                 </div>
                 -->
             </form>
+            <a href="/reg">New user? Click here to create an account. </a>
         </div>
     </div>
 </div>
