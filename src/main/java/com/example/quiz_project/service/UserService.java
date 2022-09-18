@@ -5,6 +5,7 @@ import com.example.quiz_project.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -14,14 +15,26 @@ public class UserService {
     public UserService(UserDao userDao){
         this.userDao=userDao;
     }
-//    public void createNewUser(User user){
-//        userDao.createNewUser(user);
-//    }
+
     public Optional<User> validateLogin(String username, String password){
         return userDao.getAllUsers().stream()
                 .filter(a->a.getUsername().equals(username)
                 && a.getPassword().equals(password)).findAny();
 
     }
+    public boolean userExists(String username){
+        List<User> users= userDao.getAllUsers();
+        for(User u : users){
+            if(u.getUsername()==username){
+                return true;
+            }
+        }
+        return false;
+
+
+
+    }
+
+
 
 }
