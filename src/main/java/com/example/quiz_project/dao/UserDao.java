@@ -25,11 +25,11 @@ public class UserDao {
     }
     public void AddUser(String user_name,String user_password,
                         String firstname, String lastname, String email,
-                        String phone){
+                        String phone, int is_active, int is_admin){
         String query ="INSERT INTO user " +
-                "(user_name,user_password,firstname,lastname,email,phone) " +
-                "VALUES(?,?,?,?,?,?)";
-        jdbcTemplate.update(query,user_name,user_password,firstname,lastname,email,phone);
+                "(user_name,user_password,firstname,lastname,email,phone,is_active,is_admin) " +
+                "VALUES(?,?,?,?,?,?,?,?)";
+        jdbcTemplate.update(query,user_name,user_password,firstname,lastname,email,phone,is_active,is_admin);
         System.out.println("User added");
     }
 

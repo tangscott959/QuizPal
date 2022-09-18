@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <script src="js/bootstrap.min.js"></script>
 </head>
-<jsp:include page="nav.jsp" flush="true" />
+<%--<jsp:include page="nav.jsp" flush="true" />--%>
 <body class="bg-dark bg-opacity-75">
 <div class="container vh-100">
 

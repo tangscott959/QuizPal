@@ -25,7 +25,9 @@ public class UserService {
     public boolean userExists(String username){
         List<User> users= userDao.getAllUsers();
         for(User u : users){
-            if(u.getUsername()==username){
+            //System.out.println(u);
+            if(u.getUsername().equals(username)){
+                System.out.println("User exist");
                 return true;
             }
         }

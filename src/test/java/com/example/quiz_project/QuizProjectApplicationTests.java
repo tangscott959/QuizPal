@@ -37,7 +37,7 @@ class QuizProjectApplicationTests {
 
 	@Test
 	public void test02() {
-		List<Map<String,Object>> r =quizQuestionDao.getScoreByQuiz(1);
+		List<Map<String,Object>> r =quizQuestionDao.getScoreByQuiz(4);
 		System.out.println(r.size());
 		System.out.println(r);
 	}
