@@ -23,6 +23,12 @@ public class QuestionDao {
         this.rowMapper=rowMapper;
     }
 
+    public List<Question> getRandom5ByType(int cid) {
+        String query ="SELECT * FROM  question " +
+                "WHERE  category_id = ? AND is_active =1 " +
+                "ORDER BY RAND() LIMIT 5";
+        return  this.jdbcTemplate.query(query,rowMapper,cid);
+    }
 
 
 }
