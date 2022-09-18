@@ -28,16 +28,23 @@ public class RegisterController {
     public String registration(Model model, HttpServletRequest req, @RequestParam String username,
                                @RequestParam String password, @RequestParam String firstname,
                                @RequestParam String lastname, @RequestParam String email,
-                               @RequestParam String phone){
+                               @RequestParam String phone ){
+
         // if user not exist, add it
         if(userService.userExists(username)==false){
-            userDao.AddUser(username,password,firstname,lastname,email,phone);
+            userDao.AddUser(username,password,firstname,lastname,email,phone,1,0);
+
+            //  System.out.println(userService.userExists(username));
             return "login";
+
         }
+
 
         model.addAttribute("exception", "The user already exist.");
         model.addAttribute("url", req.getRequestURL());
         return "errorPage";
+
+
 
     }
 

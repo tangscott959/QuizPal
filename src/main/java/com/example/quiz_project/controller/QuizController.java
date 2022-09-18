@@ -144,5 +144,11 @@ public class QuizController {
         }
         return mv;
     }
+    @GetMapping("/quizdetail")
+    public String quizDetails(@RequestParam int quizId) {
+        return "quiz";
+
+
+    }
 
 }
