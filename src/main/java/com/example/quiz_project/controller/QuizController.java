@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
@@ -53,6 +54,10 @@ public class QuizController {
         return "home";
     }
 
+    @GetMapping("/quizdetails")
+    public void quizDetails(@RequestParam int quizId) {
+
+    }
     private int initQuiz(User u,Category c) {
         Timestamp startTime = new Timestamp(System.currentTimeMillis());
 
@@ -74,7 +79,7 @@ public class QuizController {
         ModelAndView mv =new ModelAndView();
         String sel =req.getParameter("optradio");
         User u = (User) session.getAttribute("user");
-
+        logger.info("---->{}",sel);
         List<QuizQuestion> qqList;
         if(action.equals("init")) {
             qqList = new ArrayList<>();
@@ -102,9 +107,8 @@ public class QuizController {
         }
         else {
             qqList = (List<QuizQuestion>) session.getAttribute("qqlist");
-
             QuizQuestion qq = qqList.get(page);
-            if(sel!=null) {
+            if(sel !=null) {
                 qq.setChoiceId(Integer.parseInt(sel));
                 session.setAttribute("qqlist", qqList);
             }
@@ -115,7 +119,6 @@ public class QuizController {
                     page = page + 1;
                     Question q = questionService.getById(qqList.get(page).getQuestionId());
                     List<Choice> c = choiceService.getByQid(q.getQuestion_id());
-                    mv.addObject("leftTime",leftTime);
                     mv.addObject("qq",qqList.get(page));
                     mv.addObject("currentPage", page );
                     mv.addObject("question", q);
@@ -126,7 +129,7 @@ public class QuizController {
                     page = page - 1;
                     Question q1 = questionService.getById(qqList.get(page).getQuestionId());
                     List<Choice> c1 = choiceService.getByQid(q1.getQuestion_id());
-                    mv.addObject("leftTime",leftTime);
+
                     mv.addObject("qq",qqList.get(page));
                     mv.addObject("currentPage", page );
                     mv.addObject("question", q1);
@@ -141,10 +144,9 @@ public class QuizController {
                     mv.setViewName("forward:/quizindex");
                     break;
                  default:
-
+                    page = Integer.parseInt(action);
                     Question qd = questionService.getById(qqList.get(page).getQuestionId());
                     List<Choice> cd = choiceService.getByQid(qd.getQuestion_id());
-                    mv.addObject("leftTime",leftTime);
                     mv.addObject("qq",qqList.get(page));
                     mv.addObject("currentPage", page );
                     mv.addObject("question", qd);
@@ -155,12 +157,6 @@ public class QuizController {
             }
         }
         return mv;
-    }
-    @GetMapping("/quizdetail") //quizdetail?resultId=
-    public String quizDetails(@RequestParam int quizId) {
-        return "quiz";
-
-
     }
 
 }

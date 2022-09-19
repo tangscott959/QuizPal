@@ -82,11 +82,11 @@
 
                 </div>
             <div>
-                <button name="action" value="1" class="btn btn-Info " type="submit">1</button>
+                <button name="action" value="0" class="btn btn-Info " type="submit">1</button>
                 <button name="action" value="1" class="btn btn-Info " type="submit">2</button>
-                <button name="action" value="1" class="btn btn-Info " type="submit">3</button>
-                <button name="action" value="1" class="btn btn-Info " type="submit">4</button>
-                <button name="action" value="1" class="btn btn-Info " type="submit">5</button>
+                <button name="action" value="2" class="btn btn-Info " type="submit">3</button>
+                <button name="action" value="3" class="btn btn-Info " type="submit">4</button>
+                <button name="action" value="4" class="btn btn-Info " type="submit">5</button>
 
 
 <%--                <a href="${pageContext.request.contextPath}/doquiz?qtid=1&lefttime=900&page=0&action=default">1 </a>--%>
@@ -110,6 +110,7 @@
             leftSeconds = leftSeconds - 1;
             if ( leftSeconds === 0) {
                 alert("Time is Over")
+                window.location.href="${pageContext.request.contextPath}/doquiz?action=finish&page=${currentPage}&lefttime=0&qtid=0"
             }
             document.getElementById("leftTime").innerText = Math.trunc(leftSeconds/60).toString() + ":" + (leftSeconds%60).toString().padStart(2,"0");
             document.getElementById("Timer").value = leftSeconds;
