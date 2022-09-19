@@ -42,7 +42,10 @@ public class LoginController {
             }
             HttpSession newSession = request.getSession(true);
             newSession.setAttribute("user",user.get());
-            return "redirect:/quizindex";
+            if (user.get().getIs_admin() == 1 )
+                return "/admin/adminindex";
+            else
+                return "redirect:/quizindex";
         }
         else {
 

@@ -50,6 +50,14 @@ public class QuizQuestionDao {
         return jdbcTemplate.queryForList(query,uid);
     }
 
+    public List<Map<String,Object>> getScoreAll() {
+        String query ="SELECT quiz_id,count(*) AS score FROM quizquestion " +
+                "WHERE choice_id IN (SELECT choice_id FROM choice WHERE is_correct =1) " +
+                "GROUP BY quiz_id";
+        return jdbcTemplate.queryForList(query);
+    }
+
+
     public int getScoreByQuiz(int qid) {
         String query ="SELECT count(*) AS score FROM quizquestion " +
                 "WHERE quiz_id =? " +
@@ -57,4 +65,6 @@ public class QuizQuestionDao {
                 ;
         return jdbcTemplate.queryForObject(query,Integer.class,qid);
     }
+
+
 }

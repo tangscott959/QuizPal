@@ -30,6 +30,10 @@ public class QuizQuestionService {
         return quizQuestionDao.getScoreByUser(uid);
     }
 
+    public List<Map<String,Object>> calScoreAll() {
+        return quizQuestionDao.getScoreAll();
+    }
+
     public int calScoreOne(int qid) {
         return quizQuestionDao.getScoreByQuiz(qid);
     }
