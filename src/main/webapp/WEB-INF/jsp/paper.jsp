@@ -6,12 +6,6 @@
     <title>papers</title>
 
     <style>
-        li {
-            margin-top: 5px;
-            margin-bottom: 10px;
-            padding-left: 5px
-        }
-
         p {
             margin-left: 15px;
             margin-top: 20px;
@@ -24,11 +18,7 @@
         }
         div {
             word-spacing: 10px;
-
-
         }
-
-
         .questionbox {
             BORDER-RIGHT: 3px inset;
             BORDER-TOP: 3px inset;
@@ -88,16 +78,7 @@
                 <button name="action" value="3" class="btn btn-Info " type="submit">4</button>
                 <button name="action" value="4" class="btn btn-Info " type="submit">5</button>
 
-
-<%--                <a href="${pageContext.request.contextPath}/doquiz?qtid=1&lefttime=900&page=0&action=default">1 </a>--%>
-<%--                <a href="${pageContext.request.contextPath}/doquiz?qtid=1&lefttime=900&page=1&action=ddefault">2 </a>--%>
-<%--                <a href="${pageContext.request.contextPath}/doquiz?qtid=1&lefttime=900&page=2&action=default">3 </a>--%>
-<%--                <a href="${pageContext.request.contextPath}/doquiz?qtid=1&lefttime=900&page=3&action=default">4 </a>--%>
-<%--                <a href="${pageContext.request.contextPath}/doquiz?qtid=1&lefttime=900&page=4&action=default">5 </a>--%>
-
             </div>
-
-
         </form>
     </div>
 

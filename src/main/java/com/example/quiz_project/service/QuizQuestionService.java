@@ -18,11 +18,19 @@ public class QuizQuestionService {
         this.quizQuestionDao = quizQuestionDao;
     }
 
+    public List<QuizQuestion> getByQuizId(int qid) {
+        return quizQuestionDao.getByQuizId(qid);
+    }
+
     public void saveQQ(List<QuizQuestion> qqList) {
         quizQuestionDao.addBatch(qqList);
     }
 
     public List<Map<String,Object>> calScore(int uid) {
-        return quizQuestionDao.getScoreByQuiz(uid);
+        return quizQuestionDao.getScoreByUser(uid);
+    }
+
+    public int calScoreOne(int qid) {
+        return quizQuestionDao.getScoreByQuiz(qid);
     }
 }

@@ -142,7 +142,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`quizquestion` (
   PRIMARY KEY (`quizquestion_id`),
   INDEX `fk_quizquestion_quiz1_idx` (`quiz_id` ASC) ,
   INDEX `fk_quizquestion_question1_idx` (`question_id` ASC) ,
-  INDEX `fk_quizquestion_choice1_idx` (`hoice_id` ASC) ,
+  INDEX `fk_quizquestion_choice1_idx` (`choice_id` ASC) ,
   CONSTRAINT `fk_quizquestion_quiz1`
     FOREIGN KEY (`quiz_id`)
     REFERENCES `mydb`.`quiz` (`quiz_id`)
