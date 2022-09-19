@@ -33,6 +33,7 @@
                             <div class="form-group">
                                 <button type="submit" name="action" value="init" class="btn btn-primary btn-block">Start Quiz</button>
                             </div>
+
                         </form>
                     </div>
                 </div>

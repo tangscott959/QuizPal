@@ -22,6 +22,12 @@
             background: SeaShell;
             color: OrangeRed
         }
+        div {
+            word-spacing: 10px;
+
+
+        }
+
 
         .questionbox {
             BORDER-RIGHT: 3px inset;
@@ -73,7 +79,24 @@
                     <c:if test="${currentPage == pageSize -1}">
                         <button name="action" value="finish" class="btn btn-Info " type="submit">Finish</button>
                     </c:if>
+
                 </div>
+            <div>
+                <button name="action" value="1" class="btn btn-Info " type="submit">1</button>
+                <button name="action" value="1" class="btn btn-Info " type="submit">2</button>
+                <button name="action" value="1" class="btn btn-Info " type="submit">3</button>
+                <button name="action" value="1" class="btn btn-Info " type="submit">4</button>
+                <button name="action" value="1" class="btn btn-Info " type="submit">5</button>
+
+
+<%--                <a href="${pageContext.request.contextPath}/doquiz?qtid=1&lefttime=900&page=0&action=default">1 </a>--%>
+<%--                <a href="${pageContext.request.contextPath}/doquiz?qtid=1&lefttime=900&page=1&action=ddefault">2 </a>--%>
+<%--                <a href="${pageContext.request.contextPath}/doquiz?qtid=1&lefttime=900&page=2&action=default">3 </a>--%>
+<%--                <a href="${pageContext.request.contextPath}/doquiz?qtid=1&lefttime=900&page=3&action=default">4 </a>--%>
+<%--                <a href="${pageContext.request.contextPath}/doquiz?qtid=1&lefttime=900&page=4&action=default">5 </a>--%>
+
+            </div>
+
 
         </form>
     </div>
