@@ -31,7 +31,7 @@
 
                     </ul>
                     <div class="text-center">
-                        <a href="#" class="card-link text-center">Take Another Quiz</a>
+                        <a href="${pageContext.request.contextPath}/quizindex" class="card-link text-center">Take Another Quiz</a>
                     </div>
 
                 </div>
