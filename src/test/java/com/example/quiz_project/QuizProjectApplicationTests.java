@@ -41,4 +41,15 @@ class QuizProjectApplicationTests {
 		System.out.println(r.size());
 		System.out.println(r);
 	}
+
+	@Test
+	public void test03() {
+		System.out.println(isNumeric("1"));
+		System.out.println(isNumeric("01"));
+		System.out.println(isNumeric("10"));
+	}
+
+	public boolean isNumeric(String str) {
+		return str != null && str.matches("-?\\d+(\\.\\d+)?");
+	}
 }
