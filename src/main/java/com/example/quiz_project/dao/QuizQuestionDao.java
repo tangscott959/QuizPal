@@ -25,7 +25,10 @@ public class QuizQuestionDao {
         String query = "SELECT * FROM quizquestion";
         return jdbcTemplate.query(query,rowMapper);
     }
-
+    public List<QuizQuestion> getByQuizId(int qid) {
+        String query = "SELECT * FROM quizquestion WHERE quiz_id= ?";
+        return jdbcTemplate.query(query,rowMapper,qid);
+    }
     public void addBatch(List<QuizQuestion> qList) {
         String query ="INSERT INTO quizquestion " +
                 "(quiz_id,question_id,choice_id,order_num) " +
@@ -39,11 +42,19 @@ public class QuizQuestionDao {
         jdbcTemplate.batchUpdate(query,ba);
     }
 
-    public List<Map<String,Object>> getScoreByQuiz(int uid) {
+    public List<Map<String,Object>> getScoreByUser(int uid) {
         String query ="SELECT quiz_id,count(*) AS score FROM quizquestion " +
                 "WHERE quiz_id IN (select quiz_id from quiz where user_id =?)   " +
                 "AND choice_id IN (SELECT choice_id FROM choice WHERE is_correct =1) " +
                 "GROUP BY quiz_id";
         return jdbcTemplate.queryForList(query,uid);
+    }
+
+    public int getScoreByQuiz(int qid) {
+        String query ="SELECT count(*) AS score FROM quizquestion " +
+                "WHERE quiz_id =? " +
+                "AND choice_id IN (SELECT choice_id FROM choice WHERE is_correct =1) "
+                ;
+        return jdbcTemplate.queryForObject(query,Integer.class,qid);
     }
 }

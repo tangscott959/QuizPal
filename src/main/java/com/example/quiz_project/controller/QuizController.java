@@ -54,9 +54,20 @@ public class QuizController {
         return "home";
     }
 
-    @GetMapping("/quizdetails")
-    public void quizDetails(@RequestParam int quizId) {
+    @GetMapping("/resultdetail")
+    public String quizDetails(HttpServletRequest req,Model model,@RequestParam(name="resultId") int quizId) {
+        HttpSession session = req.getSession(false);
+        User currentUser = (User) session.getAttribute("user");
+        model.addAttribute("user",currentUser);
 
+        Quiz quiz = quizService.getById(quizId);
+        int score = quizQuestionService.calScoreOne(quizId);
+        List<QuizQuestion> qqList = quizQuestionService.getByQuizId(quizId);
+        model.addAttribute("score",score);
+        model.addAttribute("quizdetail",quiz);
+        model.addAttribute("qqlist",qqList);
+        logger.info("resultid {} score {} qqlist {}",quizId,score,qqList);
+        return "quiz";
     }
     private int initQuiz(User u,Category c) {
         Timestamp startTime = new Timestamp(System.currentTimeMillis());

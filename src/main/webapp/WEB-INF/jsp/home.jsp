@@ -69,7 +69,7 @@
                                                   pattern="yyyy-MM-dd HH:mm"/></td>
                     <td class="col-md-1">${scoreMap.get(Key)!=null ? scoreMap.get(Key) : 0}/5</td>
                     <td class="col-md-2"><a class="btn btn-default"
-                                            href="${pageContext.request.contextPath}/quiz/resultdetail?resultId=${result.getQuizId()}"
+                                            href="${pageContext.request.contextPath}/resultdetail?resultId=${result.getQuizId()}"
                                             role="button">Details</a></td>
 
                 </tr>
