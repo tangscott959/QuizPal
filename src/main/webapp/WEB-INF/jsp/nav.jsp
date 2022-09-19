@@ -4,7 +4,8 @@
     <title>quiz</title>
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <script src="js/bootstrap.min.js"></script>
-    <style>.topnav {
+    <style>
+    .topnav {
         background-color: #333;
         overflow: hidden;
     }
@@ -21,7 +22,7 @@
 
     /* Change the color of links on hover */
     .topnav a:hover {
-        background-color: #ddd;
+        background-color: #797878;
         color: black;
     }
 
@@ -32,16 +33,18 @@
     }</style>
 </head>
 <body>
-<nav class="navbar navbar-default justify-content-center">
-    <div class="container-fluid">
-        <div class="topnav">
-            <a href="${pageContext.request.contextPath}/home">Home</a>
-            <a href="${pageContext.request.contextPath}/feedback">Feed Back</a>
+<div class="container-fluid" style="width:500px; margin:0 auto;">
+    <nav class="navbar navbar-default mb-5">
 
-            <a href="${pageContext.request.contextPath}/contact">Contact Us</a>
-            <a href="${pageContext.request.contextPath}/logout">Logout</a>
-        </div>
-    </div>
-</nav>
+            <div class="topnav">
+                <a href="${pageContext.request.contextPath}/quizindex">Home</a>
+                <a href="${pageContext.request.contextPath}/feedback">Feed Back</a>
+
+                <a href="${pageContext.request.contextPath}/contact">Contact Us</a>
+                <a href="${pageContext.request.contextPath}/logout">Logout</a>
+            </div>
+
+    </nav>
+</div>
 </body>
 </html>

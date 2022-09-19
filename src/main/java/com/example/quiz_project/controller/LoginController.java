@@ -20,7 +20,7 @@ public class LoginController {
     }
     @GetMapping("/home")
     public String home(Model model){
-        return "home";
+        return "/quizindex";
     }
     @GetMapping("/login")
     public String getLogin(HttpServletRequest request, Model model){

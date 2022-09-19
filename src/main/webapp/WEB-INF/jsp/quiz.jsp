@@ -8,12 +8,11 @@
 
 </style>
 <jsp:include page="nav.jsp" flush="true" />
-<body class="bg-light">
-<div class="container">
+<body>
+<div class="container bg-light">
 
     <div class="row justify-content-center">
-
-            <div class="card" style="width: 38rem;" >
+        <div class="card" style="width: 38rem;" >
                 <div class="card-body">
                     <h5 class="card-title">Quiz Results of <strong>${user.getFullName()}</strong></h5>
 
@@ -34,19 +33,34 @@
                     <div class="text-center">
                         <a href="#" class="card-link text-center">Take Another Quiz</a>
                     </div>
+
                 </div>
             </div>
-            <div class="gy-5">
-                Your Quiz Response and Answers
-            </div>
-        <c:forEach var="qq" items="${qqlist}">
-            <div class="card gy-5" style="width: 38rem;" >
+        <div class="gy-5">
+            <h4>Your Quiz Response and Answers</h4>
+        </div>
+        <c:forEach var="qc" items="${qclist}" varStatus="status">
+            <div class="card gy-5" style="width: 48rem;" >
                 <div class="card-body">
-                    <h5 class="card-title">Question <strong>${qq.getQuestionId()}</strong></h5>
-                    Correct Answer :
-                    <div class="text-center">
-                        <a href="#" class="card-link text-center">Take Another Quiz</a>
+                    <h5 class="card-title">Question-${status.count}:&nbsp&nbsp<strong class="pl-3">${qc.getDescription()}</strong></h5>
+                    <div>
+                    <c:forEach var="choice" items="${qc.getChoiceList()}">
+                        <c:if test="${choice.getIs_correct() == 1 }">
+                            <c:set var="answer" value='${choice.getChoice_description()}' />
+                        </c:if>
+                        <div class=" form-check">
+                            <input class="form-check-input" type="radio"  value="1"
+                                   ${choice.getChoice_id() == qc.getUserChoice()  ? "checked=\"checked\"" : ""} disabled>
+                            <label class="form-check-label" >
+                                ${choice.getChoice_description()}
+                            </label>
+                        </div>
+                    </c:forEach>
+                        <div>
+                            Correct Answer : ${answer}
+                        </div>
                     </div>
+
                 </div>
             </div>
         </c:forEach>

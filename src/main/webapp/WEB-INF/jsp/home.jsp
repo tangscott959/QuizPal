@@ -6,6 +6,11 @@
 <head>
     <title>QuizMe</title>
 </head>
+<style>
+    tbody tr td{
+        vertical-align: middle;
+    }
+</style>
 <jsp:include page="nav.jsp" flush="true" />
 <body>
 <div class="container ">
@@ -62,13 +67,13 @@
                 <tr>
                     <td class="col-1">${result.getQuizId()}</td>
                     <td class="col-2">${result.getQuizName()}</td>
-                    <td class="col-2">${result.getCategoryId()}</td>
+                    <td class="col-2">${typeDic.get(result.getCategoryId())}</td>
                     <td class="col-2"><fmt:formatDate value="${result.getQuizTimeStart()}" type="date"
                                                          pattern="yyyy-MM-dd HH:mm"/></td>
                     <td class="col-2"><fmt:formatDate value="${result.getQuizTimeEnd()}" type="date"
                                                   pattern="yyyy-MM-dd HH:mm"/></td>
                     <td class="col-md-1">${scoreMap.get(Key)!=null ? scoreMap.get(Key) : 0}/5</td>
-                    <td class="col-md-2"><a class="btn btn-default"
+                    <td class="col-md-2"><a class="btn btn-outline-info"
                                             href="${pageContext.request.contextPath}/resultdetail?resultId=${result.getQuizId()}"
                                             role="button">Details</a></td>
 

@@ -31,7 +31,7 @@ public class RegisterController {
                                @RequestParam String phone ){
 
         // if user not exist, add it
-        if(userService.userExists(username)==false){
+        if(!userService.userExists(username)){
             userDao.AddUser(username,password,firstname,lastname,email,phone,1,0);
 
             //  System.out.println(userService.userExists(username));
@@ -39,11 +39,9 @@ public class RegisterController {
 
         }
 
-
         model.addAttribute("exception", "The user already exist.");
         model.addAttribute("url", req.getRequestURL());
         return "errorPage";
-
 
 
     }
