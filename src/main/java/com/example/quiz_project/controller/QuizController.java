@@ -140,11 +140,23 @@ public class QuizController {
                     quizQuestionService.saveQQ(qqList);
                     mv.setViewName("forward:/quizindex");
                     break;
+                 default:
+
+                    Question qd = questionService.getById(qqList.get(page).getQuestionId());
+                    List<Choice> cd = choiceService.getByQid(qd.getQuestion_id());
+                    mv.addObject("leftTime",leftTime);
+                    mv.addObject("qq",qqList.get(page));
+                    mv.addObject("currentPage", page );
+                    mv.addObject("question", qd);
+                    mv.addObject("choices",cd);
+                    mv.setViewName("paper");
+
+
             }
         }
         return mv;
     }
-    @GetMapping("/quizdetail")
+    @GetMapping("/quizdetail") //quizdetail?resultId=
     public String quizDetails(@RequestParam int quizId) {
         return "quiz";
 
