@@ -23,7 +23,7 @@ import java.util.Map;
 
 @Controller
 public class QuizController {
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final CategoryService categoryService;
     private final QuizService quizService;
     private final QuizQuestionService quizQuestionService;
@@ -41,13 +41,19 @@ public class QuizController {
         HttpSession session = req.getSession(false);
         User currentUser = (User) session.getAttribute("user");
         List<Category> categories = categoryService.getALl();
+        Map<Integer,String> typeDic =new HashMap<>();
+        categories.forEach(c->{
+            typeDic.put(c.getCategoryId(),c.getCategoryName());
+        });
         List<Quiz> quizList = quizService.getByUser(currentUser.getId());
         List<Map<String,Object>> scores = quizQuestionService.calScore(currentUser.getId());
         Map<String,String> scoreMap =new HashMap<>();
+
         scores.forEach(s-> {
             scoreMap.put(s.get("quiz_id").toString(), s.get("score").toString());
         });
-        logger.info("------{}",scoreMap);
+
+        model.addAttribute("typeDic",typeDic);
         model.addAttribute("scoreMap",scoreMap);
         model.addAttribute("quizList",quizList);
         model.addAttribute("quizTypeList",categories);
@@ -62,18 +68,28 @@ public class QuizController {
 
         Quiz quiz = quizService.getById(quizId);
         int score = quizQuestionService.calScoreOne(quizId);
-        List<QuizQuestion> qqList = quizQuestionService.getByQuizId(quizId);
+
         model.addAttribute("score",score);
         model.addAttribute("quizdetail",quiz);
-        model.addAttribute("qqlist",qqList);
-        logger.info("resultid {} score {} qqlist {}",quizId,score,qqList);
+        List<QuizQuestion> qqList = quizQuestionService.getByQuizId(quizId);
+        List<QuestionChoice> qcList = new ArrayList<>();
+        qqList.forEach(qq->{
+            QuestionChoice qc = new QuestionChoice();
+            qc.setQuestionId(qq.getQuestionId());
+            qc.setUserChoice(qq.getChoiceId());
+            qc.setDescription(questionService.getById(qq.getQuestionId()).getQuiz_description());
+            qc.setChoiceList(choiceService.getByQid(qq.getQuestionId()));
+            qcList.add(qc);
+        });
+        model.addAttribute("qclist",qcList);
+        logger.info("qclist {}",qcList);
         return "quiz";
     }
     private int initQuiz(User u,Category c) {
         Timestamp startTime = new Timestamp(System.currentTimeMillis());
 
         Quiz quiz = new Quiz();
-        quiz.setQuizName(u.getFullName()+c.getCategoryName());
+        quiz.setQuizName(u.getFullName()+"-"+c.getCategoryName());
         quiz.setUserId(u.getId());
         quiz.setCategoryId(c.getCategoryId());
         quiz.setQuizTimeStart(startTime);

@@ -8,12 +8,12 @@
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <script src="js/bootstrap.min.js"></script>
 </head>
-<%--<jsp:include page="nav.jsp" flush="true" />--%>
+<jsp:include page="nav.jsp" flush="true" />
 <body class="bg-dark bg-opacity-75">
 <div class="container vh-100">
 
-    <div class="row vh-100">
-        <div class="col-6 m-auto p-5 justify-content-center bg-white rounded">
+    <div class="row justify-content-center">
+        <div class="col-6 mt-5 p-5 justify-content-center bg-white rounded">
             <form method="post" action="/login">
                 <!-- UserName input -->
                 <div class="mb-2">
@@ -30,28 +30,6 @@
                 <div class="mb-4">
                     <button type="submit" class="btn btn-primary btn-block">Submit</button>
                 </div>
-
-                <!-- Register buttons
-                <div class="text-center">
-                    <p>Not a member? <a href="#!">Register</a></p>
-                    <p>or sign up with:</p>
-                    <button type="button" class="btn btn-link btn-floating mx-1">
-                        <i class="fab fa-facebook-f"></i>
-                    </button>
-
-                    <button type="button" class="btn btn-link btn-floating mx-1">
-                        <i class="fab fa-google"></i>
-                    </button>
-
-                    <button type="button" class="btn btn-link btn-floating mx-1">
-                        <i class="fab fa-twitter"></i>
-                    </button>
-
-                    <button type="button" class="btn btn-link btn-floating mx-1">
-                        <i class="fab fa-github"></i>
-                    </button>
-                </div>
-                -->
             </form>
             <a href="/register">New user? Click here to create an account. </a>
         </div>
