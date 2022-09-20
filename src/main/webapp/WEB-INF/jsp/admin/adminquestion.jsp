@@ -34,86 +34,75 @@
                 <form role="form" id="add-form" action="${pageContext.request.contextPath}/admin/addquestion"
                       method="POST">
                     <div class="modal-body">
+                        <div class="row gy-3">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="f1">Category</label>
+                                    <select id="f1" name="quizType" class="form-select">
+                                        <c:forEach items="${qzTypes}" var="qz">
+                                            <option value="${qz.getCategoryId()}">${qz.getCategoryName()}</option>
+                                        </c:forEach>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="c1">Question's Description</label>
+                                    <input type="text" class="form-control"
+                                           placeholder="Input description for the Category"
+                                           name="desc" id="c1">
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label>ChoicesList</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">1.</span>
+                                        <input type="text" class="form-control"
+                                               placeholder="Input description for the choice" name="choices">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">2.</span>
+                                        <input type="text" class="form-control"
+                                               placeholder="Input description for the choice" id="c12" name="choices">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">3.</span>
+                                        <input type="text" class="form-control"
+                                               placeholder="Input description for the choice" name="choices">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label>Set Answer</label>
+                                </div>
+                                <div class="form-group form-inline">
+                                    <label class="radio-inline">
+                                        <input type="radio" name="isAnswerOption" value="1"> 1
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="isAnswerOption" value="2"> 2
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="isAnswerOption" value="3"> 3
+                                    </label>
 
-                        <div class="col-12">
-                            <div class="form-group">
-                                <label for="f1">Category</label>
-                                <select id="f1" name="quizType" class="form-control">
-                                    <c:forEach items="${qzTypes}" var="qz">
-                                        <option value="${qz.getCategoryId()}">${qz.getCategoryName()}</option>
-                                    </c:forEach>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group">
-                                <label for="c1">Question's Description</label>
-                                <input type="text" class="form-control" placeholder="Input description for the Category"
-                                       name="desc" id="c1">
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group">
-                                <label>ChoicesList</label>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group">
-                                <div class="input-group">
-                                    <span class="input-group-addon">a.</span>
-                                    <input type="text" class="form-control"
-                                           placeholder="Input description for the choice" name="choices">
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12">
-                            <div class="form-group">
-                                <div class="input-group">
-                                    <span class="input-group-addon">b.</span>
-                                    <input type="text" class="form-control"
-                                           placeholder="Input description for the choice" id="c12" name="choices">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group">
-
-                                <div class="input-group">
-                                    <span class="input-group-addon">c.</span>
-                                    <input type="text" class="form-control"
-                                           placeholder="Input description for the choice" name="choices">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group">
-                                <div class="input-group">
-                                    <span class="input-group-addon">d.</span>
-                                    <input type="text" class="form-control"
-                                           placeholder="Input description for the choice" name="choices">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group">
-                                <label>Set Answer</label>
-                            </div>
-                            <div class="form-group form-inline">
-                                <label class="radio-inline">
-                                    <input type="radio" name="isAnswerOption" value="0"> a
-                                </label>
-                                <label class="radio-inline">
-                                    <input type="radio" name="isAnswerOption" value="1"> b
-                                </label>
-                                <label class="radio-inline">
-                                    <input type="radio" name="isAnswerOption" value="2"> c
-                                </label>
-                                <label class="radio-inline">
-                                    <input type="radio" name="isAnswerOption" value="3"> d
-                                </label>
-                            </div>
-                        </div>
-
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-bs-dismiss="modal"> Close</button>
@@ -147,7 +136,8 @@
                     <td class="col-md-1">${qu.getQuestion_id()}</td>
                     <td class="col-md-4">${qu.getQuiz_description()}</td>
                     <td class="col-md-1">${qu.getIs_active()}</td>
-                    <td class="col-md-2"><a class="btn btn-default" href="${pageContext.request.contextPath}/admindetail?questionId=${qu.getQuestion_id()}"
+                    <td class="col-md-2"><a class="btn btn-default"
+                                            href="${pageContext.request.contextPath}/admindetail?questionId=${qu.getQuestion_id()}"
                                             role="button">Edit</a></td>
 
                 </tr>

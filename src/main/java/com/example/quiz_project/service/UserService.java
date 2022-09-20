@@ -34,7 +34,9 @@ public class UserService {
         return false;
 
     }
-
+    public List<User> getAllUsers() {
+        return userDao.getAllUsers();
+    }
     public List<User> getActiveUsers() {
         return userDao.getAllActiveUsers();
     }

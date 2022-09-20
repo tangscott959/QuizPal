@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -49,7 +50,7 @@ public class AdminQuizController {
                                        @RequestParam(name="sortByCategory" ,required=false)boolean sortFlag2){
         List<QuizResultTable> qrtList = new ArrayList<>();
         List<Category> categories = categoryService.getALl();
-        List<User> usersList = userService.getActiveUsers();
+        List<User> usersList = userService.getAllUsers();
         List<Quiz> quizList = quizService.getALl();
         List<Map<String,Object>> scores = quizQuestionService.calScoreAll();
         for (Quiz quiz : quizList) {
@@ -58,7 +59,13 @@ public class AdminQuizController {
                 qrt.setQuizName(quiz.getQuizName());
                 qrt.setStartTime(quiz.getQuizTimeStart());
                 qrt.setEndTime(quiz.getQuizTimeEnd());
-                qrt.setUserName(usersList.stream().filter(u-> u.getId() == quiz.getUserId()).findAny().get().getFullName());
+                User user = usersList.stream().filter(u-> u.getId() == quiz.getUserId()).findAny().orElse(null);
+                if (user != null) {
+                    qrt.setUserName(usersList.stream().filter(u-> u.getId() == quiz.getUserId()).findAny().get().getFullName());
+                }
+                else {
+                    qrt.setUserName(null);
+                }
                 qrt.setCategory(categories.stream().filter(c -> c.getCategoryId() == quiz.getCategoryId())
                         .findAny().get().getCategoryName());
                 Map<String,Object> score = scores.stream().filter(s->(Integer)s.get("quiz_id") == quiz.getQuizId()).findAny().orElse(null);
@@ -83,5 +90,36 @@ public class AdminQuizController {
         mv.addObject("qList",questionList);
         mv.setViewName("admin/adminquestion");
         return mv;
+    }
+    @PostMapping(value = "/admin/addquestion")
+    protected String addQuestion(@RequestParam(name="quizType") int quizType ,@RequestParam(name="desc") String desc,
+                                 @RequestParam(name="choices") List<String> choices,@RequestParam(name="isAnswerOption") int isAnswer) {
+        questionService.addQuestion(quizType,desc,1,isAnswer,choices);
+        return("redirect:/adminallquestions?pageNum=1");
+    }
+    @GetMapping(value ="/admindetail")
+    protected String QuesstionDetail(Model model , @RequestParam(name="questionId")int qId) {
+        Question question = questionService.getById(qId);
+        List<Category> qzList = categoryService.getALl();
+        List<Choice> cList = choiceService.getByQid(qId);
+        model.addAttribute("qzTypes",qzList);
+        model.addAttribute("detailInfo",question);
+        model.addAttribute("choices",cList);
+        return "admin/adminedit";
+    }
+    @PostMapping(value = "/admin/updatequestion")
+    protected String editQuestion(@RequestParam(name="Id") int id,@RequestParam(name="quizType") int quizType ,
+                                  @RequestParam(name="desc") String desc,
+                                  @RequestParam(name="isAnswerOption") int isAnswer,
+                                  @RequestParam(name="status") int status) {
+        questionService.updateQuestion(id,quizType,isAnswer,status,desc);
+        choiceService.setAnswer(id,isAnswer);
+        return("redirect:/adminallquestions?pageNum=1");
+    }
+    @GetMapping(value ="/adminallusers")
+    protected String  userall(Model model,@RequestParam(name="pageNum")int pageNum) {
+        List<User> userList = userService.getAllUsers();
+        model.addAttribute("userInfo",userList);
+        return "admin/adminusers";
     }
 }
