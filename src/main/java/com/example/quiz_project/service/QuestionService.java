@@ -23,8 +23,13 @@ public class QuestionService {
     public List<Question> getRandom5(int cid) {
         return questionDao.getRandom5ByType(cid);
     }
+    public List<Question> getAll() {
+        return questionDao.getALl();
+    }
 
     public Question getById(int id) {
         return questionDao.getById(id);
     }
+
+
 }
