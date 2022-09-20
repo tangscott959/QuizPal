@@ -19,7 +19,7 @@
         <div class="row">
             <div class="col-4">
                 <h4 class="text-info text-center">
-                    <a  href="${pageContext.request.contextPath}/adminquiz?pageNum=1"   >Browse Results</a>
+                    <a  href="${pageContext.request.contextPath}/adminquiz?pageNum=1&sortByCategory=0"   >Browse Results</a>
                 </h4>
             </div>
             <div class="col-4 ">

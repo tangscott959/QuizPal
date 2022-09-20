@@ -49,5 +49,7 @@ public class UserService {
             status =0;
         userDao.updateUserstatus(uid,status);
     }
-
+    public User getUserById(int id) {
+        return userDao.getById(id);
+    }
 }

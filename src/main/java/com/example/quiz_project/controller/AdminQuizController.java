@@ -18,10 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Controller
@@ -45,18 +42,22 @@ public class AdminQuizController {
     }
 
     @GetMapping(value ="adminquiz")
-    public String adminquizindex(HttpServletRequest req, Model model,
-                                       @RequestParam(name="sortByName" ,required=false)boolean sortFlag1,
-                                       @RequestParam(name="sortByCategory" ,required=false)int sortFlag2){
+    public String adminquizindex(Model model,
+                                       @RequestParam(name="sortByName" ,required=false)String sortFlag1,
+                                       @RequestParam(name="sortByCategory" ,required=false)String sortFlag2){
         List<QuizResultTable> qrtList = new ArrayList<>();
         List<Quiz> quizList ;
-        logger.info("-----{} {}",sortFlag1,sortFlag2);
+
         List<Category> categories = categoryService.getALl();
         List<User> usersList = userService.getAllUsers();
-        if( sortFlag2==0 )
-            quizList = quizService.getALl();
+
+        if( null == sortFlag2 || sortFlag2.equals("0"))
+            if( null != sortFlag1 )
+                quizList = quizService.getByUserName(sortFlag1);
+            else
+                quizList = quizService.getALl();
         else
-            quizList = quizService.getByCategory(sortFlag2);
+            quizList = quizService.getByCategory(Integer.parseInt(sortFlag2));
         List<Map<String,Object>> scores = quizQuestionService.calScoreAll();
         for (Quiz quiz : quizList) {
                 QuizResultTable qrt = new QuizResultTable();
@@ -84,6 +85,30 @@ public class AdminQuizController {
         model.addAttribute("qrtList",qrtList);
         return "admin/adminresult";
     }
+
+    @GetMapping("/adminresultdetail")
+    public String quizDetails(HttpServletRequest req,Model model,@RequestParam(name="resultId") int quizId) {
+        Quiz quiz = quizService.getById(quizId);
+        User u = userService.getUserById(quiz.getUserId());
+        int score = quizQuestionService.calScoreOne(quizId);
+
+        model.addAttribute("user",u);
+        model.addAttribute("score",score);
+        model.addAttribute("quizdetail",quiz);
+        List<QuizQuestion> qqList = quizQuestionService.getByQuizId(quizId);
+        List<QuestionChoice> qcList = new ArrayList<>();
+        qqList.forEach(qq->{
+            QuestionChoice qc = new QuestionChoice();
+            qc.setQuestionId(qq.getQuestionId());
+            qc.setUserChoice(qq.getChoiceId());
+            qc.setDescription(questionService.getById(qq.getQuestionId()).getQuiz_description());
+            qc.setChoiceList(choiceService.getByQid(qq.getQuestionId()));
+            qcList.add(qc);
+        });
+        model.addAttribute("qclist",qcList);
+        return "admin/adminquiz";
+    }
+
     @GetMapping(value ="adminallquestions")
     protected ModelAndView listall(@RequestParam(name="pageNum")int pageNum) {
         ModelAndView mv =new ModelAndView();

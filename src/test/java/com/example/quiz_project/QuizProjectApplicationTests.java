@@ -1,6 +1,8 @@
 package com.example.quiz_project;
 
+import com.example.quiz_project.dao.QuizDao;
 import com.example.quiz_project.dao.QuizQuestionDao;
+import com.example.quiz_project.domain.Quiz;
 import com.example.quiz_project.domain.QuizQuestion;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,8 @@ import java.util.Map;
 class QuizProjectApplicationTests {
 	@Autowired
 	private QuizQuestionDao quizQuestionDao;
+	@Autowired
+	private QuizDao quizDao;
 	@Test
 	void contextLoads() {
 	}
@@ -48,7 +52,11 @@ class QuizProjectApplicationTests {
 		System.out.println(isNumeric("01"));
 		System.out.println(isNumeric("10"));
 	}
-
+	@Test
+	public void test04() {
+		List<Quiz> quizList = quizDao.getByUserName("tang");
+		System.out.println(quizList.size());
+	}
 	public boolean isNumeric(String str) {
 		return str != null && str.matches("-?\\d+(\\.\\d+)?");
 	}
