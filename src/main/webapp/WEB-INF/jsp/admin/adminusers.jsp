@@ -54,8 +54,9 @@
                 <th class="col-1">--</th>
             </tr>
             </thead>
-            <form action="${pageContext.request.contextPath}/admin/adminupdateuser"
+
             <c:forEach items="${userInfo}" var="user">
+            <form action="${pageContext.request.contextPath}/admin/adminupdateuser" method="POST" >
                 <tr>
                     <td class="col-2">${user.getUsername()}</td>
                     <td class="col-2">${user.getFirstname()}</td>
@@ -70,19 +71,19 @@
                         </button>
                     </td>
                 </tr>
+            </form>
             </c:forEach>
+
         </table>
     </div>
 </div>
 <script src="js/bootstrap.min.js"></script>
 <script type="text/javascript">
+    // <body onload="show()"
     // function show(data){
     //     console.log(data);
     // }
-    function toggle() {
-        console.log('ee')
-        window.location.href="${pageContext.request.contextPath}/doquiz?action=finish&page=${currentPage}&lefttime=0&qtid=0"
-    }
+
 </script>
 </body>
 </html>

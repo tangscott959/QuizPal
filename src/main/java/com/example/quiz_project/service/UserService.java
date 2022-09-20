@@ -41,4 +41,13 @@ public class UserService {
         return userDao.getAllActiveUsers();
     }
 
+    public void toggleUserStatus(int uid) {
+        int status = userDao.getById(uid).getIs_active();
+        if (status == 0)
+            status =1;
+        else
+            status =0;
+        userDao.updateUserstatus(uid,status);
+    }
+
 }

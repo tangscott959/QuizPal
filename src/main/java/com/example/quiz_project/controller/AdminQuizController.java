@@ -47,11 +47,16 @@ public class AdminQuizController {
     @GetMapping(value ="adminquiz")
     public String adminquizindex(HttpServletRequest req, Model model,
                                        @RequestParam(name="sortByName" ,required=false)boolean sortFlag1,
-                                       @RequestParam(name="sortByCategory" ,required=false)boolean sortFlag2){
+                                       @RequestParam(name="sortByCategory" ,required=false)int sortFlag2){
         List<QuizResultTable> qrtList = new ArrayList<>();
+        List<Quiz> quizList ;
+        logger.info("-----{} {}",sortFlag1,sortFlag2);
         List<Category> categories = categoryService.getALl();
         List<User> usersList = userService.getAllUsers();
-        List<Quiz> quizList = quizService.getALl();
+        if( sortFlag2==0 )
+            quizList = quizService.getALl();
+        else
+            quizList = quizService.getByCategory(sortFlag2);
         List<Map<String,Object>> scores = quizQuestionService.calScoreAll();
         for (Quiz quiz : quizList) {
                 QuizResultTable qrt = new QuizResultTable();
@@ -75,6 +80,7 @@ public class AdminQuizController {
                     qrt.setScore("0");
                 qrtList.add(qrt);
         }
+        model.addAttribute("category",categories);
         model.addAttribute("qrtList",qrtList);
         return "admin/adminresult";
     }
@@ -117,9 +123,15 @@ public class AdminQuizController {
         return("redirect:/adminallquestions?pageNum=1");
     }
     @GetMapping(value ="/adminallusers")
-    protected String  userall(Model model,@RequestParam(name="pageNum")int pageNum) {
+    protected String  userall(Model model,@RequestParam(name="pageNum" )int pageNum) {
         List<User> userList = userService.getAllUsers();
         model.addAttribute("userInfo",userList);
         return "admin/adminusers";
+    }
+    @PostMapping(value = "admin/adminupdateuser")
+    protected String toggleuser(@RequestParam(name="userid") int userId) {
+        logger.info("-------userid={}",userId);
+        userService.toggleUserStatus(userId);
+        return "redirect:/adminallusers?pageNum=1";
     }
 }
