@@ -17,14 +17,19 @@
 
         <ul class="nav nav-list"><li class="divider"></li></ul>
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-4">
                 <h4 class="text-info text-center">
                     <a  href="${pageContext.request.contextPath}/adminquiz?pageNum=1"   >Browse Results</a>
                 </h4>
             </div>
-            <div class="col-md-6 ">
+            <div class="col-4 ">
                 <h4 class="text-info text-center">
                     <a  href="${pageContext.request.contextPath}/adminallquestions?pageNum=1"   >Manage Questions</a>
+                </h4>
+            </div>
+            <div class="col-4 ">
+                <h4 class="text-info text-center">
+                    <a  href="${pageContext.request.contextPath}/adminallusers?pageNum=1"   >Manage Users</a>
                 </h4>
             </div>
         </div>
