@@ -60,6 +60,11 @@ public class LoginController {
         return "login";
     }
 
+    @GetMapping("/admin")
+    public String admin(){
+        return "admin";
+    }
+
 
 
 }
