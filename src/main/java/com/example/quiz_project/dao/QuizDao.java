@@ -34,6 +34,11 @@ public class QuizDao {
         String query = "SELECT * FROM quiz WHERE user_id = ? ORDER BY quiz_time_start DESC";
         return jdbcTemplate.query(query,rowMapper,id);
     }
+    public List<Quiz> getByUserName(String pattern ) {
+        String p = "%"+pattern+"%";
+        String query = "SELECT * FROM quiz WHERE user_id IN (SELECT user_id FROM user WHERE firstname like ? OR lastname like ? ) ORDER BY quiz_time_start DESC";
+        return jdbcTemplate.query(query,rowMapper,p,p);
+    }
     public List<Quiz> getByCategory(int qid) {
         String query = "SELECT * FROM quiz WHERE category_id = ? ORDER BY quiz_time_start DESC";
         return jdbcTemplate.query(query,rowMapper,qid);

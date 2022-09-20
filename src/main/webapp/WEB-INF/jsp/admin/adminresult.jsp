@@ -49,7 +49,7 @@
 <div class="container">
     <div class="col-md-10">
         <h4> Quiz History</h4>
-        <div class="row">
+        <div class="row align-items-center">
             <div class="col-3">
                 <form action="${pageContext.request.contextPath}/adminquiz?pageNum=1&sortByCategory=0" method="get">
                     <div class="input-group input-group-sm">
@@ -65,36 +65,49 @@
                     </div>
                 </form>
             </div>
-
+            <div class="col-1"><span> OR </span></div>
+            <div class="col-5">
+                <form action="${pageContext.request.contextPath}/adminquiz?pageNum=1&sortByCategory=0" method="get">
+                    <div class="input-group input-group-sm">
+                        <input type="text" name="sortByName" class="form-control" placeholder="username pattern "  aria-label="username" aria-describedby="button-addon2">
+                        <button class="btn btn-outline-secondary" type="submit" id="button-addon2">search</button>
+                    </div>
+                </form>
+            </div>
         </div>
         <table class="table table-striped mt-2">
             <thead>
             <tr class="bg-info">
-                <th class="col-md-2">UserName<span class="arrow asc"></span></th>
-                <th class="col-md-2">Category<span class="arrow asc"></span></th>
-                <th class="col-md-2">QuizName<span class="arrow asc"></span></th>
-                <th class="col-md-2">StartTime</th>
-                <th class="col-md-2">EndTime</th>
-                <th class="col-md-1">Score</th>
-                <th class="col-md-1">Details</th>
+                <th class="col-2">UserName<span class="arrow asc"></span></th>
+                <th class="col-2">Category<span class="arrow asc"></span></th>
+                <th class="col-2">QuizName<span class="arrow asc"></span></th>
+                <th class="col-2">StartTime</th>
+                <th class="col-2">EndTime</th>
+                <th class="col-1">Score</th>
+                <th class="col-1">Details</th>
             </tr>
             </thead>
+            <tbody>
             <c:forEach items="${qrtList}" var="result">
                 <tr>
-                    <td class="col-md-2">${result.getUserName()}</td>
-                    <td class="col-md-2">${result.getCategory()}</td>
-                    <td class="col-md-2">${result.getQuizName()}</td>
-                    <td class="col-md-2"><fmt:formatDate value="${result.getStartTime()}" type="date"
+                    <td class="col-2">${result.getUserName()}</td>
+                    <td class="col-2">${result.getCategory()}</td>
+                    <td class="col-2">${result.getQuizName()}</td>
+                    <td class="col-2"><fmt:formatDate value="${result.getStartTime()}" type="date"
+                                                      pattern="yyyy-MM-dd HH:mm"/></td>
+                    <td class="col-2"><fmt:formatDate value="${result.getEndTime()}" type="date"
                                                          pattern="yyyy-MM-dd HH:mm"/></td>
-                    <td class="col-md-2"><fmt:formatDate value="${result.getEndTime()}" type="date"
-                                                         pattern="yyyy-MM-dd HH:mm"/></td>
-                    <td class="col-md-1">${result.getScore()}</td>
-                    <td class="col-md-1"><a class="btn btn-default"
-                                            href="${pageContext.request.contextPath}/resultdetail?resultId=${result.getQuizId()}"
+                    <td class="col-1">${result.getScore()}</td>
+                    <td class="col-1"><a class="btn btn-default"
+                                            href="${pageContext.request.contextPath}/adminresultdetail?resultId=${result.getQuizId()}"
                                             role="button">Detail</a></td>
 
                 </tr>
             </c:forEach>
+            </tbody>
+            <tfoot>
+                Total: ${qrtList.size()}
+            </tfoot>
         </table>
     </div>
 </div>

@@ -25,6 +25,8 @@ public class QuizService {
     public List<Quiz> getByUser(int id) {
         return quizDao.getByUser(id);
     }
+
+    public List<Quiz> getByUserName(String p) {return quizDao.getByUserName(p);}
     public List<Quiz> getByCategory( int qid) {return quizDao.getByCategory(qid);}
     public Quiz getById(int id) {
         return quizDao.getById(id);
