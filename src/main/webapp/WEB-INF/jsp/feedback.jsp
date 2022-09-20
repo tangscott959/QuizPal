@@ -32,10 +32,7 @@
                     </div>
 
 
-                    <div class="col-12 mb-2">
-                        <label class="form-label" for="form13">Subject</label>
-                        <input type="text" id="form13" name="firstname" class="form-control" />
-                    </div>
+
 
                     <div class="col-12 mb-2">
                         <button id ="btn" type="submit" class="btn btn-primary btn-block">Submit</button>
