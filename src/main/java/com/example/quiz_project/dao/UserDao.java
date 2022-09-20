@@ -38,7 +38,10 @@ public class UserDao {
         jdbcTemplate.update(query,user_name,user_password,firstname,lastname,email,phone,is_active,is_admin);
         System.out.println("User added");
     }
-
+    public void updateUserstatus(int uid,int status) {
+        String query = "UPDATE user SET is_active = ? WHERE user_id =?";
+        jdbcTemplate.update(query,status,uid);
+    }
     public User getById(int uid) {
         String query = "SELECT * FROM USER WHERE user_id = ?";
         return this.jdbcTemplate.queryForObject(query,rowMapper,uid);

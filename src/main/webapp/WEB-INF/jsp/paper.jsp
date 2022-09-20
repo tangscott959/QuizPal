@@ -16,9 +16,11 @@
             background: SeaShell;
             color: OrangeRed
         }
+
         div {
             word-spacing: 10px;
         }
+
         .questionbox {
             BORDER-RIGHT: 3px inset;
             BORDER-TOP: 3px inset;
@@ -29,23 +31,24 @@
         }
     </style>
 </head>
-<jsp:include page="nav.jsp" flush="true" />
+<jsp:include page="nav.jsp" flush="true"/>
 <body onload=setTimer(${leftTime})>
 
 <div class="container">
     <div class="row">
-        <div class="col-md-4">
-            <h2>
+        <div class="col-4">
+            <h3>
                 Question ${currentPage+1} / ${pageSize}
-            </h2>
+            </h3>
         </div>
-        <div class="col-md-8 text-right text-warning">
+        <div class="col-8 text-right text-warning">
             <h3>Time Remaining: <span id="leftTime"></span></h3>
         </div>
 
         <form action="${pageContext.request.contextPath}/doquiz" method="GET">
-            <div class="col-md-12 questionbox">
-                <h3 class="pl-2">${question.getQuiz_description()}</h3>
+            <div class="col-12 questionbox">
+                <div class="px-4 mt-2">
+                <h4>${question.getQuiz_description()}</h4>
                 <input type="hidden" name="qtid" value="0"/>
                 <input id="Timer" type="hidden" name="lefttime" value="0"/>
                 <input type="hidden" name="page" value="${currentPage}"/>
@@ -58,8 +61,10 @@
                         </label>
                     </p>
                 </c:forEach>
+                </div>
             </div>
-                <div style="margin-top: 20px ;margin-left: 20px" class="btn-group btn-group col-4">
+            <div class="row justify-content-center gy-3">
+                <div style="margin-top: 20px ;margin-left: 20px" class="btn-group col-4">
                     <c:if test="${currentPage != 0}">
                         <button name="action" value="prev" class="btn btn-Info " type="submit">Prev</button>
                     </c:if>
@@ -71,29 +76,30 @@
                     </c:if>
 
                 </div>
-            <div>
-                <button name="action" value="0" class="btn btn-Info " type="submit">1</button>
-                <button name="action" value="1" class="btn btn-Info " type="submit">2</button>
-                <button name="action" value="2" class="btn btn-Info " type="submit">3</button>
-                <button name="action" value="3" class="btn btn-Info " type="submit">4</button>
-                <button name="action" value="4" class="btn btn-Info " type="submit">5</button>
-
+                <div class="col-12 text-center">
+                    <button name="action" value="0" class="btn btn-Info " type="submit">1</button>
+                    <button name="action" value="1" class="btn btn-Info " type="submit">2</button>
+                    <button name="action" value="2" class="btn btn-Info " type="submit">3</button>
+                    <button name="action" value="3" class="btn btn-Info " type="submit">4</button>
+                    <button name="action" value="4" class="btn btn-Info " type="submit">5</button>
+                </div>
             </div>
+
         </form>
     </div>
 
 </div>
 <script type="text/javascript">
 
-    function  setTimer(leftSeconds) {
-        document.getElementById("leftTime").innerText =Math.trunc(leftSeconds/60).toString() + ":" + (leftSeconds%60).toString().padStart(2,"0");
+    function setTimer(leftSeconds) {
+        document.getElementById("leftTime").innerText = Math.trunc(leftSeconds / 60).toString() + ":" + (leftSeconds % 60).toString().padStart(2, "0");
         window.setInterval(function () {
             leftSeconds = leftSeconds - 1;
-            if ( leftSeconds === 0) {
+            if (leftSeconds === 0) {
                 alert("Time is Over")
-                window.location.href="${pageContext.request.contextPath}/doquiz?action=finish&page=${currentPage}&lefttime=0&qtid=0"
+                window.location.href = "${pageContext.request.contextPath}/doquiz?action=finish&page=${currentPage}&lefttime=0&qtid=0"
             }
-            document.getElementById("leftTime").innerText = Math.trunc(leftSeconds/60).toString() + ":" + (leftSeconds%60).toString().padStart(2,"0");
+            document.getElementById("leftTime").innerText = Math.trunc(leftSeconds / 60).toString() + ":" + (leftSeconds % 60).toString().padStart(2, "0");
             document.getElementById("Timer").value = leftSeconds;
         }, 1000);
     }

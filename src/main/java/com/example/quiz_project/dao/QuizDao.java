@@ -26,7 +26,7 @@ public class QuizDao {
     }
 
     public List<Quiz> getAll() {
-        String query = "SELECT * FROM quiz";
+        String query = "SELECT * FROM quiz ORDER BY quiz_time_start DESC";
         return jdbcTemplate.query(query,rowMapper);
     }
 
@@ -34,7 +34,10 @@ public class QuizDao {
         String query = "SELECT * FROM quiz WHERE user_id = ? ORDER BY quiz_time_start DESC";
         return jdbcTemplate.query(query,rowMapper,id);
     }
-
+    public List<Quiz> getByCategory(int qid) {
+        String query = "SELECT * FROM quiz WHERE category_id = ? ORDER BY quiz_time_start DESC";
+        return jdbcTemplate.query(query,rowMapper,qid);
+    }
     public Quiz getById(int id) {
         String query = "SELECT * FROM quiz WHERE quiz_id = ? ";
         return jdbcTemplate.queryForObject(query,rowMapper,id);
