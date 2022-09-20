@@ -25,8 +25,10 @@ public class ContactDao {
         return contacts;
     }
     public void AddContact(String firstName, String lastName, String subject, String message){
-        String query = "INSERT INTO contact (firstname, lastname, subject, message) VALUES(?,?,?,?)";
+        String query = "insert into contact (firstname,lastname,subject,message) values(?,?,?,?)";
         jdbcTemplate.update(query,firstName,lastName,subject,message);
+
+
         System.out.println("Contact added");
     }
 }

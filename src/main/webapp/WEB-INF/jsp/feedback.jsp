@@ -40,6 +40,10 @@
                     <div class="col-12 mb-2">
                         <button id ="btn" type="submit" class="btn btn-primary btn-block">Submit</button>
                     </div>
+
+                    <div class=" text-center">
+                        <a href="/quizindex" class = "card-link text-center"> Back to Quiz Page </a>
+                    </div>
                 </div>
             </form>
         </div>
