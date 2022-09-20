@@ -51,7 +51,9 @@
                 <th  class="col-2">Email</th>
                 <th class="col-2">phone</th>
                 <th class="col-1">status</th>
+
                 <th class="col-1">--</th>
+                <th class="col-1">Is_admin</th>
             </tr>
             </thead>
 
@@ -64,6 +66,9 @@
                     <td class="col-2">${user.getEmail()}</td>
                     <td class="col-2">${user.getPhone()}</td>
                     <td class="col-1">${user.getIs_active() == 1 ? "active" : "disabled"}</td>
+                    <td class="col-1">${user.getIs_admin()==1 ? "admin" : "Not admin"}</td>
+
+
                     <td class="col-1">
                         <input type="hidden" name="userid" value="${user.getId()}">
                         <button type="submit" ${user.getIs_active()==1 ? "class=\"btn btn-outline-danger\"" : "class=\"btn btn-outline-success\""} >
