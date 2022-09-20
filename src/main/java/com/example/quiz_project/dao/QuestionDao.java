@@ -30,6 +30,12 @@ public class QuestionDao {
         return  this.jdbcTemplate.query(query,rowMapper,cid);
     }
 
+    public List<Question> getALl() {
+        String query ="SELECT * FROM  question " +
+                "WHERE  is_active =1 " +
+                "ORDER BY category_id";
+        return  this.jdbcTemplate.query(query,rowMapper);
+    }
     public Question getById(int id) {
         String query ="SELECT * FROM  question " +
                 "WHERE  question_id = ?  " ;

@@ -1,7 +1,9 @@
 package com.example.quiz_project.controller;
 
+import com.example.quiz_project.dao.UserDao;
 import com.example.quiz_project.domain.*;
 import com.example.quiz_project.service.*;
+import lombok.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -29,35 +31,57 @@ public class AdminQuizController {
     private final QuizQuestionService quizQuestionService;
     private final QuestionService questionService;
     private final ChoiceService choiceService;
-    public AdminQuizController(CategoryService categoryService, QuizService quizService, QuizQuestionService quizQuestionService, QuestionService questionService, ChoiceService choiceService){
+    private final UserService userService;
+    public AdminQuizController(CategoryService categoryService, QuizService quizService,
+                               QuizQuestionService quizQuestionService, QuestionService questionService,
+                               ChoiceService choiceService,UserService userService){
         this.categoryService=categoryService;
         this.quizService=quizService;
         this.quizQuestionService=quizQuestionService;
         this.questionService=questionService;
         this.choiceService = choiceService;
+        this.userService = userService;
     }
 
     @GetMapping(value ="adminquiz")
     public String adminquizindex(HttpServletRequest req, Model model,
                                        @RequestParam(name="sortByName" ,required=false)boolean sortFlag1,
                                        @RequestParam(name="sortByCategory" ,required=false)boolean sortFlag2){
+        List<QuizResultTable> qrtList = new ArrayList<>();
         List<Category> categories = categoryService.getALl();
-        Map<Integer,String> typeDic =new HashMap<>();
-        categories.forEach(c->{
-            typeDic.put(c.getCategoryId(),c.getCategoryName());
-        });
+        List<User> usersList = userService.getActiveUsers();
         List<Quiz> quizList = quizService.getALl();
         List<Map<String,Object>> scores = quizQuestionService.calScoreAll();
-        Map<String,String> scoreMap =new HashMap<>();
-        scores.forEach(s-> {
-            scoreMap.put(s.get("quiz_id").toString(), s.get("score").toString());
-        });
-
-        model.addAttribute("typeDic",typeDic);
-        model.addAttribute("scoreMap",scoreMap);
-        model.addAttribute("quizList",quizList);
-        model.addAttribute("quizTypeList",categories);
+        for (Quiz quiz : quizList) {
+                QuizResultTable qrt = new QuizResultTable();
+                qrt.setQuizId(quiz.getQuizId());
+                qrt.setQuizName(quiz.getQuizName());
+                qrt.setStartTime(quiz.getQuizTimeStart());
+                qrt.setEndTime(quiz.getQuizTimeEnd());
+                qrt.setUserName(usersList.stream().filter(u-> u.getId() == quiz.getUserId()).findAny().get().getFullName());
+                qrt.setCategory(categories.stream().filter(c -> c.getCategoryId() == quiz.getCategoryId())
+                        .findAny().get().getCategoryName());
+                Map<String,Object> score = scores.stream().filter(s->(Integer)s.get("quiz_id") == quiz.getQuizId()).findAny().orElse(null);
+                if( score!=null )
+                    qrt.setScore(score.get("score").toString());
+                else
+                    qrt.setScore("0");
+                qrtList.add(qrt);
+        }
+        model.addAttribute("qrtList",qrtList);
         return "admin/adminresult";
     }
-
+    @GetMapping(value ="adminallquestions")
+    protected ModelAndView listall(@RequestParam(name="pageNum")int pageNum) {
+        ModelAndView mv =new ModelAndView();
+        List<Sort.Order> orders = new ArrayList<Sort.Order>();
+        orders.add(new Sort.Order(Sort.Direction.ASC,"quizType.id"));
+        Sort sort = Sort.by(orders);
+        List<Question> questionList = questionService.getAll();
+        List<Category> qzList = categoryService.getALl();
+        mv.addObject("qzTypes",qzList);
+        mv.addObject("qList",questionList);
+        mv.setViewName("admin/adminquestion");
+        return mv;
+    }
 }

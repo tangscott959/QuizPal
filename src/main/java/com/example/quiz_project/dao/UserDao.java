@@ -23,6 +23,12 @@ public class UserDao {
         List<User> users = jdbcTemplate.query(query,rowMapper);
         return users;
     }
+
+    public List<User> getAllActiveUsers(){
+        String query = "SELECT * FROM USER WHERE is_active = 1 AND is_admin = 0";
+        List<User> users = jdbcTemplate.query(query,rowMapper);
+        return users;
+    }
     public void AddUser(String user_name,String user_password,
                         String firstname, String lastname, String email,
                         String phone, int is_active, int is_admin){

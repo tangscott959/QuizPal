@@ -33,10 +33,10 @@ public class UserService {
         }
         return false;
 
-
-
     }
 
-
+    public List<User> getActiveUsers() {
+        return userDao.getAllActiveUsers();
+    }
 
 }

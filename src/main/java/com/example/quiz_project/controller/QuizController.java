@@ -106,7 +106,6 @@ public class QuizController {
         ModelAndView mv =new ModelAndView();
         String sel =req.getParameter("optradio");
         User u = (User) session.getAttribute("user");
-        logger.info("---->{}",sel);
         List<QuizQuestion> qqList;
         if(action.equals("init")) {
             qqList = new ArrayList<>();
