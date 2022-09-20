@@ -22,6 +22,16 @@
                     <a  href="${pageContext.request.contextPath}/adminquiz?pageNum=1&sortByCategory=0"   >Browse Results</a>
                 </h4>
             </div>
+            <div class="col-4">
+                <h4 class="text-info text-center">
+                    <a  href="${pageContext.request.contextPath}/admincontact"  >Browse Contact</a>
+                </h4>
+            </div>
+            <div class="col-4">
+                <h4 class="text-info text-center">
+                    <a  href="${pageContext.request.contextPath}/adminfeedback"  >Browse Feedback</a>
+                </h4>
+            </div>
             <div class="col-4 ">
                 <h4 class="text-info text-center">
                     <a  href="${pageContext.request.contextPath}/adminallquestions?pageNum=1"   >Manage Questions</a>

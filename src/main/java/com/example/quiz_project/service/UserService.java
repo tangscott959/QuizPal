@@ -19,7 +19,7 @@ public class UserService {
     public Optional<User> validateLogin(String username, String password){
         return userDao.getAllUsers().stream()
                 .filter(a->a.getUsername().equals(username)
-                && a.getPassword().equals(password)).findAny();
+                && a.getPassword().equals(password) && a.getIs_active()==1).findAny();
 
     }
     public boolean userExists(String username){
@@ -34,6 +34,7 @@ public class UserService {
         return false;
 
     }
+
     public List<User> getAllUsers() {
         return userDao.getAllUsers();
     }

@@ -17,25 +17,28 @@
                     <div class="row">
                         <div class="col-12 mb-2">
                             <label class="form-label" for="form11">FirstName</label>
-                            <input type="text" id="form11" name="message" class="form-control" />
+                            <input type="text" id="form11" name="firstname" class="form-control" />
                         </div>
 
 
                         <div class="col-12 mb-2">
                             <label class="form-label" for="form12">LastName</label>
-                            <input type="text" id="form12" name="rating" class="form-control" />
+                            <input type="text" id="form12" name="lastname" class="form-control" />
                         </div>
                         <div class="col-12 mb-2">
                             <label class="form-label" for="form13">Subject</label>
-                            <input type="text" id="form13" name="firstname" class="form-control" />
+                            <input type="text" id="form13" name="subject" class="form-control" />
                         </div>
                         <div class="col-12 mb-2">
                             <label class="form-label" for="form13">message</label>
-                            <input type="text" id="form14" name="firstname" class="form-control" />
+                            <input type="text" id="form14" name="message" class="form-control" />
                         </div>
 
                         <div class="col-12 mb-2">
                             <button id ="btn" type="submit" class="btn btn-primary btn-block"><span>Submit</span></button>
+                        </div>
+                        <div class=" text-center">
+                            <a href="/quizindex" class = "card-link text-center"> Back to Quiz Page </a>
                         </div>
                     </div>
                 </form>

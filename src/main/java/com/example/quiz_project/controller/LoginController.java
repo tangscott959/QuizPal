@@ -15,6 +15,7 @@ import java.util.Optional;
 @Controller
 public class LoginController {
     private final LoginService loginService;
+
     public LoginController(LoginService loginService){
         this.loginService=loginService;
     }
@@ -25,7 +26,7 @@ public class LoginController {
     @GetMapping("/login")
     public String getLogin(HttpServletRequest request, Model model){
         HttpSession session = request.getSession(false);
-        if(session!=null && session.getAttribute("user")!=null){
+        if(session!=null && session.getAttribute("user")!=null ){
             return "redirect:/quizindex";
         }
         return "login";
@@ -33,7 +34,7 @@ public class LoginController {
     @PostMapping("/login")
     public String postLogin(@RequestParam String username,
                             @RequestParam String password,
-                            HttpServletRequest request){
+                            HttpServletRequest request, Model model){
         Optional<User> user =loginService.validateLogin(username,password);
         if(user.isPresent()){
             HttpSession oldSession = request.getSession(false);
@@ -48,8 +49,11 @@ public class LoginController {
                 return "redirect:/quizindex";
         }
         else {
+            model.addAttribute("exception", "Wrong username/password or acc in suspension.");
+            model.addAttribute("url", request.getRequestURL());
+            return "errorPage";
 
-            return "login";
+           // return "login";
         }
     }
     @GetMapping("/logout")

@@ -30,15 +30,19 @@ public class AdminQuizController {
     private final QuestionService questionService;
     private final ChoiceService choiceService;
     private final UserService userService;
+    private final ContactService contactService;
+    private final FeedbackService feedbackService;
     public AdminQuizController(CategoryService categoryService, QuizService quizService,
                                QuizQuestionService quizQuestionService, QuestionService questionService,
-                               ChoiceService choiceService,UserService userService){
+                               ChoiceService choiceService,UserService userService, ContactService contactService, FeedbackService feedbackService){
         this.categoryService=categoryService;
         this.quizService=quizService;
         this.quizQuestionService=quizQuestionService;
         this.questionService=questionService;
         this.choiceService = choiceService;
         this.userService = userService;
+        this.contactService =contactService;
+        this.feedbackService =feedbackService;
     }
 
     @GetMapping(value ="adminquiz")
@@ -158,5 +162,23 @@ public class AdminQuizController {
         logger.info("-------userid={}",userId);
         userService.toggleUserStatus(userId);
         return "redirect:/adminallusers?pageNum=1";
+    }
+    @GetMapping(value = "/admincontact")
+    protected String contact(Model model){
+        List<Contact> contactList = contactService.getAllContacts();
+
+        model.addAttribute("contactInfo",contactList);
+        return "admin/admincontact";
+    }
+    @GetMapping(value = "/adminfeedback")
+    protected String feedback(Model model){
+        List<Feedback> feedbackList = feedbackService.getAllFeedbacks();
+//        feedbackList.get(0).getMessage();
+//        feedbackList.get(0).getRating();
+//        feedbackList.get(0).getSubmitDate();
+        model.addAttribute("feedbackInfo",feedbackList);
+
+        return "admin/adminfeedback";
+
     }
 }
