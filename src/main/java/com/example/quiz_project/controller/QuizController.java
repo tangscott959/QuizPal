@@ -100,8 +100,8 @@ public class QuizController {
     @SuppressWarnings("unchecked")
     protected ModelAndView pageQuestions(HttpServletRequest req, @RequestParam("action") String action,
                                          @RequestParam(name="qtid" ,required=false) int cid,
-                                         @RequestParam(name="page") int page)
-//                                         @RequestParam(name="lefttime") int leftTime)
+                                         @RequestParam(name="page") int page,
+                                        @RequestParam(name="lefttime") int leftTime)
     {
         HttpSession session = req.getSession(false);
         ModelAndView mv =new ModelAndView();
@@ -124,7 +124,7 @@ public class QuizController {
             session.setAttribute("qqlist",qqList);
             session.setAttribute("quizKey",quizid);
             Question q = questionList.get(0);
-          //  mv.addObject("leftTime",leftTime*60);
+            mv.addObject("leftTime",leftTime*60);
             mv.addObject("qq",qqList.get(0));
             mv.addObject("question",q);
             mv.addObject("choices",choiceService.getByQid(q.getQuestion_id()));
@@ -139,7 +139,7 @@ public class QuizController {
                 qq.setChoiceId(Integer.parseInt(sel));
                 session.setAttribute("qqlist", qqList);
             }
-          //  mv.addObject("leftTime",leftTime);
+            mv.addObject("leftTime",leftTime-1);
             mv.addObject("pageSize", qqList.size());
             switch (action) {
                 case "next":
