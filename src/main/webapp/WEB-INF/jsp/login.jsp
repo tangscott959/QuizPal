@@ -5,8 +5,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login</title>
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <script src="js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/bootstrap.min.css">
+
 </head>
 
 <body class="bg-dark bg-opacity-75">
@@ -14,7 +14,7 @@
 
     <div class="row justify-content-center">
         <div class="col-6 mt-5 p-5 justify-content-center bg-white rounded">
-            <form method="post" action="/login">
+            <form method="post" action="${pageContext.request.contextPath}/login">
                 <!-- UserName input -->
                 <div class="mb-2">
                     <label class="form-label" for="form21">Username</label>
@@ -31,13 +31,14 @@
                     <button type="submit" class="btn btn-primary btn-block">Submit</button>
                 </div>
             </form>
-            <a href="/register">New user? Click here to create an account. </a>
+            <a href="${pageContext.request.contextPath}/register">New user? Click here to create an account. </a>
         </div>
     </div>
 </div>
 <script>
 
 </script>
+<script src="${pageContext.request.contextPath}/js/bootstrap.min.js"></script>
 </body>
 
 </html>
