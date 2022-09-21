@@ -108,6 +108,7 @@ public class QuizController {
         String sel =req.getParameter("optradio");
         User u = (User) session.getAttribute("user");
         List<QuizQuestion> qqList;
+        int [] selArray=new int[5];
         if(action.equals("init")) {
             qqList = new ArrayList<>();
             Category category = categoryService.getById(cid);
@@ -123,7 +124,9 @@ public class QuizController {
             });
             session.setAttribute("qqlist",qqList);
             session.setAttribute("quizKey",quizid);
+            session.setAttribute("selArray",selArray);
             Question q = questionList.get(0);
+            mv.addObject("selArray",selArray);
             mv.addObject("leftTime",leftTime*60);
             mv.addObject("qq",qqList.get(0));
             mv.addObject("question",q);
@@ -134,9 +137,13 @@ public class QuizController {
         }
         else {
             qqList = (List<QuizQuestion>) session.getAttribute("qqlist");
+            selArray = (int[])session.getAttribute("selArray");
             QuizQuestion qq = qqList.get(page);
+
             if(sel !=null) {
                 qq.setChoiceId(Integer.parseInt(sel));
+                selArray[page]=1;
+                session.setAttribute("selArray", selArray);
                 session.setAttribute("qqlist", qqList);
             }
             mv.addObject("leftTime",leftTime-1);
