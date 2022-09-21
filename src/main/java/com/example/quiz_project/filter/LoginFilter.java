@@ -20,7 +20,6 @@ public class LoginFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        System.out.println("In LoginFilter");
         HttpSession session = request.getSession(false);
 
         if (session != null && session.getAttribute("user") != null) {
@@ -34,7 +33,7 @@ public class LoginFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-        return "/login".equals(path) || "/register".equals(path);
+        return "/login".equals(path) || "/register".equals(path)|| path.contains(".css")||path.contains(".js");
     }
 }
 
