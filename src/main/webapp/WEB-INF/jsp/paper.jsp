@@ -51,7 +51,7 @@
                 <h4>${question.getQuiz_description()}</h4>
                 <input type="hidden" name="qtid" value="0"/>
                 <input id="Timer" type="hidden" name="lefttime" value="0"/>
-                <input type="hidden" name="page" value="${currentPage}"/>
+                <input type="hidden" id="pidx" name="page" value="${currentPage}"/>
                 <c:forEach var="choice" items="${choices}">
                     <p><input type="radio" class="form-check-input pl-2" name="optradio" id=O${choice.getChoice_id()}
                               value="${choice.getChoice_id()}"
@@ -77,11 +77,11 @@
 
                 </div>
                 <div class="col-12 text-center">
-                    <button name="action" value="0" class="btn btn-Info " type="submit">1</button>
-                    <button name="action" value="1" class="btn btn-Info " type="submit">2</button>
-                    <button name="action" value="2" class="btn btn-Info " type="submit">3</button>
-                    <button name="action" value="3" class="btn btn-Info " type="submit">4</button>
-                    <button name="action" value="4" class="btn btn-Info " type="submit">5</button>
+                    <button name="action" value="0" id="b0" ${selArray[0]==1 ? "class=\"btn btn-success\"" : "class=\"btn btn-Info\""} type="submit">1</button>
+                    <button name="action" value="1" id="b1" ${selArray[1]==1 ? "class=\"btn btn-success\"" : "class=\"btn btn-Info\""} type="submit">2</button>
+                    <button name="action" value="2" id="b2" ${selArray[2]==1 ? "class=\"btn btn-success\"" : "class=\"btn btn-Info\""} type="submit">3</button>
+                    <button name="action" value="3" id="b3" ${selArray[3]==1 ? "class=\"btn btn-success\"" : "class=\"btn btn-Info\""} type="submit">4</button>
+                    <button name="action" value="4" id="b4" ${selArray[4]==1 ? "class=\"btn btn-success\"" : "class=\"btn btn-Info\""} type="submit">5</button>
                 </div>
             </div>
 
@@ -104,6 +104,7 @@
             document.getElementById("Timer").value = leftSeconds;
         }, 1000);
     }
+
 </script>
 </body>
 </html>
