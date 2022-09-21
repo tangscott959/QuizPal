@@ -32,7 +32,7 @@
     </style>
 </head>
 <jsp:include page="nav.jsp" flush="true"/>
-<body onload=setTimer(${leftTime})>
+<%--<body onload=setTimer(${leftTime})>--%>
 
 <div class="container">
     <div class="row">
@@ -41,16 +41,16 @@
                 Question ${currentPage+1} / ${pageSize}
             </h3>
         </div>
-        <div class="col-8 text-right text-warning">
-            <h3>Time Remaining: <span id="leftTime"></span></h3>
-        </div>
+<%--        <div class="col-8 text-right text-warning">--%>
+<%--            <h3>Time Remaining: <span id="leftTime"></span></h3>--%>
+<%--        </div>--%>
 
         <form action="${pageContext.request.contextPath}/doquiz" method="GET">
             <div class="col-12 questionbox">
                 <div class="px-4 mt-2">
                 <h4>${question.getQuiz_description()}</h4>
                 <input type="hidden" name="qtid" value="0"/>
-                <input id="Timer" type="hidden" name="lefttime" value="0"/>
+<%--                <input id="Timer" type="hidden" name="lefttime" value="0"/>--%>
                 <input type="hidden" name="page" value="${currentPage}"/>
                 <c:forEach var="choice" items="${choices}">
                     <p><input type="radio" class="form-check-input pl-2" name="optradio" id=O${choice.getChoice_id()}
@@ -89,21 +89,21 @@
     </div>
 
 </div>
-<script type="text/javascript">
+<%--<script type="text/javascript">--%>
 
-    function setTimer(leftSeconds) {
-        document.getElementById("leftTime").innerText = Math.trunc(leftSeconds / 60).toString() + ":" + (leftSeconds % 60).toString().padStart(2, "0");
-        window.setInterval(function () {
-            leftSeconds = leftSeconds - 1;
-            if (leftSeconds === 0) {
-                alert("Time is Over")
-                window.location.href = "${pageContext.request.contextPath}/doquiz?action=finish&page=${currentPage}&lefttime=0&qtid=0"
-            }
-            document.getElementById("leftTime").innerText = Math.trunc(leftSeconds / 60).toString() + ":" + (leftSeconds % 60).toString().padStart(2, "0");
-            document.getElementById("Timer").value = leftSeconds;
-        }, 1000);
-    }
-</script>
+<%--    function setTimer(leftSeconds) {--%>
+<%--        document.getElementById("leftTime").innerText = Math.trunc(leftSeconds / 60).toString() + ":" + (leftSeconds % 60).toString().padStart(2, "0");--%>
+<%--        window.setInterval(function () {--%>
+<%--            leftSeconds = leftSeconds - 1;--%>
+<%--            if (leftSeconds === 0) {--%>
+<%--                alert("Time is Over")--%>
+<%--                window.location.href = "${pageContext.request.contextPath}/doquiz?action=finish&page=${currentPage}&lefttime=0&qtid=0"--%>
+<%--            }--%>
+<%--            document.getElementById("leftTime").innerText = Math.trunc(leftSeconds / 60).toString() + ":" + (leftSeconds % 60).toString().padStart(2, "0");--%>
+<%--            document.getElementById("Timer").value = leftSeconds;--%>
+<%--        }, 1000);--%>
+<%--    }--%>
+<%--</script>--%>
 </body>
 </html>
 
