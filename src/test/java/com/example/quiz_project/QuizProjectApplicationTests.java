@@ -2,9 +2,14 @@ package com.example.quiz_project;
 
 import com.example.quiz_project.dao.QuizDao;
 import com.example.quiz_project.dao.QuizQuestionDao;
+import com.example.quiz_project.dao.QuizRowMapper;
 import com.example.quiz_project.domain.Quiz;
 import com.example.quiz_project.domain.QuizQuestion;
+import com.example.quiz_project.util.JdbcTemplatePager;
+import com.example.quiz_project.util.PageData;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -19,6 +24,11 @@ class QuizProjectApplicationTests {
 	private QuizQuestionDao quizQuestionDao;
 	@Autowired
 	private QuizDao quizDao;
+	@Autowired
+	QuizRowMapper quizRowMapper;
+	@Autowired
+	JdbcTemplatePager jdbcTemplatePager;
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	@Test
 	void contextLoads() {
 	}
@@ -59,5 +69,12 @@ class QuizProjectApplicationTests {
 	}
 	public boolean isNumeric(String str) {
 		return str != null && str.matches("-?\\d+(\\.\\d+)?");
+	}
+
+	@Test
+	public void test05() {
+		String sql = "select * from quiz";
+		PageData<Quiz> pq= jdbcTemplatePager.queryForPage(sql,2,5,quizRowMapper);
+		logger.info("startrow:{}, total{},records{},rows{}",pq.getStartRow(),pq.getTotal(),pq.getRecords(),pq.getRows());
 	}
 }
