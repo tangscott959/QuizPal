@@ -2,8 +2,8 @@
 <html>
 <head>
     <title>quiz</title>
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <script src="js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}css/bootstrap.min.css">
+    <script src="${pageContext.request.contextPath}/js/bootstrap.min.js"></script>
     <style>
     .topnav {
         background-color: #333;
