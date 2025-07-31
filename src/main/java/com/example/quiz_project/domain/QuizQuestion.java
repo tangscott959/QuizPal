@@ -13,5 +13,5 @@ public class QuizQuestion {
     int quizId;
     int questionId;
     int choiceId;
-    int orderNum;
+    int is_marked;
 }

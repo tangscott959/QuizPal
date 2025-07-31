@@ -12,7 +12,7 @@ public class JdbcConfig {
     private final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
     private final String DB_URL =  "jdbc:mysql://localhost:3306/mydb";
     private final String USER = "root";
-    private final String PASSWORD = "12345";
+    private final String PASSWORD = "Txx12345";
 
     @Bean
     public DataSource jdbcDataSource(){

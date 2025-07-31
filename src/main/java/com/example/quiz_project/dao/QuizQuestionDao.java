@@ -31,7 +31,7 @@ public class QuizQuestionDao {
     }
     public void addBatch(List<QuizQuestion> qList) {
         String query ="INSERT INTO quizquestion " +
-                "(quiz_id,question_id,choice_id,order_num) " +
+                "(quiz_id,question_id,choice_id,is_marked) " +
                 "VALUES(?,?,?,?)";
         List<Object[]> ba = new ArrayList<>();
         Object[] arr = null;

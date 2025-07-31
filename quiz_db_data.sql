@@ -1,4 +1,4 @@
-use mydb;
+ use mydb;
 -- ALTER TABLE quizquestion DROP COLUMN order_num;
 -- ALTER TABLE quizquestion RENAME COLUMN hoice_id TO choice_id;
 
