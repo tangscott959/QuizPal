@@ -53,4 +53,10 @@ public class UserService {
     public User getUserById(int id) {
         return userDao.getById(id);
     }
+    public void toggleAdminStatus(int userId) {
+        User user = userDao.getById(userId);
+        int newStatus = (user.getIs_admin() == 1) ? 0 : 1;
+        userDao.updateAdminStatus(userId, newStatus);
+    }
+
 }

@@ -46,5 +46,10 @@ public class UserDao {
         String query = "SELECT * FROM USER WHERE user_id = ?";
         return this.jdbcTemplate.queryForObject(query,rowMapper,uid);
     }
+    public void updateAdminStatus(int userId, int isAdmin) {
+        String sql = "UPDATE user SET is_admin = ? WHERE user_id = ?";
+        jdbcTemplate.update(sql, isAdmin, userId);
+    }
+
 
 }

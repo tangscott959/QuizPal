@@ -20,7 +20,6 @@ import javax.servlet.http.HttpSession;
 import java.sql.Timestamp;
 import java.util.*;
 
-
 @Controller
 public class AdminQuizController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -32,76 +31,104 @@ public class AdminQuizController {
     private final UserService userService;
     private final ContactService contactService;
     private final FeedbackService feedbackService;
+
     public AdminQuizController(CategoryService categoryService, QuizService quizService,
                                QuizQuestionService quizQuestionService, QuestionService questionService,
-                               ChoiceService choiceService,UserService userService, ContactService contactService, FeedbackService feedbackService){
-        this.categoryService=categoryService;
-        this.quizService=quizService;
-        this.quizQuestionService=quizQuestionService;
-        this.questionService=questionService;
+                               ChoiceService choiceService, UserService userService, ContactService contactService, FeedbackService feedbackService){
+        this.categoryService = categoryService;
+        this.quizService = quizService;
+        this.quizQuestionService = quizQuestionService;
+        this.questionService = questionService;
         this.choiceService = choiceService;
         this.userService = userService;
-        this.contactService =contactService;
-        this.feedbackService =feedbackService;
+        this.contactService = contactService;
+        this.feedbackService = feedbackService;
+    }
+    @GetMapping("/admin/home")
+    public String adminHome(HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null || user.getIs_admin() != 1) {
+            return "redirect:/";
+        }
+        return "admin/adminhome"; // make sure this JSP exists
     }
 
-    @GetMapping(value ="adminquiz")
-    public String adminquizindex(Model model,
-                                       @RequestParam(name="sortByName" ,required=false)String sortFlag1,
-                                       @RequestParam(name="sortByCategory" ,required=false)String sortFlag2){
-        List<QuizResultTable> qrtList = new ArrayList<>();
-        List<Quiz> quizList ;
 
+    @GetMapping(value = "adminquiz")
+    public String adminQuizIndex(HttpSession session, Model model,
+                                 @RequestParam(name = "sortByName", required = false) String sortFlag1,
+                                 @RequestParam(name = "sortByCategory", required = false) String sortFlag2) {
+
+        // Debugging the session and user role
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            logger.warn("User is not logged in.");
+            return "redirect:/accessdenied.jsp";  // Redirect to access denied page if no user is found
+        }
+
+        logger.info("User {} logged in with role: {}", user.getUsername(), user.getIs_admin() == 1 ? "Admin" : "Regular User");
+
+        if (user.getIs_admin() != 1) {
+            logger.warn("Access denied: User {} is not an admin.", user.getUsername());
+            return "redirect:/accessdenied.jsp";  // Ensure only admins have access
+        }
+
+        // Process quiz list for admin view
+        List<QuizResultTable> qrtList = new ArrayList<>();
+        List<Quiz> quizList;
         List<Category> categories = categoryService.getALl();
         List<User> usersList = userService.getAllUsers();
 
-        if( null == sortFlag2 || sortFlag2.equals("0"))
-            if( null != sortFlag1 )
+        if (null == sortFlag2 || sortFlag2.equals("0")) {
+            if (null != sortFlag1) {
                 quizList = quizService.getByUserName(sortFlag1);
-            else
+            } else {
                 quizList = quizService.getALl();
-        else
+            }
+        } else {
             quizList = quizService.getByCategory(Integer.parseInt(sortFlag2));
-        List<Map<String,Object>> scores = quizQuestionService.calScoreAll();
-        for (Quiz quiz : quizList) {
-                QuizResultTable qrt = new QuizResultTable();
-                qrt.setQuizId(quiz.getQuizId());
-                qrt.setQuizName(quiz.getQuizName());
-                qrt.setStartTime(quiz.getQuizTimeStart());
-                qrt.setEndTime(quiz.getQuizTimeEnd());
-                User user = usersList.stream().filter(u-> u.getId() == quiz.getUserId()).findAny().orElse(null);
-                if (user != null) {
-                    qrt.setUserName(usersList.stream().filter(u-> u.getId() == quiz.getUserId()).findAny().get().getFullName());
-                }
-                else {
-                    qrt.setUserName(null);
-                }
-                qrt.setCategory(categories.stream().filter(c -> c.getCategoryId() == quiz.getCategoryId())
-                        .findAny().get().getCategoryName());
-                Map<String,Object> score = scores.stream().filter(s->(Integer)s.get("quiz_id") == quiz.getQuizId()).findAny().orElse(null);
-                if( score!=null )
-                    qrt.setScore(score.get("score").toString());
-                else
-                    qrt.setScore("0");
-                qrtList.add(qrt);
         }
-        model.addAttribute("category",categories);
-        model.addAttribute("qrtList",qrtList);
-        return "admin/adminresult";
+
+        List<Map<String,Object>> scores = quizQuestionService.calScoreAll();
+
+        for (Quiz quiz : quizList) {
+            QuizResultTable qrt = new QuizResultTable();
+            qrt.setQuizId(quiz.getQuizId());
+            qrt.setQuizName(quiz.getQuizName());
+            qrt.setStartTime(quiz.getQuizTimeStart());
+            qrt.setEndTime(quiz.getQuizTimeEnd());
+            User quizUser = usersList.stream().filter(u -> u.getId() == quiz.getUserId()).findFirst().orElse(null);
+            if (quizUser != null) {
+                qrt.setUserName(quizUser.getFullName());
+            } else {
+                qrt.setUserName("Unknown");
+            }
+
+            qrt.setCategory(categories.stream().filter(c -> c.getCategoryId() == quiz.getCategoryId()).findFirst().map(Category::getCategoryName).orElse("Unknown"));
+
+            Map<String, Object> score = scores.stream().filter(s -> (Integer) s.get("quiz_id") == quiz.getQuizId()).findFirst().orElse(null);
+            qrt.setScore(score != null ? score.get("score").toString() : "0");
+
+            qrtList.add(qrt);
+        }
+
+        model.addAttribute("category", categories);
+        model.addAttribute("qrtList", qrtList);
+        return "admin/adminresult";  // Admin page
     }
 
     @GetMapping("/adminresultdetail")
-    public String quizDetails(HttpServletRequest req,Model model,@RequestParam(name="resultId") int quizId) {
+    public String quizDetails(HttpServletRequest req, Model model, @RequestParam(name = "resultId") int quizId) {
         Quiz quiz = quizService.getById(quizId);
         User u = userService.getUserById(quiz.getUserId());
         int score = quizQuestionService.calScoreOne(quizId);
 
-        model.addAttribute("user",u);
-        model.addAttribute("score",score);
-        model.addAttribute("quizdetail",quiz);
+        model.addAttribute("user", u);
+        model.addAttribute("score", score);
+        model.addAttribute("quizdetail", quiz);
         List<QuizQuestion> qqList = quizQuestionService.getByQuizId(quizId);
         List<QuestionChoice> qcList = new ArrayList<>();
-        qqList.forEach(qq->{
+        qqList.forEach(qq -> {
             QuestionChoice qc = new QuestionChoice();
             qc.setQuestionId(qq.getQuestionId());
             qc.setUserChoice(qq.getChoiceId());
@@ -109,76 +136,122 @@ public class AdminQuizController {
             qc.setChoiceList(choiceService.getByQid(qq.getQuestionId()));
             qcList.add(qc);
         });
-        model.addAttribute("qclist",qcList);
-        return "admin/adminquiz";
+
+        model.addAttribute("qclist", qcList);
+        return "admin/adminquiz";  // Admin quiz detail page
     }
 
-    @GetMapping(value ="adminallquestions")
-    protected ModelAndView listall(@RequestParam(name="pageNum")int pageNum) {
-        ModelAndView mv =new ModelAndView();
-        List<Sort.Order> orders = new ArrayList<Sort.Order>();
-        orders.add(new Sort.Order(Sort.Direction.ASC,"quizType.id"));
-        Sort sort = Sort.by(orders);
-        List<Question> questionList = questionService.getAll();
-        List<Category> qzList = categoryService.getALl();
-        mv.addObject("qzTypes",qzList);
-        mv.addObject("qList",questionList);
-        mv.setViewName("admin/adminquestion");
-        return mv;
-    }
-    @PostMapping(value = "/admin/addquestion")
-    protected String addQuestion(@RequestParam(name="quizType") int quizType ,@RequestParam(name="desc") String desc,
-                                 @RequestParam(name="choices") List<String> choices,@RequestParam(name="isAnswerOption") int isAnswer) {
-        questionService.addQuestion(quizType,desc,1,isAnswer,choices);
-        return("redirect:/adminallquestions?pageNum=1");
-    }
-    @GetMapping(value ="/admindetail")
-    protected String QuesstionDetail(Model model , @RequestParam(name="questionId")int qId) {
-        Question question = questionService.getById(qId);
-        List<Category> qzList = categoryService.getALl();
-        List<Choice> cList = choiceService.getByQid(qId);
-        model.addAttribute("qzTypes",qzList);
-        model.addAttribute("detailInfo",question);
-        model.addAttribute("choices",cList);
-        return "admin/adminedit";
-    }
-    @PostMapping(value = "/admin/updatequestion")
-    protected String editQuestion(@RequestParam(name="Id") int id,@RequestParam(name="quizType") int quizType ,
-                                  @RequestParam(name="desc") String desc,
-                                  @RequestParam(name="isAnswerOption") int isAnswer,
-                                  @RequestParam(name="status") int status) {
-        questionService.updateQuestion(id,quizType,isAnswer,status,desc);
-        choiceService.setAnswer(id,isAnswer);
-        return("redirect:/adminallquestions?pageNum=1");
-    }
-    @GetMapping(value ="/adminallusers")
-    protected String  userall(Model model,@RequestParam(name="pageNum" )int pageNum) {
+    @GetMapping(value = "adminallusers")
+    protected String listAllUsers(Model model, @RequestParam(name = "pageNum") int pageNum) {
         List<User> userList = userService.getAllUsers();
-        model.addAttribute("userInfo",userList);
-        return "admin/adminusers";
+        model.addAttribute("userInfo", userList);
+        return "admin/adminusers";  // Admin user list page
     }
-    @PostMapping(value = "admin/adminupdateuser")
-    protected String toggleuser(@RequestParam(name="userid") int userId) {
-        logger.info("-------userid={}",userId);
-        userService.toggleUserStatus(userId);
-        return "redirect:/adminallusers?pageNum=1";
-    }
-    @GetMapping(value = "/admincontact")
-    protected String contact(Model model){
-        List<Contact> contactList = contactService.getAllContacts();
 
-        model.addAttribute("contactInfo",contactList);
-        return "admin/admincontact";
+    @PostMapping(value = "admin/adminupdateuser")
+    protected String toggleUserStatus(@RequestParam(name = "userid") int userId) {
+        logger.info("Toggling status for user with ID: {}", userId);
+        userService.toggleUserStatus(userId);
+        return "redirect:/adminallusers?pageNum=1";  // Redirect back to user list page
     }
-    @GetMapping(value = "/adminfeedback")
-    protected String feedback(Model model){
-        List<Feedback> feedbackList = feedbackService.getAllFeedbacks();
-//        feedbackList.get(0).getMessage();
-//        feedbackList.get(0).getRating();
-//        feedbackList.get(0).getSubmitDate();
-        model.addAttribute("feedbackInfo",feedbackList);
+
+    @PostMapping(value = "admin/toggleuser")
+    protected String updateUser(@RequestParam(name = "userid") int userId, @RequestParam(name = "action") String action) {
+        logger.info("Action: {} for user with ID: {}", action, userId);
+        if ("toggle_status".equals(action)) {
+            userService.toggleUserStatus(userId);
+        } else if ("toggle_admin".equals(action)) {
+            userService.toggleAdminStatus(userId);  // Assuming you have a toggleAdminStatus method in the service
+        }
+        return "redirect:/adminallusers?pageNum=1";  // Redirect to user list after update
+    }
+
+    // Debugging for regular user viewing their own results
+    @GetMapping("/userquizresults")
+    public String userResults(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        List<Quiz> quizList;
+
+        if (user.getIs_admin() == 1) {
+            // Admin sees all users' quiz results
+            quizList = quizService.getALl();
+        } else {
+            // Regular user sees only their own quiz results
+            quizList = quizService.getByUserId(user.getId());
+        }
+
+        List<QuizResultTable> qrtList = new ArrayList<>();
+        List<Category> categories = categoryService.getALl();
+        List<User> usersList = userService.getAllUsers();
+        List<Map<String,Object>> scores = quizQuestionService.calScoreAll();
+
+        for (Quiz quiz : quizList) {
+            QuizResultTable qrt = new QuizResultTable();
+            qrt.setQuizId(quiz.getQuizId());
+            qrt.setQuizName(quiz.getQuizName());
+            qrt.setStartTime(quiz.getQuizTimeStart());
+            qrt.setEndTime(quiz.getQuizTimeEnd());
+
+            // Get the user that took the quiz
+            User quizUser = usersList.stream().filter(u -> u.getId() == quiz.getUserId()).findFirst().orElse(null);
+            if (quizUser != null) {
+                qrt.setUserName(quizUser.getFullName());
+            } else {
+                qrt.setUserName("Unknown");
+            }
+
+            // Set the category name for the quiz
+            qrt.setCategory(
+                    categories.stream()
+                            .filter(c -> c.getCategoryId() == quiz.getCategoryId())
+                            .findFirst()
+                            .map(Category::getCategoryName)
+                            .orElse("Unknown")
+            );
+
+            // Set the score
+            Map<String, Object> score = scores.stream()
+                    .filter(s -> (Integer) s.get("quiz_id") == quiz.getQuizId())
+                    .findFirst()
+                    .orElse(null);
+            qrt.setScore(score != null ? score.get("score").toString() : "0");
+
+            qrtList.add(qrt);
+        }
+
+        model.addAttribute("qrtList", qrtList);
+        return user.getIs_admin() == 1 ? "admin/adminresult" : "user/quizresults";
+    }
+    @GetMapping("/admin/feedback")
+    public String viewAllFeedback(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+
+        // Ensure only admin can access
+        if (user == null || user.getIs_admin() != 1) {
+            return "redirect:/";
+        }
+
+        List<Feedback> feedbackList = feedbackService.getAllFeedback();
+        model.addAttribute("feedbackList", feedbackList);
 
         return "admin/adminfeedback";
-
     }
+
+    @GetMapping("/admin/contact")
+    public String viewAllContact(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+
+        if (user == null || user.getIs_admin() != 1) {
+            return "redirect:/";
+        }
+
+        List<Contact> contactList = contactService.getAllContacts();
+        model.addAttribute("contactlist", contactList);
+
+        return "admin/admincontact";
+    }
+
+
+
+
 }

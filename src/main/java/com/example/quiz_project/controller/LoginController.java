@@ -43,8 +43,9 @@ public class LoginController {
             }
             HttpSession newSession = request.getSession(true);
             newSession.setAttribute("user",user.get());
+
             if (user.get().getIs_admin() == 1 )
-                return "/admin/adminindex";
+                return "redirect:/admin/adminindex"; // ✅ updated here
             else
                 return "redirect:/quizindex";
         }
@@ -52,10 +53,9 @@ public class LoginController {
             model.addAttribute("exception", "Wrong username/password or acc in suspension.");
             model.addAttribute("url", request.getRequestURL());
             return "errorPage";
-
-           // return "login";
         }
     }
+
     @GetMapping("/logout")
     public String logout(HttpServletRequest request, Model model) {
         HttpSession oldSession = request.getSession(false);
@@ -68,6 +68,11 @@ public class LoginController {
     public String admin(){
         return "admin";
     }
+    @GetMapping("/admin/adminindex")
+    public String adminIndex() {
+        return "admin/adminindex";  // Looks for /WEB-INF/views/admin/adminindex.jsp
+    }
+
 
 
 

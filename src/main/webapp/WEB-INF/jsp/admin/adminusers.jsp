@@ -39,6 +39,53 @@
 </head>
 
 <body>
+<%--<c:if test="${sessionScope.user.is_admin == 1}">--%>
+<%--    <div class="container">--%>
+<%--        <div class="col-10">--%>
+<%--            <h4>User List</h4>--%>
+<%--            <table class="table table-striped">--%>
+<%--                <thead>--%>
+<%--                <tr class="bg-info">--%>
+<%--                    <th>UserName</th>--%>
+<%--                    <th>FirstName</th>--%>
+<%--                    <th>LastName</th>--%>
+<%--                    <th>Email</th>--%>
+<%--                    <th>Phone</th>--%>
+<%--                    <th>Status</th>--%>
+<%--                    <th>Make Admin</th>--%>
+<%--                </tr>--%>
+<%--                </thead>--%>
+<%--                <c:forEach items="${userInfo}" var="user">--%>
+<%--                    <form action="${pageContext.request.contextPath}/admin/adminupdateuser" method="POST">--%>
+<%--                        <tr>--%>
+<%--                            <td>${user.getUsername()}</td>--%>
+<%--                            <td>${user.getFirstname()}</td>--%>
+<%--                            <td>${user.getLastname()}</td>--%>
+<%--                            <td>${user.getEmail()}</td>--%>
+<%--                            <td>${user.getPhone()}</td>--%>
+<%--                            <td>${user.getIs_active() == 1 ? "Active" : "Inactive"}</td>--%>
+<%--                            <!-- Button to toggle user status -->--%>
+<%--                            <td>--%>
+<%--                                <button type="submit" name="action" value="toggle_status"--%>
+<%--                                    ${user.getIs_active() == 1 ? "class='btn btn-outline-danger'" : "class='btn btn-outline-success'"} >--%>
+<%--                                        ${user.getIs_active() == 1 ? "Disable" : "Enable"}--%>
+<%--                                </button>--%>
+<%--                            </td>--%>
+<%--                            <!-- Button to toggle admin role -->--%>
+<%--                            <td>--%>
+<%--                                <button type="submit" name="action" value="toggle_admin"--%>
+<%--                                    ${user.getIs_admin() == 1 ? "class='btn btn-warning'" : "class='btn btn-secondary'"} >--%>
+<%--                                        ${user.getIs_admin() == 1 ? "Remove Admin" : "Make Admin"}--%>
+<%--                                </button>--%>
+<%--                            </td>--%>
+<%--                        </tr>--%>
+<%--                    </form>--%>
+<%--                </c:forEach>--%>
+<%--            </table>--%>
+<%--        </div>--%>
+<%--    </div>--%>
+<%--</c:if>--%>
+
 <div class="container">
     <div class="col-10">
         <h4> User List</h4>
@@ -58,28 +105,39 @@
             </thead>
 
             <c:forEach items="${userInfo}" var="user">
-            <form action="${pageContext.request.contextPath}/admin/adminupdateuser" method="POST" >
                 <tr>
-                    <td class="col-2">${user.getUsername()}</td>
-                    <td class="col-2">${user.getFirstname()}</td>
-                    <td class="col-2">${user.getLastname()}</td>
-                    <td class="col-2">${user.getEmail()}</td>
-                    <td class="col-2">${user.getPhone()}</td>
-                    <td class="col-1">${user.getIs_active() == 1 ? "active" : "disabled"}</td>
-                    <td class="col-1">${user.getIs_admin()==1 ? "admin" : "Not admin"}</td>
+                    <!-- Is Admin Column -->
+                    <td class="col-1">${user.getIs_admin() == 1 ? "Admin" : "Not Admin"}</td>
 
-
+                    <!-- Enable/Disable User Button in its own form -->
                     <td class="col-1">
-                        <input type="hidden" name="userid" value="${user.getId()}">
-                        <button type="submit" ${user.getIs_active()==1 ? "class=\"btn btn-outline-danger\"" : "class=\"btn btn-outline-success\""} >
-                                ${user.getIs_active()==1 ? "disable" : "enable"}
-                        </button>
+                        <form action="${pageContext.request.contextPath}/admin/toggleuser" method="POST">
+                            <input type="hidden" name="userid" value="${user.getId()}">
+                            <input type="hidden" name="action" value="toggle_status">
+                            <button type="submit"
+                                ${user.getIs_active() == 1 ? "class='btn btn-outline-danger'" : "class='btn btn-outline-success'"}>
+                                    ${user.getIs_active() == 1 ? "Disable" : "Enable"}
+                            </button>
+                        </form>
+                    </td>
+
+                    <!-- Toggle Admin Button in its own form -->
+                    <td class="col-1">
+                        <form action="${pageContext.request.contextPath}/admin/toggleuser" method="POST">
+                            <input type="hidden" name="userid" value="${user.getId()}">
+                            <input type="hidden" name="action" value="toggle_admin">
+                            <button type="submit"
+                                ${user.getIs_admin() == 1 ? "class='btn btn-warning'" : "class='btn btn-secondary'"}>
+                                    ${user.getIs_admin() == 1 ? "Remove Admin" : "Make Admin"}
+                            </button>
+                        </form>
                     </td>
                 </tr>
-            </form>
             </c:forEach>
 
+
         </table>
+
     </div>
 </div>
 <script src="js/bootstrap.min.js"></script>

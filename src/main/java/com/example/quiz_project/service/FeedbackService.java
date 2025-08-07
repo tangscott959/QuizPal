@@ -16,4 +16,8 @@ public class FeedbackService {
         return feedbackDao.getAllFeedbacks();
 
     }
+    public List<Feedback> getAllFeedback() {
+        return feedbackDao.getAllFeedbacks();
+    }
+
 }

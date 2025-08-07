@@ -1,49 +1,99 @@
-
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>admin</title>
-    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+        .admin-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .admin-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+        .card-link {
+            text-decoration: none;
+            color: #0d6efd;
+        }
+        .card-link:hover {
+            text-decoration: underline;
+            color: #0a58ca;
+        }
+    </style>
 </head>
 <body>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="text-center">
-                <h3 class="page-header">
-                    Administator Index
-                </h3>
+<div class="container py-5">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold">Administrator Dashboard</h2>
+        <a href="${pageContext.request.contextPath}/logout" class="btn btn-danger mt-2">Logout</a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card admin-card h-100 text-center p-3">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a class="card-link" href="${pageContext.request.contextPath}/adminquiz?pageNum=1&sortByCategory=0">
+                            Browse Results
+                        </a>
+                    </h5>
+                </div>
             </div>
         </div>
 
-        <ul class="nav nav-list"><li class="divider"></li></ul>
-        <div class="row">
-            <div class="col-4">
-                <h4 class="text-info text-center">
-                    <a  href="${pageContext.request.contextPath}/adminquiz?pageNum=1&sortByCategory=0"   >Browse Results</a>
-                </h4>
+        <div class="col-md-4">
+            <div class="card admin-card h-100 text-center p-3">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a class="card-link" href="${pageContext.request.contextPath}/admin/contact">
+                            Browse Contact
+                        </a>
+                    </h5>
+                </div>
             </div>
-            <div class="col-4">
-                <h4 class="text-info text-center">
-                    <a  href="${pageContext.request.contextPath}/admincontact"  >Browse Contact</a>
-                </h4>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card admin-card h-100 text-center p-3">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a class="card-link" href="${pageContext.request.contextPath}/admin/feedback">
+                            Browse Feedback
+                        </a>
+                    </h5>
+                </div>
             </div>
-            <div class="col-4">
-                <h4 class="text-info text-center">
-                    <a  href="${pageContext.request.contextPath}/adminfeedback"  >Browse Feedback</a>
-                </h4>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card admin-card h-100 text-center p-3">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a class="card-link" href="${pageContext.request.contextPath}/adminallquestions?pageNum=1">
+                            Manage Questions
+                        </a>
+                    </h5>
+                </div>
             </div>
-            <div class="col-4 ">
-                <h4 class="text-info text-center">
-                    <a  href="${pageContext.request.contextPath}/adminallquestions?pageNum=1"   >Manage Questions</a>
-                </h4>
-            </div>
-            <div class="col-4 ">
-                <h4 class="text-info text-center">
-                    <a  href="${pageContext.request.contextPath}/adminallusers?pageNum=1"   >Manage Users</a>
-                </h4>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card admin-card h-100 text-center p-3">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a class="card-link" href="${pageContext.request.contextPath}/adminallusers?pageNum=1">
+                            Manage Users
+                        </a>
+                    </h5>
+                </div>
             </div>
         </div>
     </div>
-    <script src="js/bootstrap.min.js"></script>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

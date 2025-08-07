@@ -30,4 +30,5 @@ public class FeedbackDao {
         jdbcTemplate.update(query,message,rating,submit_date);
         System.out.println("feedback added");
     }
+
 }

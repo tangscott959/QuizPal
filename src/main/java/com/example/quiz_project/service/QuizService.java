@@ -38,4 +38,9 @@ public class QuizService {
     public int updateQuiz(int quizId, Timestamp ts) {
         return quizDao.updateQuiz(quizId,ts);
     }
+
+
+    public List<Quiz> getByUserId(int id) {
+        return quizDao.getByUser(id);
+    }
 }
