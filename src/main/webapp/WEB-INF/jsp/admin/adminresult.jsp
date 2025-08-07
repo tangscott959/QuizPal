@@ -113,6 +113,12 @@
 </div>
 <script type="text/javascript">
 
+
 </script>
+<div class="text-center mt-4">
+    <form action="/admin/adminindex" method="get">
+        <button type="submit" class="btn btn-custom">Back to Admin Home</button>
+    </form>
+</div>
 </body>
 </html>
