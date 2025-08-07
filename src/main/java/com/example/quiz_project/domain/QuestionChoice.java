@@ -11,7 +11,7 @@ import java.util.List;
 @ToString
 public class QuestionChoice {
     private int questionId;
-    private String Description;
+    private String description;
     private int userChoice;
     private List<Choice> choiceList;
 }

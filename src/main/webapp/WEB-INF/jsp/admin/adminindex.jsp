@@ -72,7 +72,7 @@
             <div class="card admin-card h-100 text-center p-3">
                 <div class="card-body">
                     <h5 class="card-title">
-                        <a class="card-link" href="${pageContext.request.contextPath}/adminallquestions?pageNum=1">
+                        <a class="card-link" href="${pageContext.request.contextPath}/admin/managequestions">
                             Manage Questions
                         </a>
                     </h5>

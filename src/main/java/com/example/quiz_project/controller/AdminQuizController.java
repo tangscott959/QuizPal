@@ -14,11 +14,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 public class AdminQuizController {
@@ -251,6 +253,55 @@ public class AdminQuizController {
         return "admin/admincontact";
     }
 
+
+    @GetMapping("/admin/managequestions")
+    public String manageQuestions(Model model) {
+        // Get all questions
+        List<Question> questionList = questionService.getAll();
+
+        // Wrap each question with its choices
+        List<QuestionChoice> questionChoiceList = questionList.stream()
+                .map(q -> {
+                    List<Choice> choices = choiceService.getByQid(q.getQuestion_id());
+                    return new QuestionChoice(q.getQuestion_id(), q.getQuiz_description(), 0, choices); // Use getQuiz_description()
+                })
+                .collect(Collectors.toList());
+
+        model.addAttribute("questionChoiceList", questionChoiceList);
+        return "admin/manage_questions";
+    }
+    @PostMapping("/admin/updateQuestion")
+    public String updateQuestion(@RequestParam("questionId") int questionId,
+                                 @RequestParam("description") String description,
+                                 @RequestParam("choices") String[] choices,
+                                 @RequestParam("choiceIds") int[] choiceIds,
+                                 RedirectAttributes redirectAttributes) {
+
+        try {
+            // Update question description
+            Question question = questionService.getById(questionId);
+            if (question != null) {
+                questionService.updateQuestion(questionId,
+                        question.getCategory_id(),
+                        0,
+                        question.getIs_active(),
+                        description);
+            }
+
+            // Update choices using their specific IDs
+            for (int i = 0; i < choices.length && i < choiceIds.length; i++) {
+                choiceService.updateChoiceDescription(choiceIds[i], choices[i]);
+            }
+
+            redirectAttributes.addFlashAttribute("successMessage", "Question and choices updated successfully!");
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return "redirect:/admin/managequestions";
+    }
 
 
 

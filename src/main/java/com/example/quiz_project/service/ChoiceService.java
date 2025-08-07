@@ -12,18 +12,28 @@ import java.util.List;
 @Service
 public class ChoiceService {
     private final ChoiceDao choiceDao;
+
     @Autowired
     public ChoiceService(ChoiceDao choiceDao){
-        this.choiceDao=choiceDao;
+        this.choiceDao = choiceDao;
     }
 
     public List<Choice> getByQid(int id){
         return choiceDao.getByQuestionId(id);
     }
+
     @Transactional
-    public void setAnswer(int questionId,int choiceId) {
-        choiceDao.updateByQId(questionId,0);
-        choiceDao.updateOne(choiceId,1);
+    public void setAnswer(int questionId, int choiceId) {
+        choiceDao.updateByQId(questionId, 0);
+        choiceDao.updateOne(choiceId, 1);
     }
 
+    // Add these new methods:
+    public void updateChoiceDescription(int choiceId, String description) {
+        choiceDao.updateDescription(choiceId, description);
+    }
+
+    public Choice getById(int choiceId) {
+        return choiceDao.getById(choiceId);
+    }
 }

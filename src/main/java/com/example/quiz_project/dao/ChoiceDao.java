@@ -3,6 +3,7 @@ package com.example.quiz_project.dao;
 import com.example.quiz_project.domain.Choice;
 import com.example.quiz_project.domain.QuizQuestion;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -17,6 +18,18 @@ public class ChoiceDao {
     public ChoiceDao(JdbcTemplate jdbcTemplate, ChoiceRowMapper rowMapper ){
         this.jdbcTemplate=jdbcTemplate;
         this.rowMapper=rowMapper;
+    }
+    // If you're using JDBC/MyBatis, add something like this to your ChoiceDao implementation:
+    public void updateDescription(int choiceId, String description) {
+        String sql = "UPDATE choice SET choice_description = ? WHERE choice_id = ?";
+        // Execute the update query
+        jdbcTemplate.update(sql, description, choiceId);
+    }
+
+    public Choice getById(int choiceId) {
+        String sql = "SELECT * FROM choice WHERE choice_id = ?";
+        // Execute select query and return Choice object
+        return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Choice.class), choiceId);
     }
 
     public List<Choice> getByQuestionId(int id) {
@@ -44,4 +57,5 @@ public class ChoiceDao {
         String query = "UPDATE choice SET is_correct = ? WHERE question_id = ?";
         jdbcTemplate.update(query,answer,qid);
     }
+
 }
