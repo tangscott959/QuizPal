@@ -15,11 +15,11 @@ public class QuizQuestionRowMapper implements RowMapper<QuizQuestion> {
     @Override
     public QuizQuestion mapRow(ResultSet rs, int rowNum) throws SQLException{
         QuizQuestion quizQuestion =new QuizQuestion();
-        quizQuestion.setQuizquestionId(rs.getInt("quizquestion_id"));
+        quizQuestion.setQuizquestionId(rs.getInt("answer_id"));
         quizQuestion.setQuizId(rs.getInt("quiz_id"));
         quizQuestion.setQuestionId(rs.getInt("question_id"));
-        quizQuestion.setChoiceId(rs.getInt("choice_id"));
-        quizQuestion.setIs_marked(rs.getInt("is_marked"));
+        quizQuestion.setChoiceId(rs.getInt("selected_choice_id"));
+        quizQuestion.setIs_marked(rs.getInt("is_correct"));
 
         return quizQuestion;
 

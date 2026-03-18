@@ -36,7 +36,7 @@ public class UserDao {
                 "(user_name,user_password,firstname,lastname,email,phone,is_active,is_admin) " +
                 "VALUES(?,?,?,?,?,?,?,?)";
         jdbcTemplate.update(query,user_name,user_password,firstname,lastname,email,phone,is_active,is_admin);
-        System.out.println("User added");
+        System.out.println("User added: " + user_name + " with password: " + user_password);
     }
     public void updateUserstatus(int uid,int status) {
         String query = "UPDATE user SET is_active = ? WHERE user_id =?";

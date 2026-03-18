@@ -2,6 +2,7 @@ package com.example.quiz_project.service;
 
 import com.example.quiz_project.dao.UserDao;
 import com.example.quiz_project.domain.User;
+import com.example.quiz_project.util.SimplePasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,16 +12,20 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final UserDao userDao;
+    private final SimplePasswordEncoder passwordEncoder;
+    
     @Autowired
-    public UserService(UserDao userDao){
+    public UserService(UserDao userDao, SimplePasswordEncoder passwordEncoder){
         this.userDao=userDao;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Optional<User> validateLogin(String username, String password){
         return userDao.getAllUsers().stream()
-                .filter(a->a.getUsername().equals(username)
-                && a.getPassword().equals(password) && a.getIs_active()==1).findAny();
-
+                .filter(user -> user.getUsername().equalsIgnoreCase(username) 
+                    && user.getIs_active() == 1
+                    && user.getPassword().equals(password))
+                .findAny();
     }
     public boolean userExists(String username){
         List<User> users= userDao.getAllUsers();

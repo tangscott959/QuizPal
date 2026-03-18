@@ -21,8 +21,11 @@ public class UserRowMapper implements RowMapper<User> {
         user.setLastname(rs.getString("lastname"));
         user.setEmail(rs.getString("email"));
         user.setPhone(rs.getString("phone"));
-        user.setIs_active(rs.getInt("is_active"));
-        user.setIs_admin(rs.getInt("is_admin"));
+        
+        // Handle boolean to int conversion
+        user.setIs_active(rs.getBoolean("is_active") ? 1 : 0);
+        user.setIs_admin(rs.getBoolean("is_admin") ? 1 : 0);
+        
         return user;
 
     }

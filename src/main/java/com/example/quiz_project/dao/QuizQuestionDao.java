@@ -22,16 +22,16 @@ public class QuizQuestionDao {
     }
 
     public List<QuizQuestion> getAll() {
-        String query = "SELECT * FROM quizquestion";
+        String query = "SELECT * FROM quiz_answer";
         return jdbcTemplate.query(query,rowMapper);
     }
     public List<QuizQuestion> getByQuizId(int qid) {
-        String query = "SELECT * FROM quizquestion WHERE quiz_id= ?";
+        String query = "SELECT * FROM quiz_answer WHERE quiz_id= ?";
         return jdbcTemplate.query(query,rowMapper,qid);
     }
     public void addBatch(List<QuizQuestion> qList) {
-        String query ="INSERT INTO quizquestion " +
-                "(quiz_id,question_id,choice_id,is_marked) " +
+        String query ="INSERT INTO quiz_answer " +
+                "(quiz_id,question_id,selected_choice_id,is_correct) " +
                 "VALUES(?,?,?,?)";
         List<Object[]> ba = new ArrayList<>();
         Object[] arr = null;
@@ -43,25 +43,25 @@ public class QuizQuestionDao {
     }
 
     public List<Map<String,Object>> getScoreByUser(int uid) {
-        String query ="SELECT quiz_id,count(*) AS score FROM quizquestion " +
+        String query ="SELECT quiz_id,count(*) AS score FROM quiz_answer " +
                 "WHERE quiz_id IN (select quiz_id from quiz where user_id =?)   " +
-                "AND choice_id IN (SELECT choice_id FROM choice WHERE is_correct =1) " +
+                "AND selected_choice_id IN (SELECT choice_id FROM choice WHERE is_correct =1) " +
                 "GROUP BY quiz_id";
         return jdbcTemplate.queryForList(query,uid);
     }
 
     public List<Map<String,Object>> getScoreAll() {
-        String query ="SELECT quiz_id,count(*) AS score FROM quizquestion " +
-                "WHERE choice_id IN (SELECT choice_id FROM choice WHERE is_correct =1) " +
+        String query ="SELECT quiz_id,count(*) AS score FROM quiz_answer " +
+                "WHERE selected_choice_id IN (SELECT choice_id FROM choice WHERE is_correct =1) " +
                 "GROUP BY quiz_id";
         return jdbcTemplate.queryForList(query);
     }
 
 
     public int getScoreByQuiz(int qid) {
-        String query ="SELECT count(*) AS score FROM quizquestion " +
+        String query ="SELECT count(*) AS score FROM quiz_answer " +
                 "WHERE quiz_id =? " +
-                "AND choice_id IN (SELECT choice_id FROM choice WHERE is_correct =1) "
+                "AND selected_choice_id IN (SELECT choice_id FROM choice WHERE is_correct =1) "
                 ;
         return jdbcTemplate.queryForObject(query,Integer.class,qid);
     }

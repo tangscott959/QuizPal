@@ -27,6 +27,15 @@ public class QuestionService {
     public List<Question> getRandom5(int cid) {
         return questionDao.getRandom5ByType(cid);
     }
+    
+    public List<Question> getByCategory(int categoryId) {
+        return questionDao.getRandom5ByType(categoryId);
+    }
+    
+    public List<Choice> getChoicesByQuestion(int questionId) {
+        return choiceDao.getByQuestionId(questionId);
+    }
+    
     public List<Question> getAll() {
         return questionDao.getALl();
     }

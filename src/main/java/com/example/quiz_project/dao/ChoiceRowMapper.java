@@ -16,10 +16,8 @@ public class ChoiceRowMapper implements RowMapper<Choice> {
         Choice choice = new Choice();
         choice.setChoice_id(rs.getInt("choice_id"));
         choice.setQuestion_id(rs.getInt("question_id"));
-        choice.setChoice_description(rs.getString("choice_description"));
-        choice.setIs_correct(rs.getInt("is_correct"));
+        choice.setChoice_description(rs.getString("choice_text")); // Updated column name
+        choice.setIs_correct(rs.getBoolean("is_correct") ? 1 : 0); // Handle boolean to int conversion
         return choice;
-
-
     }
 }
