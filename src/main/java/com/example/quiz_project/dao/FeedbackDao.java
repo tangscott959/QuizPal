@@ -26,7 +26,7 @@ public class FeedbackDao {
         return feedbacks;
     }
     public void addFeedback(String message, int rating, Timestamp submit_date){
-        String query = "INSERT INTO feedback (feedback_text, rating, created_at) VALUES(?,?,?)";
+        String query = "INSERT INTO feedback (message, rating, created_at) VALUES(?,?,?)";
         jdbcTemplate.update(query, message, rating, submit_date);
         System.out.println("feedback added");
     }

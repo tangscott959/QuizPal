@@ -24,9 +24,9 @@ public class ContactDao {
         List<Contact> contacts = jdbcTemplate.query(query,rowMapper);
         return contacts;
     }
-    public void AddContact(String name, String email, String subject, String message){
-        String query = "insert into contact (name, email, message) values(?,?,?)";
-        jdbcTemplate.update(query, name, email, message);
+    public void AddContact(String firstname, String lastname, String email, String subject, String message){
+        String query = "insert into contact (firstname, lastname, email, subject, message) values(?,?,?,?,?)";
+        jdbcTemplate.update(query, firstname, lastname, email, subject, message);
 
         System.out.println("Contact added");
     }

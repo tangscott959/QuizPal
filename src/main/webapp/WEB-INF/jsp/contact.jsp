@@ -20,18 +20,21 @@
                             <input type="text" id="form11" name="firstname" class="form-control" />
                         </div>
 
-
                         <div class="col-12 mb-2">
                             <label class="form-label" for="form12">LastName</label>
                             <input type="text" id="form12" name="lastname" class="form-control" />
                         </div>
                         <div class="col-12 mb-2">
-                            <label class="form-label" for="form13">Subject</label>
-                            <input type="text" id="form13" name="subject" class="form-control" />
+                            <label class="form-label" for="form13">Email</label>
+                            <input type="email" id="form13" name="email" class="form-control" />
                         </div>
                         <div class="col-12 mb-2">
-                            <label class="form-label" for="form13">message</label>
-                            <input type="text" id="form14" name="message" class="form-control" />
+                            <label class="form-label" for="form14">Subject</label>
+                            <input type="text" id="form14" name="subject" class="form-control" />
+                        </div>
+                        <div class="col-12 mb-2">
+                            <label class="form-label" for="form15">Message</label>
+                            <textarea id="form15" name="message" class="form-control" rows="4"></textarea>
                         </div>
 
                         <div class="col-12 mb-2">

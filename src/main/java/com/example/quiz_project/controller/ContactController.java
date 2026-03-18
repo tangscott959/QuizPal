@@ -27,12 +27,8 @@ public class ContactController {
         return "contact";
     }
     @PostMapping("/contact")
-    public String contact(@RequestParam String firstname, @RequestParam String lastname, @RequestParam String subject,@RequestParam String message){
-        contactService.addContact(firstname,lastname,subject,message);
+    public String contact(@RequestParam String firstname, @RequestParam String lastname, @RequestParam String email, @RequestParam String subject, @RequestParam String message){
+        contactService.addContact(firstname, lastname, email, subject, message);
         return "contact";
-
-
-
     }
-
 }

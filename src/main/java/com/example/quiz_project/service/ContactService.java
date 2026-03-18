@@ -17,7 +17,7 @@ public class ContactService {
     public List<Contact> getAllContacts(){
         return contactDao.getAllContacts();
     }
-    public void addContact(String firstname, String lastname, String subject,String message){
-        contactDao.AddContact(firstname,lastname, subject,message);
+    public void addContact(String firstname, String lastname, String email, String subject, String message){
+        contactDao.AddContact(firstname, lastname, email, subject, message);
     }
 }

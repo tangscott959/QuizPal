@@ -8,11 +8,11 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 public class Contact {
-    private int ContactId;
-    private String FirstName;
-    private String LastName;
-    private String Subject;
-    private String Message;
-
+    private int contactId;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String subject;
+    private String message;
 
 }

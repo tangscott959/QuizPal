@@ -275,7 +275,13 @@ INSERT INTO question (category_id, question_text, question_type, difficulty_leve
 (1, 'What is 2 + 2?', 'MULTIPLE_CHOICE', 'EASY', 1),
 (1, 'What is 10 × 5?', 'MULTIPLE_CHOICE', 'EASY', 1),
 (2, 'What is the chemical symbol for water?', 'MULTIPLE_CHOICE', 'MEDIUM', 2),
-(3, 'In which year did World War II end?', 'MULTIPLE_CHOICE', 'MEDIUM', 2);
+(3, 'In which year did World War II end?', 'MULTIPLE_CHOICE', 'MEDIUM', 2),
+(4, 'What is the capital of France?', 'MULTIPLE_CHOICE', 'EASY', 1),
+(4, 'Which is the largest continent by area?', 'MULTIPLE_CHOICE', 'EASY', 1),
+(4, 'What is the longest river in the world?', 'MULTIPLE_CHOICE', 'MEDIUM', 2),
+(4, 'Which country has the largest population?', 'MULTIPLE_CHOICE', 'MEDIUM', 2),
+(4, 'What is the smallest country in the world?', 'MULTIPLE_CHOICE', 'HARD', 3),
+(4, 'Which desert is the largest in the world?', 'MULTIPLE_CHOICE', 'HARD', 3);
 
 -- Insert sample choices
 INSERT INTO choice (question_id, choice_text, is_correct, choice_order) VALUES
@@ -294,7 +300,32 @@ INSERT INTO choice (question_id, choice_text, is_correct, choice_order) VALUES
 (4, '1945', TRUE, 1),
 (4, '1944', FALSE, 2),
 (4, '1946', FALSE, 3),
-(4, '1943', FALSE, 4);
+(4, '1943', FALSE, 4),
+-- Geography question choices
+(5, 'London', FALSE, 1),
+(5, 'Paris', TRUE, 2),
+(5, 'Berlin', FALSE, 3),
+(5, 'Madrid', FALSE, 4),
+(6, 'Africa', FALSE, 1),
+(6, 'Asia', TRUE, 2),
+(6, 'Europe', FALSE, 3),
+(6, 'North America', FALSE, 4),
+(7, 'Amazon', FALSE, 1),
+(7, 'Nile', TRUE, 2),
+(7, 'Yangtze', FALSE, 3),
+(7, 'Mississippi', FALSE, 4),
+(8, 'India', FALSE, 1),
+(8, 'United States', FALSE, 2),
+(8, 'China', TRUE, 3),
+(8, 'Brazil', FALSE, 4),
+(9, 'Monaco', FALSE, 1),
+(9, 'San Marino', FALSE, 2),
+(9, 'Vatican City', TRUE, 3),
+(9, 'Liechtenstein', FALSE, 4),
+(10, 'Sahara', FALSE, 1),
+(10, 'Arabian', FALSE, 2),
+(10, 'Antarctica', TRUE, 3),
+(10, 'Gobi', FALSE, 4);
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
