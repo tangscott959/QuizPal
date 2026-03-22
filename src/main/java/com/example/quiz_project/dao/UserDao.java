@@ -19,13 +19,13 @@ public class UserDao {
         this.rowMapper=rowMapper;
     }
     public List<User> getAllUsers(){
-        String query = "SELECT * FROM USER";
+        String query = "SELECT * FROM user";
         List<User> users = jdbcTemplate.query(query,rowMapper);
         return users;
     }
 
     public List<User> getAllActiveUsers(){
-        String query = "SELECT * FROM USER WHERE is_active = 1 AND is_admin = 0";
+        String query = "SELECT * FROM user WHERE is_active = 1 AND is_admin = 0";
         List<User> users = jdbcTemplate.query(query,rowMapper);
         return users;
     }
@@ -43,7 +43,7 @@ public class UserDao {
         jdbcTemplate.update(query,status,uid);
     }
     public User getById(int uid) {
-        String query = "SELECT * FROM USER WHERE user_id = ?";
+        String query = "SELECT * FROM user WHERE user_id = ?";
         return this.jdbcTemplate.queryForObject(query,rowMapper,uid);
     }
     public void updateAdminStatus(int userId, int isAdmin) {
