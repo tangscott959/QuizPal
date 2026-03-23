@@ -31,3 +31,9 @@ build/
 
 ### VS Code ###
 .vscode/
+*.log
+logs/
+*.pem
+*.pub
+quizpal-key*
+catalina.base_IS_UNDEFINED/
