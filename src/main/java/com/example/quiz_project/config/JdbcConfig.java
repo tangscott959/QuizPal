@@ -1,5 +1,6 @@
 package com.example.quiz_project.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -9,10 +10,17 @@ import javax.sql.DataSource;
 @Configuration
 public class JdbcConfig {
 
-    private final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
-    private final String DB_URL =  "jdbc:mysql://localhost:3306/quiz_db_new";
-    private final String USER = "root";
-    private final String PASSWORD = "Txx12345";
+    @Value("${spring.datasource.driver-class-name}")
+    private String JDBC_DRIVER;
+
+    @Value("${spring.datasource.url}")
+    private String DB_URL;
+
+    @Value("${spring.datasource.username}")
+    private String USER;
+
+    @Value("${spring.datasource.password}")
+    private String PASSWORD;
 
     @Bean
     public DataSource jdbcDataSource(){
