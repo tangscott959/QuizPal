@@ -51,5 +51,10 @@ public class UserDao {
         jdbcTemplate.update(sql, isAdmin, userId);
     }
 
+    public User findByEmail(String email) {
+        String query = "SELECT * FROM user WHERE email = ?";
+        List<User> users = jdbcTemplate.query(query, rowMapper, email);
+        return users.isEmpty() ? null : users.get(0);
+    }
 
 }
