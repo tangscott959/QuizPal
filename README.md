@@ -48,7 +48,7 @@ QuizPal is a comprehensive web-based quiz application built with Spring Boot tha
 
 ## 🌐 **Live Demo**
 
-**URL**: [http:/98.89.26.67](http://18.212.208.67)
+**URL**: [98.89.26.67](http://98.89.26.67)
 
 **Test Credentials**:
 - **Username**: `testuser`
