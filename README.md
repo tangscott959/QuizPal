@@ -12,6 +12,7 @@ QuizPal is a comprehensive web-based quiz application built with Spring Boot tha
 - ✅ **Multiple Choice Questions**: Interactive answer selection
 - ✅ **Real-time Scoring**: Instant feedback on quiz performance
 - ✅ **User Authentication**: Secure login and registration system
+- ✅ **Google SSO**: Sign in with Google OAuth2 integration
 - ✅ **Admin Dashboard**: Manage users, questions, and quiz results
 
 ### **Technical Features**
@@ -29,6 +30,7 @@ QuizPal is a comprehensive web-based quiz application built with Spring Boot tha
 - **Spring Boot**: Application framework
 - **Spring MVC**: Web framework
 - **Spring Security**: Authentication and authorization
+- **Spring OAuth2 Client**: Google SSO integration
 - **MySQL**: Database management
 - **Maven**: Build and dependency management
 
@@ -239,6 +241,22 @@ mvn verify
 - Password hashing with BCrypt
 - Session management
 - CSRF protection
+- Google OAuth2 Single Sign-On (SSO)
+
+### **Google SSO Setup**
+QuizPal supports Google Sign-In via OAuth2. To enable it:
+
+1. Create a project on [Google Cloud Console](https://console.cloud.google.com/)
+2. Go to **APIs & Services → Credentials → Create OAuth 2.0 Client ID**
+3. Set Application type to **Web application**
+4. Add redirect URI: `http://localhost:8080/login/oauth2/code/google`
+5. Set environment variables before running:
+```bash
+export GOOGLE_CLIENT_ID="your-client-id"
+export GOOGLE_CLIENT_SECRET="your-client-secret"
+```
+
+> **Note**: Google OAuth2 requires a valid domain for redirect URIs in production. Raw IP addresses are not supported. Use a domain name or SSH tunnel (`ssh -L 8080:localhost:8080 user@server`) for testing.
 
 ### **Database Security**
 - Parameterized queries to prevent SQL injection
@@ -307,6 +325,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - ✅ **Mobile Responsive**: Works on all device sizes
 - ✅ **Database Optimized**: Clean schema with proper relationships
 - ✅ **CI/CD Ready**: GitHub Actions configured
+- ✅ **Google SSO**: OAuth2 Sign-In with Google
 - ✅ **Documentation**: Comprehensive guides and README
 
 ### **Technical Highlights**
@@ -318,6 +337,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🚀 **Future Enhancements**
 
 ### **Planned Features**
+- [ ] **Google SSO Production Domain**: Configure custom domain for OAuth2 redirect
 - [ ] **Real-time Multiplayer**: Compete with other users
 - [ ] **Advanced Analytics**: Detailed performance insights
 - [ ] **Question Categories**: More diverse topics
