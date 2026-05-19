@@ -87,7 +87,6 @@ jobs:
           mkdir -p ~/.ssh
           printf '%s\n' "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2_key
           chmod 600 ~/.ssh/ec2_key
-          ssh-keyscan -H "${{ secrets.EC2_HOST }}" >> ~/.ssh/known_hosts
 
       - name: Deploy container
         env:
@@ -103,7 +102,7 @@ jobs:
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
         run: |
-          ssh -i ~/.ssh/ec2_key "$EC2_USER@$EC2_HOST" \
+          ssh -i ~/.ssh/ec2_key -o StrictHostKeyChecking=accept-new "$EC2_USER@$EC2_HOST" \
             GHCR_USERNAME="$GHCR_USERNAME" \
             GHCR_TOKEN="$GHCR_TOKEN" \
             IMAGE_NAME="$IMAGE_NAME" \
