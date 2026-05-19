@@ -2,8 +2,8 @@ package com.example.quiz_project.service;
 
 import com.example.quiz_project.dao.UserDao;
 import com.example.quiz_project.domain.User;
-import com.example.quiz_project.util.SimplePasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,31 +12,29 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final UserDao userDao;
-    private final SimplePasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
     
     @Autowired
-    public UserService(UserDao userDao, SimplePasswordEncoder passwordEncoder){
+    public UserService(UserDao userDao, PasswordEncoder passwordEncoder){
         this.userDao=userDao;
         this.passwordEncoder = passwordEncoder;
     }
 
     public Optional<User> validateLogin(String username, String password){
-        return userDao.getAllUsers().stream()
-                .filter(user -> user.getUsername().equalsIgnoreCase(username) 
-                    && user.getIs_active() == 1
-                    && user.getPassword().equals(password))
-                .findAny();
+        return userDao.findByUsername(username)
+                .filter(user -> user.getIs_active() == 1)
+                .filter(user -> passwordEncoder.matches(password, user.getPassword()));
     }
+
+    public void registerUser(String username, String password,
+                             String firstname, String lastname,
+                             String email, String phone) {
+        String encodedPassword = passwordEncoder.encode(password);
+        userDao.AddUser(username, encodedPassword, firstname, lastname, email, phone, 1, 0);
+    }
+
     public boolean userExists(String username){
-        List<User> users= userDao.getAllUsers();
-        for(User u : users){
-            //System.out.println(u);
-            if(u.getUsername().equals(username)){
-                System.out.println("User exist");
-                return true;
-            }
-        }
-        return false;
+        return userDao.findByUsername(username).isPresent();
 
     }
 

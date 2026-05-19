@@ -28,7 +28,10 @@
 <div class="container py-5">
     <div class="text-center mb-4">
         <h2 class="fw-bold">Administrator Dashboard</h2>
-        <a href="${pageContext.request.contextPath}/logout" class="btn btn-danger mt-2">Logout</a>
+        <form action="${pageContext.request.contextPath}/logout" method="post" class="mt-2">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+            <button type="submit" class="btn btn-danger">Logout</button>
+        </form>
     </div>
 
     <div class="row g-4">

@@ -169,6 +169,7 @@
         </div>
 
         <form method="post" action="${pageContext.request.contextPath}/login">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
             <div class="input-group-custom">
                 <input type="text" id="username" name="username" placeholder="Username" required autocomplete="username" />
                 <div class="input-icon">

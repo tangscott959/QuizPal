@@ -1,50 +1,36 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
-<head>
-    <title>quiz</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}css/bootstrap.min.css">
-    <script src="${pageContext.request.contextPath}/js/bootstrap.min.js"></script>
-    <style>
-    .topnav {
-        background-color: #333;
-        overflow: hidden;
+<style>
+    .quizpal-navbar {
+        background: rgba(15, 12, 41, 0.95);
+        box-shadow: 0 4px 24px rgba(15, 12, 41, 0.18);
     }
-
-    /* Style the links inside the navigation bar */
-    .topnav a {
-        float: left;
-        color: #f2f2f2;
-        text-align: center;
-        padding: 14px 16px;
-        text-decoration: none;
-        font-size: 17px;
+    .quizpal-navbar .navbar-brand,
+    .quizpal-navbar .nav-link,
+    .quizpal-navbar .logout-button {
+        color: #fff;
+        font-weight: 600;
     }
-
-    /* Change the color of links on hover */
-    .topnav a:hover {
-        background-color: #797878;
-        color: black;
+    .quizpal-navbar .nav-link:hover,
+    .quizpal-navbar .logout-button:hover {
+        color: #c7d2fe;
     }
-
-    /* Add a color to the active/current link */
-    .topnav a.active {
-        background-color: #04AA6D;
-        color: white;
-    }</style>
-</head>
-<body>
-<div class="container-fluid" style="width:500px; margin:0 auto;">
-    <nav class="navbar navbar-default mb-5">
-
-            <div class="topnav">
-                <a href="${pageContext.request.contextPath}/quizindex">Home</a>
-                <a href="${pageContext.request.contextPath}/feedback">Feed Back</a>
-
-                <a href="${pageContext.request.contextPath}/contact">Contact Us</a>
-                <a href="${pageContext.request.contextPath}/logout">Logout</a>
-            </div>
-
-    </nav>
-</div>
-</body>
-</html>
+    .quizpal-navbar .logout-button {
+        background: transparent;
+        border: 0;
+        padding: 0.5rem 0;
+    }
+</style>
+<nav class="navbar navbar-expand-lg quizpal-navbar mb-5">
+    <div class="container">
+        <a class="navbar-brand" href="${pageContext.request.contextPath}/quiz/index">QuizPal</a>
+        <div class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+            <a class="nav-link" href="${pageContext.request.contextPath}/quiz/index">Home</a>
+            <a class="nav-link" href="${pageContext.request.contextPath}/feedback">Feedback</a>
+            <a class="nav-link" href="${pageContext.request.contextPath}/contact">Contact Us</a>
+            <form action="${pageContext.request.contextPath}/logout" method="post" class="mb-0">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+                <button class="logout-button" type="submit">Logout</button>
+            </form>
+        </div>
+    </div>
+</nav>

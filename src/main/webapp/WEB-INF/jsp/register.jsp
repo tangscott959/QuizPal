@@ -352,6 +352,7 @@
         </div>
 
         <form method="post" action="${pageContext.request.contextPath}/register">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 
             <!-- Username -->
             <div class="input-group-custom">

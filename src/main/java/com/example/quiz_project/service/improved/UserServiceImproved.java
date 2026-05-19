@@ -2,8 +2,8 @@ package com.example.quiz_project.service.improved;
 
 import com.example.quiz_project.dao.improved.UserDaoImproved;
 import com.example.quiz_project.domain.improved.User;
-import com.example.quiz_project.util.SimplePasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,10 +15,10 @@ import java.util.Optional;
 public class UserServiceImproved {
 
     private final UserDaoImproved userDao;
-    private final SimplePasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImproved(UserDaoImproved userDao, SimplePasswordEncoder passwordEncoder) {
+    public UserServiceImproved(UserDaoImproved userDao, PasswordEncoder passwordEncoder) {
         this.userDao = userDao;
         this.passwordEncoder = passwordEncoder;
     }

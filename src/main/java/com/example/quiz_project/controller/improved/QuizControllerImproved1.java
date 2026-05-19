@@ -58,6 +58,13 @@ public class QuizControllerImproved1 {
             List<Quiz> userQuizzes = quizService.getByUser(currentUser.getId());
             model.addAttribute("userQuizzes", userQuizzes);
 
+            List<Map<String, Object>> scores = quizQuestionService.calScore(currentUser.getId());
+            Map<Integer, Object> scoreMap = new HashMap<>();
+            for (Map<String, Object> score : scores) {
+                scoreMap.put((Integer) score.get("quiz_id"), score.get("score"));
+            }
+            model.addAttribute("scoreMap", scoreMap);
+
             // Calculate statistics
             Map<String, Object> stats = calculateUserStatistics(currentUser.getId());
             model.addAttribute("stats", stats);
@@ -105,7 +112,7 @@ public class QuizControllerImproved1 {
             session.setAttribute("currentQuiz", quiz);
             session.setAttribute("quizQuestions", questions);
             session.setAttribute("currentQuestionIndex", 0);
-            session.setAttribute("quizAnswers", new ArrayList<>());
+            session.setAttribute("quizAnswers", new ArrayList<QuizQuestion>());
 
             logger.info("Started new quiz {} for user {} in category {}", 
                        quizId, currentUser.getUsername(), categoryId);
@@ -166,7 +173,7 @@ public class QuizControllerImproved1 {
             Quiz currentQuiz = (Quiz) session.getAttribute("currentQuiz");
             List<Question> questions = (List<Question>) session.getAttribute("quizQuestions");
             Integer currentQuestionIndex = (Integer) session.getAttribute("currentQuestionIndex");
-            List<Map<String, Object>> quizAnswers = (List<Map<String, Object>>) session.getAttribute("quizAnswers");
+            List<QuizQuestion> quizAnswers = (List<QuizQuestion>) session.getAttribute("quizAnswers");
 
             if (currentQuiz == null || questions == null || currentQuestionIndex == null || quizAnswers == null) {
                 redirectAttributes.addFlashAttribute("error", "Quiz session expired");
@@ -175,13 +182,11 @@ public class QuizControllerImproved1 {
 
             Question currentQuestion = questions.get(currentQuestionIndex);
 
-            // Create answer record
-            Map<String, Object> answer = new HashMap<>();
-            answer.put("quizId", currentQuiz.getQuizId());
-            answer.put("questionId", currentQuestion.getQuestion_id());
-            answer.put("selectedChoiceId", selectedChoiceId);
-            answer.put("answeredAt", new Timestamp(System.currentTimeMillis()));
-
+            QuizQuestion answer = new QuizQuestion();
+            answer.setQuizId(currentQuiz.getQuizId());
+            answer.setQuestionId(currentQuestion.getQuestion_id());
+            answer.setChoiceId(selectedChoiceId);
+            answer.setIs_marked(isCorrectChoice(currentQuestion.getQuestion_id(), selectedChoiceId) ? 1 : 0);
             quizAnswers.add(answer);
             session.setAttribute("quizAnswers", quizAnswers);
 
@@ -208,7 +213,7 @@ public class QuizControllerImproved1 {
 
         try {
             Quiz currentQuiz = (Quiz) session.getAttribute("currentQuiz");
-            List<Map<String, Object>> quizAnswers = (List<Map<String, Object>>) session.getAttribute("quizAnswers");
+            List<QuizQuestion> quizAnswers = (List<QuizQuestion>) session.getAttribute("quizAnswers");
 
             if (currentQuiz == null || quizAnswers == null) {
                 redirectAttributes.addFlashAttribute("error", "Quiz session expired");
@@ -220,6 +225,7 @@ public class QuizControllerImproved1 {
 
             currentQuiz.setQuizTimeEnd(new Timestamp(System.currentTimeMillis()));
             quizService.updateQuiz(currentQuiz.getQuizId(), currentQuiz.getQuizTimeEnd());
+            quizQuestionService.saveQQ(quizAnswers);
 
             // Clear quiz from session
             session.removeAttribute("currentQuiz");
@@ -263,10 +269,23 @@ public class QuizControllerImproved1 {
             }
 
             // Get quiz answers and calculate score
-            List<Map<String, Object>> scores = quizQuestionService.calScore(currentUser.getId());
+            int score = quizQuestionService.calScoreOne(quizId);
+            List<QuizQuestion> quizAnswers = quizQuestionService.getByQuizId(quizId);
+            List<QuestionChoice> questionChoices = new ArrayList<>();
+            for (QuizQuestion quizAnswer : quizAnswers) {
+                Question question = questionService.getById(quizAnswer.getQuestionId());
+                QuestionChoice questionChoice = new QuestionChoice();
+                questionChoice.setQuestionId(question.getQuestion_id());
+                questionChoice.setDescription(question.getQuiz_description());
+                questionChoice.setUserChoice(quizAnswer.getChoiceId());
+                questionChoice.setChoiceList(questionService.getChoicesByQuestion(question.getQuestion_id()));
+                questionChoices.add(questionChoice);
+            }
             
             model.addAttribute("quiz", quiz);
-            model.addAttribute("scores", scores);
+            model.addAttribute("score", score);
+            model.addAttribute("user", currentUser);
+            model.addAttribute("qclist", questionChoices);
 
             return "quiz/quiz-result";
         } catch (Exception e) {
@@ -300,25 +319,30 @@ public class QuizControllerImproved1 {
         return stats;
     }
 
-    private int calculateScore(List<Map<String, Object>> answers) {
+    private int calculateScore(List<QuizQuestion> answers) {
         int score = 0;
-        for (Map<String, Object> answer : answers) {
-            Integer selectedChoiceId = (Integer) answer.get("selectedChoiceId");
-            if (selectedChoiceId != null) {
-                // Check if the selected choice is correct
-                try {
-                    List<Choice> choices = questionService.getChoicesByQuestion((Integer) answer.get("questionId"));
-                    for (Choice choice : choices) {
-                        if (choice.getChoice_id() == selectedChoiceId && choice.getIs_correct() == 1) {
-                            score++;
-                            break;
-                        }
-                    }
-                } catch (Exception e) {
-                    logger.error("Error checking answer correctness", e);
-                }
+        for (QuizQuestion answer : answers) {
+            if (isCorrectChoice(answer.getQuestionId(), answer.getChoiceId())) {
+                score++;
             }
         }
         return score;
+    }
+
+    private boolean isCorrectChoice(Integer questionId, Integer selectedChoiceId) {
+        if (questionId == null || selectedChoiceId == null) {
+            return false;
+        }
+        try {
+            List<Choice> choices = questionService.getChoicesByQuestion(questionId);
+            for (Choice choice : choices) {
+                if (choice.getChoice_id() == selectedChoiceId && choice.getIs_correct() == 1) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error checking answer correctness", e);
+        }
+        return false;
     }
 }

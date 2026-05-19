@@ -1,77 +1,58 @@
 #!/bin/bash
 
-# AWS EC2 Deployment Script for QuizPal
-# This script automates the deployment process
+# Manual Docker deployment helper. GitHub Actions normally runs this flow.
 
-set -e  # Exit on any error
+set -euo pipefail
 
-echo "🚀 Starting AWS EC2 deployment for QuizPal..."
+if [ $# -lt 2 ]; then
+  echo "Usage: $0 <ec2-host> <ssh-key-path> [image-tag]"
+  echo "Example: $0 1.2.3.4 ~/.ssh/quizpal-key.pem latest"
+  exit 1
+fi
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
-
-# Configuration
-EC2_HOST=$1
-EC2_USER="ubuntu"
+EC2_HOST="$1"
 KEY_PATH="$2"
-APP_DIR="/home/ubuntu/QuizPal"
-WAR_FILE="quiz-project-0.0.1-SNAPSHOT.war"
+IMAGE_TAG="${3:-latest}"
+EC2_USER="${EC2_USER:-ubuntu}"
+IMAGE_NAME="${IMAGE_NAME:-ghcr.io/tangscott959/quizpal}"
 
-# Check if parameters are provided
-if [ $# -ne 2 ]; then
-    echo -e "${RED}❌ Usage: $0 <EC2_HOST> <KEY_PATH>${NC}"
-    echo -e "${YELLOW}Example: $0 1.2.3.4 ~/.ssh/quizpal-key.pem${NC}"
-    exit 1
+if [ -z "${DB_URL:-}" ] || [ -z "${DB_USERNAME:-}" ] || [ -z "${DB_PASSWORD:-}" ]; then
+  echo "DB_URL, DB_USERNAME, and DB_PASSWORD must be set in your environment."
+  exit 1
 fi
 
-echo -e "${GREEN}✅ Configuration:${NC}"
-echo -e "  Host: ${YELLOW}$EC2_HOST${NC}"
-echo -e "  User: ${YELLOW}$EC2_USER${NC}"
-echo -e "  Key: ${YELLOW}$KEY_PATH${NC}"
+ssh -i "$KEY_PATH" -o StrictHostKeyChecking=accept-new "$EC2_USER@$EC2_HOST" \
+  IMAGE_NAME="$IMAGE_NAME" \
+  IMAGE_TAG="$IMAGE_TAG" \
+  DB_URL="$DB_URL" \
+  DB_USERNAME="$DB_USERNAME" \
+  DB_PASSWORD="$DB_PASSWORD" \
+  GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID:-}" \
+  GOOGLE_CLIENT_SECRET="${GOOGLE_CLIENT_SECRET:-}" \
+  'bash -s' <<'EOF'
+set -euo pipefail
 
-# Test SSH connection
-echo -e "\n${YELLOW}🔍 Testing SSH connection...${NC}"
-ssh -i "$KEY_PATH" -o ConnectTimeout=10 -o BatchMode=yes -o StrictHostKeyChecking=no "$EC2_USER@$EC2_HOST" 'echo "SSH connection successful"' || {
-    echo -e "${RED}❌ SSH connection failed! Check your key and host.${NC}"
-    exit 1
-}
+DOCKER="docker"
+if ! docker ps >/dev/null 2>&1; then
+  DOCKER="sudo docker"
+fi
 
-echo -e "${GREEN}✅ SSH connection successful!${NC}"
+$DOCKER pull "$IMAGE_NAME:$IMAGE_TAG"
+$DOCKER stop quizpal >/dev/null 2>&1 || true
+$DOCKER rm quizpal >/dev/null 2>&1 || true
 
-# Deploy commands to run on EC2
-echo -e "\n${YELLOW}🚀 Deploying to EC2...${NC}"
+$DOCKER run -d \
+  --name quizpal \
+  --restart unless-stopped \
+  -p 8080:8080 \
+  -e DB_URL="$DB_URL" \
+  -e DB_USERNAME="$DB_USERNAME" \
+  -e DB_PASSWORD="$DB_PASSWORD" \
+  -e GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID" \
+  -e GOOGLE_CLIENT_SECRET="$GOOGLE_CLIENT_SECRET" \
+  "$IMAGE_NAME:$IMAGE_TAG"
 
-ssh -i "$KEY_PATH" "$EC2_USER@$EC2_HOST" << 'EOF'
-set -e
-
-echo "📁 Updating application..."
-cd /home/ubuntu/QuizPal
-
-echo "🔄 Pulling latest changes..."
-git pull origin master
-
-echo "🔨 Building application..."
-mvn clean package -DskipTests
-
-echo "🔄 Restarting application with PM2..."
-pm2 restart quizpal
-
-echo "📊 Checking application status..."
-pm2 status quizpal
-
-echo "✅ Deployment completed!"
+sleep 15
+curl -fsS http://localhost:8080/login >/dev/null
+echo "QuizPal is running."
 EOF
-
-if [ $? -eq 0 ]; then
-    echo -e "\n${GREEN}🎉 Deployment successful!${NC}"
-    echo -e "${GREEN}🌍 Application available at: http://$EC2_HOST${NC}"
-else
-    echo -e "\n${RED}❌ Deployment failed! Check the logs above.${NC}"
-    exit 1
-fi
-
-echo -e "\n${YELLOW}📊 Application status:${NC}"
-ssh -i "$KEY_PATH" "$EC2_USER@$EC2_HOST" 'pm2 logs quizpal --lines 20'

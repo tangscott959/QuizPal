@@ -263,12 +263,11 @@ INSERT INTO category (category_name, description) VALUES
 ('History', 'World history and historical events'),
 ('Geography', 'Countries, capitals, and geographical features');
 
--- Insert sample users with simple test passwords (plain text for testing)
--- In production, these should be properly hashed
+-- Insert sample users. All sample accounts use BCrypt-hashed password: password
 INSERT INTO user (user_name, user_password, firstname, lastname, email, is_admin, is_active) VALUES
-('admin', 'admin123', 'System', 'Administrator', 'admin@quiz.com', 1, 1),
-('teacher1', 'teacher123', 'John', 'Teacher', 'teacher@quiz.com', 0, 1),
-('student1', 'student123', 'Jane', 'Student', 'student@quiz.com', 0, 1);
+('admin', '$2a$06$DCq7YPn5Rq63x1Lad4cll.2yIhH87Kz8Nto9PO6j6ztDk5dCcGkWa', 'System', 'Administrator', 'admin@quiz.com', 1, 1),
+('teacher1', '$2a$06$DCq7YPn5Rq63x1Lad4cll.2yIhH87Kz8Nto9PO6j6ztDk5dCcGkWa', 'John', 'Teacher', 'teacher@quiz.com', 0, 1),
+('student1', '$2a$06$DCq7YPn5Rq63x1Lad4cll.2yIhH87Kz8Nto9PO6j6ztDk5dCcGkWa', 'Jane', 'Student', 'student@quiz.com', 0, 1);
 
 -- Insert sample questions
 INSERT INTO question (category_id, question_text, question_type, difficulty_level, points) VALUES

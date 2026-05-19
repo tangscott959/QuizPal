@@ -73,7 +73,7 @@
         </div>
 
         <div class="text-center mt-4">
-            <form action="/admin/adminindex" method="get">
+            <form action="${pageContext.request.contextPath}/admin/adminindex" method="get">
                 <button type="submit" class="btn btn-custom">Back to Admin Home</button>
             </form>
         </div>

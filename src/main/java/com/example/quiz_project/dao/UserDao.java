@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @Repository
@@ -29,6 +30,13 @@ public class UserDao {
         List<User> users = jdbcTemplate.query(query,rowMapper);
         return users;
     }
+
+    public Optional<User> findByUsername(String username) {
+        String query = "SELECT * FROM user WHERE user_name = ?";
+        List<User> users = jdbcTemplate.query(query, rowMapper, username);
+        return users.stream().findFirst();
+    }
+
     public void AddUser(String user_name,String user_password,
                         String firstname, String lastname, String email,
                         String phone, int is_active, int is_admin){
@@ -36,7 +44,6 @@ public class UserDao {
                 "(user_name,user_password,firstname,lastname,email,phone,is_active,is_admin) " +
                 "VALUES(?,?,?,?,?,?,?,?)";
         jdbcTemplate.update(query,user_name,user_password,firstname,lastname,email,phone,is_active,is_admin);
-        System.out.println("User added: " + user_name + " with password: " + user_password);
     }
     public void updateUserstatus(int uid,int status) {
         String query = "UPDATE user SET is_active = ? WHERE user_id =?";

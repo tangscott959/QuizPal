@@ -49,7 +49,7 @@ public class QuestionDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con ->  {
             String sql ="INSERT INTO question " +
-                    "(category_id,quiz_description,is_active) VALUES( ?,?,? )";
+                    "(category_id,question_text,is_active) VALUES( ?,?,? )";
             PreparedStatement ps = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
             ps.setInt(1, categoryId);
             ps.setString(2, description);
@@ -60,7 +60,7 @@ public class QuestionDao {
     }
 
     public int updateOne(int id, int quizType,int status,String desc) {
-        String query = "Update question SET category_id =?, quiz_description= ?, is_active= ? " +
+        String query = "UPDATE question SET category_id =?, question_text= ?, is_active= ? " +
                 "WHERE question_id = ? ";
         return jdbcTemplate.update(query,quizType,desc,status,id);
     }

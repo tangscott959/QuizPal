@@ -1,6 +1,5 @@
 package com.example.quiz_project.controller;
 
-import com.example.quiz_project.dao.UserDao;
 import com.example.quiz_project.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,11 +12,9 @@ import javax.servlet.http.HttpServletRequest;
 
 @Controller
 public class RegisterController {
-    private final UserDao userDao;
     private final UserService userService;
     @Autowired
-    public RegisterController(UserService userService, UserDao userDao){
-        this.userDao=userDao;
+    public RegisterController(UserService userService){
         this.userService=userService;
     }
     @GetMapping("/register")
@@ -32,7 +29,7 @@ public class RegisterController {
 
         // if user not exist, add it
         if(!userService.userExists(username)){
-            userDao.AddUser(username,password,firstname,lastname,email,phone,1,0);
+            userService.registerUser(username,password,firstname,lastname,email,phone);
 
             //  System.out.println(userService.userExists(username));
             return "login";

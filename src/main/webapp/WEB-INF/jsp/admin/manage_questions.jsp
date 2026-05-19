@@ -17,7 +17,8 @@
     <tbody>
     <c:forEach var="item" items="${questionChoiceList}">
         <tr>
-            <form action="/admin/updateQuestion" method="post">
+            <form action="${pageContext.request.contextPath}/admin/updateQuestion" method="post">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
                 <td>
                     <input type="hidden" name="questionId" value="${item.questionId}" />
                         ${item.questionId}
@@ -47,6 +48,6 @@
 </table>
 </body>
 </html>
-<form action="/admin/adminindex" method="get">
+<form action="${pageContext.request.contextPath}/admin/adminindex" method="get">
     <button type="submit">Back to Admin Home</button>
 </form>

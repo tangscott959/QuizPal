@@ -4,6 +4,7 @@ import com.example.quiz_project.dao.UserDao;
 import com.example.quiz_project.domain.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
@@ -18,9 +19,11 @@ import java.util.UUID;
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final UserDao userDao;
+    private final PasswordEncoder passwordEncoder;
 
-    public OAuth2LoginSuccessHandler(UserDao userDao) {
+    public OAuth2LoginSuccessHandler(UserDao userDao, PasswordEncoder passwordEncoder) {
         this.userDao = userDao;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -46,10 +49,10 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         if (user == null) {
             String username = email.split("@")[0];
-            if (userDao.findByEmail(email) != null || userExists(username)) {
+            if (userDao.findByEmail(email) != null || userDao.findByUsername(username).isPresent()) {
                 username = username + "_" + UUID.randomUUID().toString().substring(0, 4);
             }
-            String randomPassword = UUID.randomUUID().toString();
+            String randomPassword = passwordEncoder.encode(UUID.randomUUID().toString());
             userDao.AddUser(username, randomPassword, firstName, lastName, email, "", 1, 0);
             user = userDao.findByEmail(email);
         }
@@ -62,18 +65,9 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         newSession.setAttribute("user", user);
 
         if (user.getIs_admin() == 1) {
-            response.sendRedirect("/admin/adminindex");
+            response.sendRedirect(request.getContextPath() + "/admin/adminindex");
         } else {
-            response.sendRedirect("/quizindex");
+            response.sendRedirect(request.getContextPath() + "/quiz/index");
         }
-    }
-
-    private boolean userExists(String username) {
-        for (User u : userDao.getAllUsers()) {
-            if (u.getUsername().equalsIgnoreCase(username)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

@@ -69,6 +69,7 @@
                     </td>
                     <td>
                         <form action="${pageContext.request.contextPath}/admin/toggleuser" method="POST">
+                            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
                             <input type="hidden" name="userid" value="${user.id}">
                             <input type="hidden" name="action" value="toggle_status">
                             <button type="submit" class="btn ${user.is_active == 1 ? 'btn-outline-danger' : 'btn-outline-success'}"
@@ -79,6 +80,7 @@
                     </td>
                     <td>
                         <form action="${pageContext.request.contextPath}/admin/toggleuser" method="POST">
+                            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
                             <input type="hidden" name="userid" value="${user.id}">
                             <input type="hidden" name="action" value="toggle_admin">
                             <button type="submit" class="btn ${user.is_admin == 1 ? 'btn-warning' : 'btn-secondary'}"
@@ -97,6 +99,6 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-<form action="/admin/adminindex" method="get">
+<form action="${pageContext.request.contextPath}/admin/adminindex" method="get">
     <button type="submit">Back to Admin Home</button>
 </form>

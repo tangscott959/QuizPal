@@ -3,7 +3,6 @@ package com.example.quiz_project.dao;
 import com.example.quiz_project.domain.Choice;
 import com.example.quiz_project.domain.QuizQuestion;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -19,17 +18,14 @@ public class ChoiceDao {
         this.jdbcTemplate=jdbcTemplate;
         this.rowMapper=rowMapper;
     }
-    // If you're using JDBC/MyBatis, add something like this to your ChoiceDao implementation:
     public void updateDescription(int choiceId, String description) {
-        String sql = "UPDATE choice SET choice_description = ? WHERE choice_id = ?";
-        // Execute the update query
+        String sql = "UPDATE choice SET choice_text = ? WHERE choice_id = ?";
         jdbcTemplate.update(sql, description, choiceId);
     }
 
     public Choice getById(int choiceId) {
         String sql = "SELECT * FROM choice WHERE choice_id = ?";
-        // Execute select query and return Choice object
-        return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Choice.class), choiceId);
+        return jdbcTemplate.queryForObject(sql, rowMapper, choiceId);
     }
 
     public List<Choice> getByQuestionId(int id) {
@@ -39,7 +35,7 @@ public class ChoiceDao {
 
     public void addBatch(List<Choice> cList) {
         String query ="INSERT INTO choice " +
-                "(question_id,choice_description,is_correct) " +
+                "(question_id,choice_text,is_correct) " +
                 "VALUES(?,?,?)";
         List<Object[]> ba = new ArrayList<>();
         Object[] arr = null;

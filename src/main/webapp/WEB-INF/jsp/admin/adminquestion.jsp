@@ -33,6 +33,7 @@
                 </div>
                 <form role="form" id="add-form" action="${pageContext.request.contextPath}/admin/addquestion"
                       method="POST">
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
                     <div class="modal-body">
                         <div class="row gy-3">
                             <div class="col-12">

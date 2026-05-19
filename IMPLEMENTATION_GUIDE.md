@@ -39,16 +39,17 @@ Create or update `src/main/java/com/example/quiz_project/config/SecurityConfig.j
 ```java
 package com.example.quiz_project.config;
 
-import com.example.quiz_project.util.SimplePasswordEncoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class SecurityConfig {
     
     @Bean
-    public SimplePasswordEncoder passwordEncoder() {
-        return new SimplePasswordEncoder();
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }
 ```
@@ -59,8 +60,8 @@ Update `src/main/resources/application.properties`:
 ```properties
 # Database Configuration
 spring.datasource.url=jdbc:mysql://localhost:3306/mydb?useSSL=false&serverTimezone=UTC
-spring.datasource.username=root
-spring.datasource.password=Txx12345
+spring.datasource.username=${DB_USERNAME}
+spring.datasource.password=${DB_PASSWORD}
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
 # JPA/Hibernate Configuration
@@ -120,7 +121,7 @@ Create a utility class to migrate existing passwords:
 public class PasswordMigrationUtil {
     
     @Autowired
-    private SimplePasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
     
     @Autowired
     private UserDao userDao;
@@ -177,7 +178,7 @@ DROP VIEW IF EXISTS quiz_results_legacy_view;
 
 2. **Password authentication fails after migration**
    - Solution: Ensure password migration is completed
-   - Temporary: Keep plain text passwords until migration is done
+   - Temporary: Reset affected user passwords; do not re-enable plain text password storage
 
 3. **Foreign key constraint errors**
    - Solution: Check data integrity before adding constraints

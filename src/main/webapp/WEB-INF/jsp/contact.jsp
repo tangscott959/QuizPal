@@ -13,7 +13,8 @@
     <div class = "container vh-100">
         <div class="row justify-content-center">
             <div class="col-6 mt-5 p-5 bg-white rounded">
-                <form method="post" action="/contact">
+                <form method="post" action="${pageContext.request.contextPath}/contact">
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
                     <div class="row">
                         <div class="col-12 mb-2">
                             <label class="form-label" for="form11">FirstName</label>
@@ -41,7 +42,7 @@
                             <button id ="btn" type="submit" class="btn btn-primary btn-block"><span>Submit</span></button>
                         </div>
                         <div class=" text-center">
-                            <a href="/quizindex" class = "card-link text-center"> Back to Quiz Page </a>
+                            <a href="${pageContext.request.contextPath}/quiz/index" class = "card-link text-center"> Back to Quiz Page </a>
                         </div>
                     </div>
                 </form>

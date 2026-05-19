@@ -48,11 +48,7 @@ public class AdminQuizController {
     }
     @GetMapping("/admin/home")
     public String adminHome(HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null || user.getIs_admin() != 1) {
-            return "redirect:/";
-        }
-        return "admin/adminhome"; // make sure this JSP exists
+        return "admin/adminindex";
     }
 
 
@@ -60,20 +56,6 @@ public class AdminQuizController {
     public String adminQuizIndex(HttpSession session, Model model,
                                  @RequestParam(name = "sortByName", required = false) String sortFlag1,
                                  @RequestParam(name = "sortByCategory", required = false) String sortFlag2) {
-
-        // Debugging the session and user role
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            logger.warn("User is not logged in.");
-            return "redirect:/accessdenied.jsp";  // Redirect to access denied page if no user is found
-        }
-
-        logger.info("User {} logged in with role: {}", user.getUsername(), user.getIs_admin() == 1 ? "Admin" : "Regular User");
-
-        if (user.getIs_admin() != 1) {
-            logger.warn("Access denied: User {} is not an admin.", user.getUsername());
-            return "redirect:/accessdenied.jsp";  // Ensure only admins have access
-        }
 
         // Process quiz list for admin view
         List<QuizResultTable> qrtList = new ArrayList<>();
@@ -226,13 +208,6 @@ public class AdminQuizController {
     }
     @GetMapping("/admin/feedback")
     public String viewAllFeedback(Model model, HttpSession session) {
-        User user = (User) session.getAttribute("user");
-
-        // Ensure only admin can access
-        if (user == null || user.getIs_admin() != 1) {
-            return "redirect:/";
-        }
-
         List<Feedback> feedbackList = feedbackService.getAllFeedback();
         model.addAttribute("feedbackList", feedbackList);
 
@@ -241,12 +216,6 @@ public class AdminQuizController {
 
     @GetMapping("/admin/contact")
     public String viewAllContact(Model model, HttpSession session) {
-        User user = (User) session.getAttribute("user");
-
-        if (user == null || user.getIs_admin() != 1) {
-            return "redirect:/";
-        }
-
         List<Contact> contactList = contactService.getAllContacts();
         model.addAttribute("contactlist", contactList);
 

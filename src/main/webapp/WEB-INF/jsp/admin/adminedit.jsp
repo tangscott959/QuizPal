@@ -34,6 +34,7 @@
                     <h4 class="modal-title" id="myModalLabel">New Category </h4>
                 </div>
                 <form action="${pageContext.request.contextPath}/admin/addcategory" method="POST">
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
                     <div class="modal-body">
                         <label for="c1">Name</label>
                         <input type="text" class="form-control" placeholder="Input Name for the Category" name="name"
@@ -53,6 +54,7 @@
     </div>
     <div class="row condition-bar top-buffer">
         <form action="${pageContext.request.contextPath}/admin/updatequestion" method="POST">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
             <div class="col-5">
                 <input type="hidden" name="Id" value="${detailInfo.getQuestion_id()}"/>
                 <div class="form-group">

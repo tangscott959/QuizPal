@@ -51,8 +51,8 @@ QuizPal is a comprehensive web-based quiz application built with Spring Boot tha
 **URL**: [98.89.26.67](http://98.89.26.67)
 
 **Test Credentials**:
-- **Username**: `testuser`
-- **Password**: `password123`
+- **Username**: `student1`
+- **Password**: `password`
 
 ## 📦 **Installation**
 
@@ -80,7 +80,7 @@ mysql -u root -p quiz_db_new < quiz_db_new_setup.sql
 
 # Create user
 mysql -u root -p -e "
-CREATE USER 'quizpal'@'localhost' IDENTIFIED BY 'Quizpal@123';
+CREATE USER 'quizpal'@'localhost' IDENTIFIED BY '<choose-a-local-db-password>';
 GRANT ALL PRIVILEGES ON quiz_db_new.* TO 'quizpal'@'localhost';
 FLUSH PRIVILEGES;
 "
@@ -91,7 +91,7 @@ FLUSH PRIVILEGES;
 # Update src/main/resources/application.properties
 spring.datasource.url=jdbc:mysql://localhost:3306/quiz_db_new
 spring.datasource.username=quizpal
-spring.datasource.password=Quizpal@123
+spring.datasource.password=<set DB_PASSWORD in your environment>
 server.port=8080
 ```
 
@@ -103,7 +103,7 @@ mvn spring-boot:run
 
 5. **Access Application**
 - **URL**: http://localhost:8080
-- **Login**: testuser / password123
+- **Login**: student1 / password
 
 ## 🗄️ **Database Schema**
 
@@ -179,7 +179,7 @@ QuizPal is fully responsive and works seamlessly on:
 # Database Configuration
 spring.datasource.url=jdbc:mysql://localhost:3306/quiz_db_new
 spring.datasource.username=quizpal
-spring.datasource.password=Quizpal@123
+spring.datasource.password=${DB_PASSWORD}
 
 # Server Configuration
 server.port=8080

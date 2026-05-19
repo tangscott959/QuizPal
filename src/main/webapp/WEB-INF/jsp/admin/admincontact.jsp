@@ -31,6 +31,6 @@
 </body>
 </html>
 <br><br>
-<form action="/admin/adminindex" method="get">
+<form action="${pageContext.request.contextPath}/admin/adminindex" method="get">
     <button type="submit">Back to Admin Home</button>
 </form>
