@@ -158,6 +158,9 @@ jobs:
 
           $DOCKER stop quizpal >/dev/null 2>&1 || true
           $DOCKER rm quizpal >/dev/null 2>&1 || true
+          $DOCKER ps -q --filter publish=8080 | xargs -r $DOCKER stop
+          $DOCKER ps -aq --filter publish=8080 | xargs -r $DOCKER rm
+          sudo fuser -k 8080/tcp >/dev/null 2>&1 || true
 
           $DOCKER run -d \
             --name quizpal \
