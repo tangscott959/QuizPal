@@ -173,7 +173,18 @@ jobs:
             -e GOOGLE_CLIENT_SECRET="$GOOGLE_CLIENT_SECRET" \
             "$IMAGE_NAME:$IMAGE_TAG"
 
-          sleep 15
-          curl -fsS http://localhost:8080/login >/dev/null
+          for attempt in $(seq 1 18); do
+            if curl -fsS http://localhost:8080/login >/dev/null; then
+              break
+            fi
+
+            if [ "$attempt" -eq 18 ]; then
+              $DOCKER ps -a
+              $DOCKER logs --tail 200 quizpal
+              exit 1
+            fi
+
+            sleep 5
+          done
           $DOCKER image prune -f
           EOF
