@@ -135,6 +135,8 @@ jobs:
             if command -v apt-get >/dev/null 2>&1; then
               sudo apt-get update
               sudo apt-get install -y docker.io
+              sudo apt-get clean
+              sudo rm -rf /var/lib/apt/lists/*
               sudo systemctl enable --now docker
             else
               echo "Docker is not installed and this host does not use apt-get."
@@ -146,6 +148,10 @@ jobs:
           if ! docker ps >/dev/null 2>&1; then
             DOCKER="sudo docker"
           fi
+
+          $DOCKER system prune -af --volumes || true
+          sudo journalctl --vacuum-time=1d || true
+          df -h
 
           echo "$GHCR_TOKEN" | $DOCKER login ghcr.io -u "$GHCR_USERNAME" --password-stdin
           $DOCKER pull "$IMAGE_NAME:$IMAGE_TAG"
