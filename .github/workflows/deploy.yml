@@ -102,18 +102,34 @@ jobs:
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
         run: |
+          encode() {
+            printf '%s' "$1" | base64 -w 0
+          }
+
+          DB_URL_B64="$(encode "$DB_URL")"
+          DB_USERNAME_B64="$(encode "$DB_USERNAME")"
+          DB_PASSWORD_B64="$(encode "$DB_PASSWORD")"
+          GOOGLE_CLIENT_ID_B64="$(encode "$GOOGLE_CLIENT_ID")"
+          GOOGLE_CLIENT_SECRET_B64="$(encode "$GOOGLE_CLIENT_SECRET")"
+
           ssh -i ~/.ssh/ec2_key -o StrictHostKeyChecking=accept-new "$EC2_USER@$EC2_HOST" \
             GHCR_USERNAME="$GHCR_USERNAME" \
             GHCR_TOKEN="$GHCR_TOKEN" \
             IMAGE_NAME="$IMAGE_NAME" \
             IMAGE_TAG="$IMAGE_TAG" \
-            DB_URL="$DB_URL" \
-            DB_USERNAME="$DB_USERNAME" \
-            DB_PASSWORD="$DB_PASSWORD" \
-            GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID" \
-            GOOGLE_CLIENT_SECRET="$GOOGLE_CLIENT_SECRET" \
+            DB_URL_B64="$DB_URL_B64" \
+            DB_USERNAME_B64="$DB_USERNAME_B64" \
+            DB_PASSWORD_B64="$DB_PASSWORD_B64" \
+            GOOGLE_CLIENT_ID_B64="$GOOGLE_CLIENT_ID_B64" \
+            GOOGLE_CLIENT_SECRET_B64="$GOOGLE_CLIENT_SECRET_B64" \
             'bash -s' <<'EOF'
           set -euo pipefail
+
+          DB_URL="$(printf '%s' "$DB_URL_B64" | base64 -d)"
+          DB_USERNAME="$(printf '%s' "$DB_USERNAME_B64" | base64 -d)"
+          DB_PASSWORD="$(printf '%s' "$DB_PASSWORD_B64" | base64 -d)"
+          GOOGLE_CLIENT_ID="$(printf '%s' "$GOOGLE_CLIENT_ID_B64" | base64 -d)"
+          GOOGLE_CLIENT_SECRET="$(printf '%s' "$GOOGLE_CLIENT_SECRET_B64" | base64 -d)"
 
           DOCKER="docker"
           if ! docker ps >/dev/null 2>&1; then
