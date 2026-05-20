@@ -131,6 +131,17 @@ jobs:
           GOOGLE_CLIENT_ID="$(printf '%s' "$GOOGLE_CLIENT_ID_B64" | base64 -d)"
           GOOGLE_CLIENT_SECRET="$(printf '%s' "$GOOGLE_CLIENT_SECRET_B64" | base64 -d)"
 
+          if ! command -v docker >/dev/null 2>&1; then
+            if command -v apt-get >/dev/null 2>&1; then
+              sudo apt-get update
+              sudo apt-get install -y docker.io
+              sudo systemctl enable --now docker
+            else
+              echo "Docker is not installed and this host does not use apt-get."
+              exit 1
+            fi
+          fi
+
           DOCKER="docker"
           if ! docker ps >/dev/null 2>&1; then
             DOCKER="sudo docker"
