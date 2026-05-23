@@ -1,84 +1,81 @@
-# 🧠 QuizPal - Interactive Web Quiz Application
+# QuizPal
 
-## 📋 **Overview**
+QuizPal is a Spring Boot web quiz application with user login, Google OAuth2 sign-in, admin management, quiz categories, scoring, and persisted quiz history. The app uses JSP views, Spring MVC controllers, a service layer, JDBC DAOs, and MySQL.
 
-QuizPal is a comprehensive web-based quiz application built with Spring Boot that provides an engaging platform for users to test their knowledge across multiple categories including Mathematics, Science, History, and Geography.
+## Features
 
-## 🚀 **Features**
+- Multi-category quizzes for Mathematics, Science, History, and Geography.
+- User registration and login with BCrypt password hashing.
+- Optional Google OAuth2 sign-in.
+- Admin dashboard for users, questions, feedback, contacts, and quiz results.
+- Persisted quiz attempts and score history.
+- CSRF-protected forms through Spring Security.
+- Docker image build and EC2 deployment through GitHub Actions.
 
-### **Core Functionality**
-- ✅ **Multi-category Quizzes**: Mathematics, Science, History, Geography
-- ✅ **5 Questions per Quiz**: Consistent quiz format with navigation
-- ✅ **Multiple Choice Questions**: Interactive answer selection
-- ✅ **Real-time Scoring**: Instant feedback on quiz performance
-- ✅ **User Authentication**: Secure login and registration system
-- ✅ **Google SSO**: Sign in with Google OAuth2 integration
-- ✅ **Admin Dashboard**: Manage users, questions, and quiz results
+## Tech Stack
 
-### **Technical Features**
-- ✅ **Responsive Design**: Mobile-friendly interface
-- ✅ **RESTful APIs**: Clean API architecture
-- ✅ **Database Integration**: MySQL with optimized queries
-- ✅ **Process Management**: PM2 for production deployment
-- ✅ **Reverse Proxy**: Nginx for load balancing
-- ✅ **CI/CD Ready**: GitHub Actions workflows
+Backend:
 
-## 🛠️ **Technology Stack**
+- Java 8
+- Spring Boot 2.7.3
+- Spring MVC
+- Spring Security
+- Spring OAuth2 Client
+- Spring JDBC / JdbcTemplate
+- MySQL
+- Maven
+- Lombok
 
-### **Backend**
-- **Java 8+**: Core programming language
-- **Spring Boot**: Application framework
-- **Spring MVC**: Web framework
-- **Spring Security**: Authentication and authorization
-- **Spring OAuth2 Client**: Google SSO integration
-- **MySQL**: Database management
-- **Maven**: Build and dependency management
+Frontend:
 
-### **Frontend**
-- **JSP**: Server-side templating
-- **Bootstrap 5**: Responsive CSS framework
-- **JavaScript**: Client-side interactions
-- **HTML5/CSS3**: Modern web standards
+- JSP / JSTL
+- HTML, CSS, JavaScript
+- Bootstrap
 
-### **Infrastructure**
-- **AWS EC2**: Cloud hosting
-- **Nginx**: Reverse proxy and load balancer
-- **PM2**: Process manager
-- **GitHub**: Version control and CI/CD
+Infrastructure:
 
-## 🌐 **Live Demo**
+- Docker
+- GitHub Actions
+- GitHub Container Registry
+- AWS EC2
+- Nginx reverse proxy
 
-**URL**: [98.89.26.67](http://98.89.26.67)
+## Architecture
 
-**Test Credentials**:
-- **Username**: `student1`
-- **Password**: `password`
+QuizPal is a layered Spring MVC monolith:
 
-## 📦 **Installation**
+- Controllers handle web routes and return JSP views.
+- Services hold authentication, registration, quiz, and user business logic.
+- DAOs use `JdbcTemplate` to read and write MySQL data.
+- Spring Security owns form login, OAuth2 login, logout, CSRF protection, and admin route authorization.
+- JSP pages render the user and admin UI.
 
-### **Prerequisites**
-- Java 8 or higher
-- Maven 3.6+
-- MySQL 8.0+
+## Local Setup
+
+### Prerequisites
+
+- Java 8
+- Maven 3.6+ or the included Maven wrapper
+- MySQL 8+
 - Git
 
-### **Local Setup**
+### 1. Clone The Repository
 
-1. **Clone the repository**
 ```bash
 git clone https://github.com/tangscott959/QuizPal.git
 cd QuizPal
 ```
 
-2. **Database Setup**
+### 2. Create And Seed The Database
+
 ```bash
-# Create database
 mysql -u root -p -e "CREATE DATABASE quiz_db_new;"
-
-# Import schema
 mysql -u root -p quiz_db_new < quiz_db_new_setup.sql
+```
 
-# Create user
+Create a local database user:
+
+```bash
 mysql -u root -p -e "
 CREATE USER 'quizpal'@'localhost' IDENTIFIED BY '<choose-a-local-db-password>';
 GRANT ALL PRIVILEGES ON quiz_db_new.* TO 'quizpal'@'localhost';
@@ -86,276 +83,191 @@ FLUSH PRIVILEGES;
 "
 ```
 
-3. **Configure Application**
-```bash
-# Update src/main/resources/application.properties
-spring.datasource.url=jdbc:mysql://localhost:3306/quiz_db_new
-spring.datasource.username=quizpal
-spring.datasource.password=<set DB_PASSWORD in your environment>
-server.port=8080
+### 3. Set Environment Variables
+
+`src/main/resources/application.properties` reads configuration from environment variables with local defaults.
+
+PowerShell:
+
+```powershell
+$env:DB_URL="jdbc:mysql://localhost:3306/quiz_db_new"
+$env:DB_USERNAME="quizpal"
+$env:DB_PASSWORD="<your-local-db-password>"
+$env:GOOGLE_CLIENT_ID="local-dev-client-id"
+$env:GOOGLE_CLIENT_SECRET="local-dev-client-secret"
 ```
 
-4. **Build and Run**
+Bash:
+
 ```bash
-mvn clean install
-mvn spring-boot:run
+export DB_URL="jdbc:mysql://localhost:3306/quiz_db_new"
+export DB_USERNAME="quizpal"
+export DB_PASSWORD="<your-local-db-password>"
+export GOOGLE_CLIENT_ID="local-dev-client-id"
+export GOOGLE_CLIENT_SECRET="local-dev-client-secret"
 ```
 
-5. **Access Application**
-- **URL**: http://localhost:8080
-- **Login**: student1 / password
+### 4. Run The App
 
-## 🗄️ **Database Schema**
+Windows:
 
-### **Tables**
-- **question**: Quiz questions with categories
-- **choice**: Multiple choice options
-- **quiz**: User quiz sessions
-- **quiz_answer**: User quiz responses
-- **user**: User authentication data
-- **category**: Question categories
-
-### **Question Categories**
-1. **Mathematics** (22+ questions)
-2. **Science** (21+ questions)
-3. **History** (21+ questions)
-4. **Geography** (26+ questions)
-
-## 🚀 **Deployment**
-
-### **AWS EC2 Deployment**
-
-1. **Create EC2 Instance**
-```bash
-# Ubuntu 24.04 LTS, t3.micro
-# Security Group: SSH(22), HTTP(80), HTTPS(443)
+```powershell
+.\mvnw.cmd spring-boot:run
 ```
 
-2. **Setup Dependencies**
+macOS/Linux:
+
 ```bash
-sudo apt update
-sudo apt install -y openjdk-17-jdk maven mysql-server nginx nodejs npm
+chmod +x mvnw
+./mvnw spring-boot:run
 ```
 
-3. **Deploy Application**
+Open `http://localhost:8080/login`.
+
+Sample login:
+
+- Username: `student1`
+- Password: `password`
+
+## Testing
+
+Run the test suite:
+
 ```bash
-git clone https://github.com/tangscott959/QuizPal.git
-cd QuizPal
-mvn clean package -DskipTests
-pm2 start ecosystem.config.js
+./mvnw test
 ```
 
-4. **Configure Nginx**
-```bash
-# Setup reverse proxy to http://localhost:8080
+On Windows:
+
+```powershell
+.\mvnw.cmd test
 ```
 
-### **Docker Deployment**
+Current tests cover key authentication behavior, including BCrypt registration/login checks and Spring Security role mapping.
+
+## Docker
+
+Build the Docker image locally:
+
 ```bash
-# Build image
 docker build -t quizpal .
-
-# Run container
-docker run -p 8080:8080 quizpal
 ```
 
-## 📱 **Mobile Responsiveness**
+Run it against a database reachable from Docker:
 
-QuizPal is fully responsive and works seamlessly on:
-- ✅ **Desktop** (1920x1080+)
-- ✅ **Tablet** (768px-1024px)
-- ✅ **Mobile** (320px-768px)
-
-### **Mobile Features**
-- Touch-friendly buttons (44px min height)
-- Responsive layout with proper scaling
-- Optimized navigation for small screens
-- No horizontal scrolling
-
-## 🔧 **Configuration**
-
-### **Application Properties**
-```properties
-# Database Configuration
-spring.datasource.url=jdbc:mysql://localhost:3306/quiz_db_new
-spring.datasource.username=quizpal
-spring.datasource.password=${DB_PASSWORD}
-
-# Server Configuration
-server.port=8080
-
-# JSP Configuration
-spring.mvc.view.prefix=/WEB-INF/jsp/
-spring.mvc.view.suffix=.jsp
-```
-
-### **PM2 Configuration**
-```javascript
-module.exports = {
-  apps: [{
-    name: 'quizpal',
-    script: 'java',
-    args: ['-jar', 'target/Quiz_project-0.0.1-SNAPSHOT.jar'],
-    cwd: '/path/to/QuizPal',
-    instances: 1,
-    autorestart: true,
-    watch: false,
-    max_memory_restart: '1G'
-  }]
-};
-```
-
-## 🧪 **Testing**
-
-### **Unit Tests**
 ```bash
-mvn test
+docker run --rm -p 8080:8080 \
+  -e DB_URL="jdbc:mysql://host.docker.internal:3306/quiz_db_new" \
+  -e DB_USERNAME="quizpal" \
+  -e DB_PASSWORD="<your-local-db-password>" \
+  -e GOOGLE_CLIENT_ID="local-dev-client-id" \
+  -e GOOGLE_CLIENT_SECRET="local-dev-client-secret" \
+  quizpal
 ```
 
-### **Integration Tests**
+Open `http://localhost:8080/login`.
+
+## CI/CD Deployment
+
+The production pipeline is defined in `.github/workflows/deploy.yml`.
+
+On pull requests to `master`, GitHub Actions runs Maven tests.
+
+On pushes to `master` or manual workflow runs, GitHub Actions:
+
+1. Runs the Maven test suite.
+2. Builds a Docker image.
+3. Publishes `latest` and commit-SHA image tags to GitHub Container Registry.
+4. SSHes into the EC2 instance.
+5. Installs Docker if it is missing.
+6. Cleans old Docker artifacts and old processes using port `8080`.
+7. Starts the `quizpal` container with production environment variables.
+8. Health-checks `http://localhost:8080/login`.
+9. Prints container logs if the health check fails.
+
+The image is published as:
+
+```text
+ghcr.io/tangscott959/quizpal
+```
+
+## Required GitHub Secrets
+
+Add these in GitHub under `Settings -> Secrets and variables -> Actions`:
+
+- `EC2_HOST`: EC2 public IP or DNS name.
+- `EC2_USER`: SSH user, usually `ubuntu`.
+- `EC2_SSH_KEY`: private key contents for SSH access to EC2.
+- `DB_URL`: production JDBC URL, for example `jdbc:mysql://<database-host>:3306/quiz_db_new`.
+- `DB_USERNAME`: production database username.
+- `DB_PASSWORD`: production database password.
+- `GOOGLE_CLIENT_ID`: Google OAuth client ID.
+- `GOOGLE_CLIENT_SECRET`: Google OAuth client secret.
+
+Do not commit `.pem` files, database passwords, or OAuth client secrets.
+
+## EC2 Notes
+
+The deployed container listens on port `8080`. Nginx can expose it on port `80` by proxying to `http://localhost:8080`.
+
+The EC2 root volume should have enough free space for Docker images and layers. A small `8 GiB` root volume may fail during image pulls. `16 GiB` or `20 GiB` is more practical for this project.
+
+If MySQL runs on the same EC2 host, do not use `localhost` in `DB_URL` from inside the container. Use the EC2 private IP, a Docker network, or another reachable database hostname.
+
+More deployment details are in `README-DEPLOYMENT.md`.
+
+## Security Updates
+
+Recent hardening work includes:
+
+- Replaced legacy/plain password handling with BCrypt.
+- Added Spring Security form login and OAuth2 login flow.
+- Added `UserDetailsService` integration for app users.
+- Added CSRF tokens to JSP forms.
+- Moved secrets and database settings to environment variables.
+- Removed manual admin session checks in favor of Spring Security authorization rules.
+- Updated seeded sample users to use BCrypt password hashes.
+
+## Database
+
+Primary tables include:
+
+- `user`
+- `category`
+- `question`
+- `choice`
+- `quiz`
+- `quiz_question`
+
+Seed data is provided in `quiz_db_new_setup.sql`.
+
+## Useful Commands
+
+Check the deployed container on EC2:
+
 ```bash
-mvn verify
+sudo docker ps
+sudo docker logs --tail 100 quizpal
 ```
 
-### **Manual Testing**
-- User registration and login
-- Quiz functionality across all categories
-- Admin dashboard operations
-- Mobile responsiveness
+Check disk space on EC2:
 
-## 📊 **Performance**
-
-### **Database Optimization**
-- Indexed queries for fast performance
-- Connection pooling for database efficiency
-- Optimized SQL queries
-
-### **Application Performance**
-- Sub-second page load times
-- Efficient memory usage
-- Scalable architecture
-
-## 🔐 **Security**
-
-### **Authentication**
-- Password hashing with BCrypt
-- Session management
-- CSRF protection
-- Google OAuth2 Single Sign-On (SSO)
-
-### **Google SSO Setup**
-QuizPal supports Google Sign-In via OAuth2. To enable it:
-
-1. Create a project on [Google Cloud Console](https://console.cloud.google.com/)
-2. Go to **APIs & Services → Credentials → Create OAuth 2.0 Client ID**
-3. Set Application type to **Web application**
-4. Add redirect URI: `http://localhost:8080/login/oauth2/code/google`
-5. Set environment variables before running:
 ```bash
-export GOOGLE_CLIENT_ID="your-client-id"
-export GOOGLE_CLIENT_SECRET="your-client-secret"
+df -h
 ```
 
-> **Note**: Google OAuth2 requires a valid domain for redirect URIs in production. Raw IP addresses are not supported. Use a domain name or SSH tunnel (`ssh -L 8080:localhost:8080 user@server`) for testing.
+Restart the deployed container:
 
-### **Database Security**
-- Parameterized queries to prevent SQL injection
-- User input validation
-- Secure password storage
+```bash
+sudo docker restart quizpal
+```
 
-## 🔄 **CI/CD**
+## Documentation
 
-### **GitHub Actions**
-- Automated testing on push
-- Build and deployment workflows
-- Multi-environment support
+- `README-DEPLOYMENT.md`: Docker EC2 deployment guide.
+- `IMPLEMENTATION_GUIDE.md`: implementation notes from the application cleanup work.
+- `quiz_db_new_setup.sql`: schema and seed data.
 
-### **Deployment Options**
-- **AWS EC2**: Production hosting
-- **Heroku**: Quick deployment
-- **DigitalOcean**: Alternative cloud hosting
-- **Docker**: Containerized deployment
+## License
 
-## 📈 **Monitoring**
-
-### **Application Logs**
-- PM2 process monitoring
-- Application error tracking
-- Performance metrics
-
-### **Database Monitoring**
-- Query performance tracking
-- Connection pool monitoring
-- Error logging
-
-## 🤝 **Contributing**
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-### **Development Guidelines**
-- Follow Java coding standards
-- Write unit tests for new features
-- Update documentation
-- Ensure mobile responsiveness
-
-## 📄 **License**
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 📞 **Support**
-
-### **Issues and Questions**
-- **GitHub Issues**: [Create an issue](https://github.com/tangscott959/QuizPal/issues)
-- **Email**: tangscott959@gmail.com
-
-### **Documentation**
-- [AWS Setup Guide](AWS-SETUP-GUIDE.md)
-- [Ubuntu 24.04 Setup](UBUNTU-24.04-SETUP.md)
-- [Implementation Guide](IMPLEMENTATION_GUIDE.md)
-
-## 🏆 **Achievements**
-
-### **Project Milestones**
-- ✅ **Complete Quiz System**: 88+ questions across 4 categories
-- ✅ **Production Deployment**: Live on AWS EC2
-- ✅ **Mobile Responsive**: Works on all device sizes
-- ✅ **Database Optimized**: Clean schema with proper relationships
-- ✅ **CI/CD Ready**: GitHub Actions configured
-- ✅ **Google SSO**: OAuth2 Sign-In with Google
-- ✅ **Documentation**: Comprehensive guides and README
-
-### **Technical Highlights**
-- **Clean Architecture**: MVC pattern with proper separation of concerns
-- **Scalable Design**: Handles multiple concurrent users
-- **Security First**: Proper authentication and data protection
-- **Performance Optimized**: Fast response times and efficient queries
-
-## 🚀 **Future Enhancements**
-
-### **Planned Features**
-- [ ] **Google SSO Production Domain**: Configure custom domain for OAuth2 redirect
-- [ ] **Real-time Multiplayer**: Compete with other users
-- [ ] **Advanced Analytics**: Detailed performance insights
-- [ ] **Question Categories**: More diverse topics
-- [ ] **Gamification**: Points, badges, and leaderboards
-- [ ] **API Integration**: Third-party quiz sources
-- [ ] **Mobile App**: Native iOS/Android applications
-
-### **Technical Improvements**
-- [ ] **Microservices Architecture**: Scale individual components
-- [ ] **Redis Caching**: Improve performance with caching
-- [ ] **Docker Compose**: Multi-container deployment
-- [ ] **Kubernetes**: Container orchestration
-- [ ] **GraphQL API**: More efficient data fetching
-
----
-
-**🎉 Thank you for checking out QuizPal!**
-
-**Built with ❤️ by [tangscott959](https://github.com/tangscott959)**
-
-**🌟 Star this repository if you find it useful!**
+This project is licensed under the MIT License.
