@@ -93,8 +93,10 @@ public class QuizControllerImproved1 {
         try {
             // Get questions for this category
             List<Question> questions = questionService.getByCategory(categoryId);
-            if (questions.isEmpty()) {
-                redirectAttributes.addFlashAttribute("error", "No questions available for this category");
+            if (questions.size() < QuestionService.QUIZ_QUESTION_COUNT) {
+                redirectAttributes.addFlashAttribute("error",
+                        "This category needs at least " + QuestionService.QUIZ_QUESTION_COUNT
+                                + " active questions to start a quiz.");
                 return "redirect:/quiz/index";
             }
 

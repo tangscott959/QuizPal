@@ -10,12 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 @Service
 public class QuestionService {
+    public static final int QUIZ_QUESTION_COUNT = QuestionDao.QUIZ_QUESTION_COUNT;
+
     private final QuestionDao questionDao;
     private final ChoiceDao choiceDao;
     @Autowired
@@ -29,6 +32,9 @@ public class QuestionService {
     }
     
     public List<Question> getByCategory(int categoryId) {
+        if (questionDao.countActiveByCategory(categoryId) < QUIZ_QUESTION_COUNT) {
+            return Collections.emptyList();
+        }
         return questionDao.getRandom5ByType(categoryId);
     }
     
