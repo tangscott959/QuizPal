@@ -17,6 +17,8 @@ import java.util.Optional;
 @Repository
 @Component
 public class QuestionDao {
+    public static final int QUIZ_QUESTION_COUNT = 5;
+
     JdbcTemplate jdbcTemplate;
     QuestionRowMapper rowMapper;
 
@@ -30,8 +32,14 @@ public class QuestionDao {
     public List<Question> getRandom5ByType(int cid) {
         String query ="SELECT * FROM  question " +
                 "WHERE  category_id = ? AND is_active =1 " +
-                "ORDER BY RAND() LIMIT 5";
+                "ORDER BY RAND() LIMIT " + QUIZ_QUESTION_COUNT;
         return  this.jdbcTemplate.query(query,rowMapper,cid);
+    }
+
+    public int countActiveByCategory(int categoryId) {
+        String query = "SELECT COUNT(*) FROM question WHERE category_id = ? AND is_active = 1";
+        Integer count = jdbcTemplate.queryForObject(query, Integer.class, categoryId);
+        return count != null ? count : 0;
     }
 
     public List<Question> getALl() {
