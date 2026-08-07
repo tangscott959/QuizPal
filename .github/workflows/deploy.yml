@@ -156,11 +156,34 @@ jobs:
           echo "$GHCR_TOKEN" | $DOCKER login ghcr.io -u "$GHCR_USERNAME" --password-stdin
           $DOCKER pull "$IMAGE_NAME:$IMAGE_TAG"
 
-          $DOCKER stop quizpal >/dev/null 2>&1 || true
-          $DOCKER rm quizpal >/dev/null 2>&1 || true
-          $DOCKER ps -q --filter publish=8080 | xargs -r $DOCKER stop
-          $DOCKER ps -aq --filter publish=8080 | xargs -r $DOCKER rm
+          stop_port_8080() {
+            local d="$1"
+            $d stop quizpal >/dev/null 2>&1 || true
+            $d rm quizpal >/dev/null 2>&1 || true
+            ids="$($d ps -q --filter publish=8080 2>/dev/null || true)"
+            if [ -n "$ids" ]; then
+              echo "$ids" | xargs -r $d stop >/dev/null 2>&1 || true
+              echo "$ids" | xargs -r $d rm >/dev/null 2>&1 || true
+            fi
+          }
+
+          stop_port_8080 docker
+          stop_port_8080 "sudo docker"
+
+          if command -v pm2 >/dev/null 2>&1; then
+            pm2 stop quizpal >/dev/null 2>&1 || true
+            pm2 delete quizpal >/dev/null 2>&1 || true
+          fi
+
           sudo fuser -k 8080/tcp >/dev/null 2>&1 || true
+          sleep 2
+
+          if ss -tln | grep -q ':8080 '; then
+            echo "Port 8080 is still in use:"
+            sudo ss -tlnp | grep ':8080 ' || true
+            sudo fuser -k 8080/tcp >/dev/null 2>&1 || true
+            sleep 2
+          fi
 
           $DOCKER run -d \
             --name quizpal \
