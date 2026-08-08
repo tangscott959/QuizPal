@@ -106,8 +106,10 @@ export DB_PASSWORD="<your-local-db-password>"
 export GOOGLE_CLIENT_ID="local-dev-client-id"
 export GOOGLE_CLIENT_SECRET="local-dev-client-secret"
 ```
-
+SSH in :
+ssh -i .\quizpal-key.pem ubuntu@98.89.26.67
 ### 4. Run The App
+
 The app is live at :http://98.89.26.67.
 Windows:
 
