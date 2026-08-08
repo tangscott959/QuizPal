@@ -20,6 +20,7 @@ Add these under GitHub repository settings: `Settings -> Secrets and variables -
 - `DB_PASSWORD`: production database password.
 - `GOOGLE_CLIENT_ID`: Google OAuth client ID.
 - `GOOGLE_CLIENT_SECRET`: Google OAuth client secret.
+- `GOOGLE_REDIRECT_URI`: Optional. Production redirect URI, e.g. `https://your-domain.com/login/oauth2/code/google`. Required for Google Sign-In in production (see `README-GOOGLE-OAUTH.md`).
 
 `GITHUB_TOKEN` is provided automatically by GitHub Actions and is used to publish `ghcr.io/tangscott959/quizpal`.
 
