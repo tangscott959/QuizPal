@@ -137,6 +137,19 @@
         .register-link a:hover { color: rgba(255,255,255,0.8); }
         .register-link a:hover span { color: #8fa4f0; }
 
+        .login-alert {
+            padding: 12px 14px;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            font-size: 0.92rem;
+            line-height: 1.45;
+        }
+        .login-alert-error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            color: #fecaca;
+        }
+
         @media (max-width: 480px) {
             .login-card { padding: 36px 24px; border-radius: 20px; }
             .brand-icon { width: 56px; height: 56px; border-radius: 16px; }
@@ -167,6 +180,20 @@
             <h1>QuizPal</h1>
             <p>Sign in to test your knowledge</p>
         </div>
+
+        <% if (request.getParameter("error") != null) { %>
+        <div class="login-alert login-alert-error">
+            Invalid username or password.
+        </div>
+        <% } %>
+
+        <% if (request.getParameter("oauth_error") != null) { %>
+        <div class="login-alert login-alert-error">
+            Google sign-in failed. Production Google OAuth requires an HTTPS domain name
+            (not a raw IP address). Use username/password for now, or configure OAuth per
+            README-GOOGLE-OAUTH.md.
+        </div>
+        <% } %>
 
         <form method="post" action="${pageContext.request.contextPath}/login">
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
