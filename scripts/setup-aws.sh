@@ -50,5 +50,5 @@ sudo systemctl enable --now nginx
 sudo systemctl reload nginx
 
 echo "Setup complete."
-echo "Add the GitHub Actions secrets from README-DEPLOYMENT.md, then push to master to deploy."
+echo "Add the GitHub Actions secrets from docs/DEPLOYMENT.md, then push to master to deploy."
 echo "If this user was just added to the docker group, log out and back in before running docker without sudo."

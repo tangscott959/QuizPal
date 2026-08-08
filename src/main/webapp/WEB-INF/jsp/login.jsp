@@ -190,8 +190,7 @@
         <% if (request.getParameter("oauth_error") != null) { %>
         <div class="login-alert login-alert-error">
             Google sign-in failed. Production Google OAuth requires an HTTPS domain name
-            (not a raw IP address). Use username/password for now, or configure OAuth per
-            README-GOOGLE-OAUTH.md.
+            (not a raw IP address). Use username/password for now, or see docs/GOOGLE-OAUTH.md.
         </div>
         <% } %>
 

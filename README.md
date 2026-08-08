@@ -216,7 +216,7 @@ The EC2 root volume should have enough free space for Docker images and layers. 
 
 If MySQL runs on the same EC2 host, do not use `localhost` in `DB_URL` from inside the container. Use the EC2 private IP, a Docker network, or another reachable database hostname.
 
-More deployment details are in `README-DEPLOYMENT.md`.
+More deployment details are in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ## Security Updates
 
@@ -266,9 +266,14 @@ sudo docker restart quizpal
 
 ## Documentation
 
-- `README-DEPLOYMENT.md`: Docker EC2 deployment guide.
-- `IMPLEMENTATION_GUIDE.md`: implementation notes from the application cleanup work.
-- `quiz_db_new_setup.sql`: schema and seed data.
+See the [docs/](docs/) folder:
+
+- [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md): Docker EC2 deployment guide
+- [docs/GOOGLE-OAUTH.md](docs/GOOGLE-OAUTH.md): Google Sign-In setup
+- [docs/AWS-SETUP-GUIDE.md](docs/AWS-SETUP-GUIDE.md): AWS EC2 setup
+- [docs/UBUNTU-24.04-SETUP.md](docs/UBUNTU-24.04-SETUP.md): Ubuntu server setup
+- [docs/IMPLEMENTATION_GUIDE.md](docs/IMPLEMENTATION_GUIDE.md): Implementation notes
+- `quiz_db_new_setup.sql`: schema and seed data
 
 ## License
 
