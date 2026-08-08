@@ -21,6 +21,8 @@ public class QuizRowMapper implements RowMapper<Quiz> {
         quiz.setQuizName(rs.getString("quiz_name"));
         quiz.setQuizTimeStart(rs.getTimestamp("quiz_time_start"));
         quiz.setQuizTimeEnd(rs.getTimestamp("quiz_time_end"));
+        int timeLimitMinutes = rs.getInt("time_limit_minutes");
+        quiz.setTimeLimitMinutes(rs.wasNull() ? 0 : timeLimitMinutes);
         quiz.setTotalQuestions(rs.getInt("total_questions"));
         quiz.setScore(rs.getInt("score"));
         quiz.setStatus(rs.getString("status"));
