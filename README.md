@@ -110,6 +110,7 @@ export GOOGLE_CLIENT_SECRET="local-dev-client-secret"
 ### 4. Run The App
 
 The app is live at :http://98.89.26.67.
+https://quizpal.duckdns.org/login
 Windows:
 
 ```powershell
