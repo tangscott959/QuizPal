@@ -53,11 +53,15 @@
     <div class="hero-card p-4 p-md-5 mb-4">
         <p class="text-uppercase fw-semibold opacity-75 mb-2">Welcome back</p>
         <h1 class="display-6 fw-bold mb-2">Choose a Quiz</h1>
-        <p class="mb-0 opacity-75">Pick a category and answer five random questions.</p>
+        <p class="mb-0 opacity-75">Pick a category and answer five random questions in 15 minutes.</p>
     </div>
 
     <c:if test="${not empty error}">
         <div class="alert alert-danger">${error}</div>
+    </c:if>
+
+    <c:if test="${not empty info}">
+        <div class="alert alert-info">${info}</div>
     </c:if>
 
     <c:if test="${not empty inProgressQuiz}">
@@ -82,7 +86,7 @@
                             <strong>${category.categoryId}</strong>
                         </div>
                         <h4 class="card-title fw-bold">${category.categoryName}</h4>
-                        <p class="card-text text-muted">Five random questions.</p>
+                        <p class="card-text text-muted">Five random questions, 15-minute limit.</p>
                         <a class="btn btn-gradient w-100"
                            href="${pageContext.request.contextPath}/quiz/start?categoryId=${category.categoryId}&timeLimit=15">
                             Start Quiz

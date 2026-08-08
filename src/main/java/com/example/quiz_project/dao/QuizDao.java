@@ -65,16 +65,17 @@ public class QuizDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con ->  {
             String sql="INSERT INTO quiz " +
-                    "(user_id,category_id,quiz_name,quiz_time_start,quiz_time_end,total_questions,status) " +
-                    "VALUES(?,?,?,?,?,?,?)";
+                    "(user_id,category_id,quiz_name,quiz_time_start,quiz_time_end,time_limit_minutes,total_questions,status) " +
+                    "VALUES(?,?,?,?,?,?,?,?)";
             PreparedStatement ps = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
             ps.setInt(1, q.getUserId());
             ps.setInt(2, q.getCategoryId());
             ps.setString(3,q.getQuizName());
             ps.setTimestamp(4,q.getQuizTimeStart());
             ps.setTimestamp(5,q.getQuizTimeEnd());
-            ps.setInt(6, q.getTotalQuestions());
-            ps.setString(7, q.getStatus());
+            ps.setInt(6, q.getTimeLimitMinutes());
+            ps.setInt(7, q.getTotalQuestions());
+            ps.setString(8, q.getStatus());
             return ps;
         }, keyHolder);
         return Optional.ofNullable(keyHolder.getKey()).orElse(0).intValue();

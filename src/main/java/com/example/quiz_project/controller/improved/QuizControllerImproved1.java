@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/quiz")
 public class QuizControllerImproved1 {
 
+    private static final int QUIZ_TIME_LIMIT_MINUTES = 15;
+
     private final Logger logger = LoggerFactory.getLogger(QuizControllerImproved1.class);
 
     private final CategoryService categoryService;
@@ -55,6 +57,11 @@ public class QuizControllerImproved1 {
             model.addAttribute("categories", categories);
 
             Quiz inProgressQuiz = quizService.getInProgressByUser(currentUser.getId());
+            if (inProgressQuiz != null && isQuizExpired(inProgressQuiz)) {
+                finalizeExpiredQuiz(inProgressQuiz);
+                model.addAttribute("info", "Your previous quiz timed out and was submitted automatically.");
+                inProgressQuiz = null;
+            }
             model.addAttribute("inProgressQuiz", inProgressQuiz);
             if (inProgressQuiz != null) {
                 model.addAttribute("inProgressAnsweredCount",
@@ -111,6 +118,7 @@ public class QuizControllerImproved1 {
             quiz.setQuizName("Quiz - " + LocalDateTime.now().toLocalDate());
             quiz.setQuizTimeStart(new Timestamp(System.currentTimeMillis()));
             quiz.setQuizTimeEnd(null);
+            quiz.setTimeLimitMinutes(resolveTimeLimitMinutes(timeLimit));
             quiz.setTotalQuestions(questions.size());
             quiz.setStatus("IN_PROGRESS");
 
@@ -167,6 +175,10 @@ public class QuizControllerImproved1 {
                 return "redirect:/quiz/index";
             }
 
+            if (isQuizExpired(quiz)) {
+                return finalizeExpiredQuiz(quiz, redirectAttributes);
+            }
+
             List<QuizQuestion> quizAnswers = quizQuestionService.getByQuizId(quizId);
             List<Question> questions = loadQuestionsInOrder(quizAnswers);
             int currentQuestionIndex = getCurrentQuestionIndex(quizAnswers);
@@ -183,6 +195,8 @@ public class QuizControllerImproved1 {
             model.addAttribute("choices", choices);
             model.addAttribute("questionIndex", currentQuestionIndex);
             model.addAttribute("totalQuestions", questions.size());
+            model.addAttribute("timerDeadlineEpochMs", getTimerDeadlineEpochMs(quiz));
+            model.addAttribute("timeLimitMinutes", resolveTimeLimitMinutes(quiz));
 
             return "quiz/quiz-question";
         } catch (Exception e) {
@@ -214,6 +228,10 @@ public class QuizControllerImproved1 {
             if (!"IN_PROGRESS".equals(quiz.getStatus())) {
                 redirectAttributes.addFlashAttribute("error", "This quiz is no longer active.");
                 return "redirect:/quiz/index";
+            }
+
+            if (isQuizExpired(quiz)) {
+                return finalizeExpiredQuiz(quiz, redirectAttributes);
             }
 
             boolean isCorrect = isCorrectChoice(questionId, selectedChoiceId);
@@ -260,6 +278,10 @@ public class QuizControllerImproved1 {
                 return "redirect:/quiz/result?quizId=" + quizId;
             }
 
+            if (isQuizExpired(quiz)) {
+                return finalizeExpiredQuiz(quiz, redirectAttributes);
+            }
+
             if (quizQuestionService.countAnswered(quizId) < quiz.getTotalQuestions()) {
                 return "redirect:/quiz/question?quizId=" + quizId;
             }
@@ -302,6 +324,9 @@ public class QuizControllerImproved1 {
             }
 
             if ("IN_PROGRESS".equals(quiz.getStatus())) {
+                if (isQuizExpired(quiz)) {
+                    return finalizeExpiredQuiz(quiz, redirectAttributes);
+                }
                 return "redirect:/quiz/question?quizId=" + quizId;
             }
 
@@ -345,6 +370,44 @@ public class QuizControllerImproved1 {
             }
         }
         return quizAnswers.size();
+    }
+
+    private int resolveTimeLimitMinutes(Integer requestedLimit) {
+        if (requestedLimit != null && requestedLimit > 0) {
+            return requestedLimit;
+        }
+        return QUIZ_TIME_LIMIT_MINUTES;
+    }
+
+    private int resolveTimeLimitMinutes(Quiz quiz) {
+        return quiz.getTimeLimitMinutes() > 0 ? quiz.getTimeLimitMinutes() : QUIZ_TIME_LIMIT_MINUTES;
+    }
+
+    private long getTimerDeadlineEpochMs(Quiz quiz) {
+        return quiz.getQuizTimeStart().getTime() + resolveTimeLimitMinutes(quiz) * 60_000L;
+    }
+
+    private boolean isQuizExpired(Quiz quiz) {
+        if (quiz.getQuizTimeStart() == null) {
+            return false;
+        }
+        return System.currentTimeMillis() >= getTimerDeadlineEpochMs(quiz);
+    }
+
+    private void finalizeExpiredQuiz(Quiz quiz) {
+        if ("COMPLETED".equals(quiz.getStatus())) {
+            return;
+        }
+        int score = quizQuestionService.calScoreOne(quiz.getQuizId());
+        quizService.completeQuiz(quiz.getQuizId(), new Timestamp(System.currentTimeMillis()), score);
+        logger.info("Quiz {} auto-submitted after time limit with score {}", quiz.getQuizId(), score);
+    }
+
+    private String finalizeExpiredQuiz(Quiz quiz, RedirectAttributes redirectAttributes) {
+        finalizeExpiredQuiz(quiz);
+        redirectAttributes.addFlashAttribute("error",
+                "Time is up! Your quiz was submitted with the answers you completed.");
+        return "redirect:/quiz/result?quizId=" + quiz.getQuizId();
     }
 
     private Map<String, Object> calculateUserStatistics(Integer userId) {

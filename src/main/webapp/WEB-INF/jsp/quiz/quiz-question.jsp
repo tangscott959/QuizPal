@@ -25,15 +25,40 @@
             color: #fff;
             filter: brightness(1.05);
         }
+        .quiz-timer {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.65rem 1rem;
+            border-radius: 999px;
+            background: #eef2ff;
+            color: #3730a3;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+        .quiz-timer.warning {
+            background: #fef3c7;
+            color: #b45309;
+        }
+        .quiz-timer.expired {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
     </style>
 </head>
 <jsp:include page="../nav.jsp" flush="true" />
 <body>
 <div class="container pb-5">
     <div class="row">
-        <div class="col-12">
-            <p class="text-uppercase text-primary fw-semibold mb-2">Quiz in progress</p>
-            <h3 class="fw-bold mb-4">Question ${questionIndex + 1} / ${totalQuestions}</h3>
+        <div class="col-12 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+            <div>
+                <p class="text-uppercase text-primary fw-semibold mb-2">Quiz in progress</p>
+                <h3 class="fw-bold mb-0">Question ${questionIndex + 1} / ${totalQuestions}</h3>
+            </div>
+            <div id="quiz-timer" class="quiz-timer" aria-live="polite">
+                <span>Time left</span>
+                <span id="quiz-timer-value">${timeLimitMinutes}:00</span>
+            </div>
         </div>
         <div class="col-lg-8">
             <div class="card question-card">
@@ -64,5 +89,38 @@
         </div>
     </div>
 </div>
+<script>
+    (function () {
+        const deadline = ${timerDeadlineEpochMs};
+        const quizId = ${quiz.quizId};
+        const completeUrl = '${pageContext.request.contextPath}/quiz/complete?quizId=' + quizId;
+        const timerValue = document.getElementById('quiz-timer-value');
+        const timerBadge = document.getElementById('quiz-timer');
+
+        function pad(value) {
+            return value < 10 ? '0' + value : String(value);
+        }
+
+        function updateTimer() {
+            const remainingMs = deadline - Date.now();
+            if (remainingMs <= 0) {
+                timerValue.textContent = '0:00';
+                timerBadge.classList.add('expired');
+                window.location.href = completeUrl;
+                return;
+            }
+
+            const totalSeconds = Math.floor(remainingMs / 1000);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            timerValue.textContent = minutes + ':' + pad(seconds);
+
+            timerBadge.classList.toggle('warning', totalSeconds <= 60);
+        }
+
+        updateTimer();
+        setInterval(updateTimer, 1000);
+    })();
+</script>
 </body>
 </html>

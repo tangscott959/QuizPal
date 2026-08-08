@@ -17,6 +17,7 @@ public class Quiz {
     String quizName;
     Timestamp quizTimeStart;
     Timestamp quizTimeEnd;
+    int timeLimitMinutes;
     int totalQuestions;
     int score;
     String status;
