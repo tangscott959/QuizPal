@@ -26,8 +26,29 @@ public class QuizQuestionDao {
         return jdbcTemplate.query(query,rowMapper);
     }
     public List<QuizQuestion> getByQuizId(int qid) {
-        String query = "SELECT * FROM quiz_answer WHERE quiz_id= ?";
+        String query = "SELECT * FROM quiz_answer WHERE quiz_id= ? ORDER BY answer_id";
         return jdbcTemplate.query(query,rowMapper,qid);
+    }
+
+    public void addPlaceholderBatch(int quizId, List<Integer> questionIds) {
+        String query = "INSERT INTO quiz_answer (quiz_id, question_id, selected_choice_id, is_correct) VALUES (?, ?, NULL, NULL)";
+        List<Object[]> batch = new ArrayList<>();
+        for (Integer questionId : questionIds) {
+            batch.add(new Object[]{quizId, questionId});
+        }
+        jdbcTemplate.batchUpdate(query, batch);
+    }
+
+    public int updateAnswer(int quizId, int questionId, int selectedChoiceId, boolean isCorrect) {
+        String query = "UPDATE quiz_answer SET selected_choice_id = ?, is_correct = ? " +
+                "WHERE quiz_id = ? AND question_id = ? AND selected_choice_id IS NULL";
+        return jdbcTemplate.update(query, selectedChoiceId, isCorrect, quizId, questionId);
+    }
+
+    public int countAnswered(int quizId) {
+        String query = "SELECT COUNT(*) FROM quiz_answer WHERE quiz_id = ? AND selected_choice_id IS NOT NULL";
+        Integer count = jdbcTemplate.queryForObject(query, Integer.class, quizId);
+        return count != null ? count : 0;
     }
     public void addBatch(List<QuizQuestion> qList) {
         String query ="INSERT INTO quiz_answer " +

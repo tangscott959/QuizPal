@@ -41,6 +41,8 @@
                     <h4 class="card-title fw-bold mb-4">${question.quiz_description}</h4>
                     <form action="${pageContext.request.contextPath}/quiz/answer" method="post">
                         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+                        <input type="hidden" name="quizId" value="${quiz.quizId}" />
+                        <input type="hidden" name="questionId" value="${question.question_id}" />
                         <c:forEach var="choice" items="${choices}">
                             <div class="form-check border rounded-3 p-3 ps-5 my-3 bg-light">
                                 <input class="form-check-input" type="radio" name="selectedChoiceId"

@@ -18,10 +18,11 @@ public class QuizQuestionRowMapper implements RowMapper<QuizQuestion> {
         quizQuestion.setQuizquestionId(rs.getInt("answer_id"));
         quizQuestion.setQuizId(rs.getInt("quiz_id"));
         quizQuestion.setQuestionId(rs.getInt("question_id"));
-        quizQuestion.setChoiceId(rs.getInt("selected_choice_id"));
-        quizQuestion.setIs_marked(rs.getInt("is_correct"));
+        int choiceId = rs.getInt("selected_choice_id");
+        quizQuestion.setChoiceId(rs.wasNull() ? 0 : choiceId);
+        int isCorrect = rs.getInt("is_correct");
+        quizQuestion.setIs_marked(rs.wasNull() ? -1 : isCorrect);
 
         return quizQuestion;
-
     }
 }

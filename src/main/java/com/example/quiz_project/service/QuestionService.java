@@ -49,6 +49,14 @@ public class QuestionService {
     public Question getById(int id) {
         return questionDao.getById(id);
     }
+
+    public List<Question> getQuestionsInOrder(List<Integer> questionIds) {
+        List<Question> questions = new ArrayList<>();
+        for (Integer questionId : questionIds) {
+            questions.add(questionDao.getById(questionId));
+        }
+        return questions;
+    }
     public void addQuestion(int categoryId,String description, int isActive,int isAnswer, List<String> choices) {
         int questionId = questionDao.addOne(categoryId,description,isActive);
         List<Choice> chList= new ArrayList<>();
