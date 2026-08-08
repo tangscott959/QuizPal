@@ -35,10 +35,28 @@ public class QuizService {
         return quizDao.addQuiz(q);
     }
 
-    public int updateQuiz(int quizId, Timestamp ts) {
-        return quizDao.updateQuiz(quizId,ts);
+    public List<Quiz> getCompletedByUser(int id) {
+        return quizDao.getCompletedByUser(id);
     }
 
+    public Quiz getInProgressByUser(int userId) {
+        return quizDao.getInProgressByUser(userId);
+    }
+
+    public void abandonInProgressQuiz(int userId) {
+        Quiz inProgress = quizDao.getInProgressByUser(userId);
+        if (inProgress != null) {
+            quizDao.abandonQuiz(inProgress.getQuizId(), userId);
+        }
+    }
+
+    public int completeQuiz(int quizId, Timestamp endTime, int score) {
+        return quizDao.completeQuiz(quizId, endTime, score);
+    }
+
+    public int updateQuiz(int quizId, Timestamp ts) {
+        return quizDao.updateQuiz(quizId, ts);
+    }
 
     public List<Quiz> getByUserId(int id) {
         return quizDao.getByUser(id);

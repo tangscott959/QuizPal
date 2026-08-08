@@ -60,6 +60,19 @@
         <div class="alert alert-danger">${error}</div>
     </c:if>
 
+    <c:if test="${not empty inProgressQuiz}">
+        <div class="alert alert-warning d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+            <div>
+                <strong>Quiz in progress:</strong> ${inProgressQuiz.quizName}
+                (${inProgressAnsweredCount} / ${inProgressQuiz.totalQuestions} answered)
+            </div>
+            <a class="btn btn-gradient"
+               href="${pageContext.request.contextPath}/quiz/question?quizId=${inProgressQuiz.quizId}">
+                Resume Quiz
+            </a>
+        </div>
+    </c:if>
+
     <div class="row g-4">
         <c:forEach var="category" items="${categories}">
             <div class="col-sm-6 col-lg-3">

@@ -22,6 +22,18 @@ public class QuizQuestionService {
         return quizQuestionDao.getByQuizId(qid);
     }
 
+    public void savePlaceholderAnswers(int quizId, List<Integer> questionIds) {
+        quizQuestionDao.addPlaceholderBatch(quizId, questionIds);
+    }
+
+    public boolean saveAnswer(int quizId, int questionId, int selectedChoiceId, boolean isCorrect) {
+        return quizQuestionDao.updateAnswer(quizId, questionId, selectedChoiceId, isCorrect) > 0;
+    }
+
+    public int countAnswered(int quizId) {
+        return quizQuestionDao.countAnswered(quizId);
+    }
+
     public void saveQQ(List<QuizQuestion> qqList) {
         quizQuestionDao.addBatch(qqList);
     }

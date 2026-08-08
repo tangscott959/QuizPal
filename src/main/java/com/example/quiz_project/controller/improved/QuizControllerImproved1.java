@@ -14,13 +14,14 @@ import javax.servlet.http.HttpSession;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/quiz")
 public class QuizControllerImproved1 {
-    
+
     private final Logger logger = LoggerFactory.getLogger(QuizControllerImproved1.class);
-    
+
     private final CategoryService categoryService;
     private final QuizService quizService;
     private final QuestionService questionService;
@@ -28,10 +29,10 @@ public class QuizControllerImproved1 {
     private final QuizQuestionService quizQuestionService;
 
     public QuizControllerImproved1(CategoryService categoryService,
-                                QuizService quizService,
-                                QuestionService questionService,
-                                UserService userService,
-                                QuizQuestionService quizQuestionService) {
+                                   QuizService quizService,
+                                   QuestionService questionService,
+                                   UserService userService,
+                                   QuizQuestionService quizQuestionService) {
         this.categoryService = categoryService;
         this.quizService = quizService;
         this.questionService = questionService;
@@ -50,12 +51,17 @@ public class QuizControllerImproved1 {
         logger.info("Loading quiz index for user: {}", currentUser.getUsername());
 
         try {
-            // Get available categories
             List<Category> categories = categoryService.getALl();
             model.addAttribute("categories", categories);
 
-            // Get user's quiz history
-            List<Quiz> userQuizzes = quizService.getByUser(currentUser.getId());
+            Quiz inProgressQuiz = quizService.getInProgressByUser(currentUser.getId());
+            model.addAttribute("inProgressQuiz", inProgressQuiz);
+            if (inProgressQuiz != null) {
+                model.addAttribute("inProgressAnsweredCount",
+                        quizQuestionService.countAnswered(inProgressQuiz.getQuizId()));
+            }
+
+            List<Quiz> userQuizzes = quizService.getCompletedByUser(currentUser.getId());
             model.addAttribute("userQuizzes", userQuizzes);
 
             List<Map<String, Object>> scores = quizQuestionService.calScore(currentUser.getId());
@@ -65,7 +71,6 @@ public class QuizControllerImproved1 {
             }
             model.addAttribute("scoreMap", scoreMap);
 
-            // Calculate statistics
             Map<String, Object> stats = calculateUserStatistics(currentUser.getId());
             model.addAttribute("stats", stats);
 
@@ -79,10 +84,9 @@ public class QuizControllerImproved1 {
 
     @GetMapping("/start")
     public String startQuiz(@RequestParam("categoryId") Integer categoryId,
-                           @RequestParam(value = "timeLimit", required = false) Integer timeLimit,
-                           HttpServletRequest request,
-                           Model model,
-                           RedirectAttributes redirectAttributes) {
+                          @RequestParam(value = "timeLimit", required = false) Integer timeLimit,
+                          HttpServletRequest request,
+                          RedirectAttributes redirectAttributes) {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
             return "redirect:/login";
@@ -91,7 +95,6 @@ public class QuizControllerImproved1 {
         User currentUser = (User) session.getAttribute("user");
 
         try {
-            // Get questions for this category
             List<Question> questions = questionService.getByCategory(categoryId);
             if (questions.size() < QuestionService.QUIZ_QUESTION_COUNT) {
                 redirectAttributes.addFlashAttribute("error",
@@ -100,26 +103,27 @@ public class QuizControllerImproved1 {
                 return "redirect:/quiz/index";
             }
 
-            // Create new quiz
+            quizService.abandonInProgressQuiz(currentUser.getId());
+
             Quiz quiz = new Quiz();
             quiz.setUserId(currentUser.getId());
             quiz.setCategoryId(categoryId);
             quiz.setQuizName("Quiz - " + LocalDateTime.now().toLocalDate());
             quiz.setQuizTimeStart(new Timestamp(System.currentTimeMillis()));
+            quiz.setQuizTimeEnd(null);
+            quiz.setTotalQuestions(questions.size());
+            quiz.setStatus("IN_PROGRESS");
 
             Integer quizId = quizService.saveQuiz(quiz);
-            quiz.setQuizId(quizId);
+            List<Integer> questionIds = questions.stream()
+                    .map(Question::getQuestion_id)
+                    .collect(Collectors.toList());
+            quizQuestionService.savePlaceholderAnswers(quizId, questionIds);
 
-            // Store quiz in session
-            session.setAttribute("currentQuiz", quiz);
-            session.setAttribute("quizQuestions", questions);
-            session.setAttribute("currentQuestionIndex", 0);
-            session.setAttribute("quizAnswers", new ArrayList<QuizQuestion>());
+            logger.info("Started new quiz {} for user {} in category {}",
+                    quizId, currentUser.getUsername(), categoryId);
 
-            logger.info("Started new quiz {} for user {} in category {}", 
-                       quizId, currentUser.getUsername(), categoryId);
-
-            return "redirect:/quiz/question";
+            return "redirect:/quiz/question?quizId=" + quizId;
         } catch (Exception e) {
             logger.error("Error starting quiz for user: {}", currentUser.getUsername(), e);
             redirectAttributes.addFlashAttribute("error", "Failed to start quiz. Please try again.");
@@ -128,118 +132,146 @@ public class QuizControllerImproved1 {
     }
 
     @GetMapping("/question")
-    public String showQuestion(HttpServletRequest request, Model model, RedirectAttributes redirectAttributes) {
+    public String showQuestion(@RequestParam(value = "quizId", required = false) Integer quizId,
+                               HttpServletRequest request,
+                               Model model,
+                               RedirectAttributes redirectAttributes) {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
             return "redirect:/login";
         }
 
-        Quiz currentQuiz = (Quiz) session.getAttribute("currentQuiz");
-        List<Question> questions = (List<Question>) session.getAttribute("quizQuestions");
-        Integer currentQuestionIndex = (Integer) session.getAttribute("currentQuestionIndex");
+        User currentUser = (User) session.getAttribute("user");
 
-        if (currentQuiz == null || questions == null || currentQuestionIndex == null) {
-            redirectAttributes.addFlashAttribute("error", "Quiz session expired. Please start again.");
+        if (quizId == null) {
+            Quiz inProgressQuiz = quizService.getInProgressByUser(currentUser.getId());
+            if (inProgressQuiz != null) {
+                return "redirect:/quiz/question?quizId=" + inProgressQuiz.getQuizId();
+            }
+            redirectAttributes.addFlashAttribute("error", "No quiz in progress. Please start a new quiz.");
             return "redirect:/quiz/index";
         }
 
-        // Check if quiz is completed
-        if (currentQuestionIndex >= questions.size()) {
-            return "redirect:/quiz/complete";
+        try {
+            Quiz quiz = quizService.getById(quizId);
+            if (quiz == null || !Objects.equals(quiz.getUserId(), currentUser.getId())) {
+                redirectAttributes.addFlashAttribute("error", "Quiz not found or access denied.");
+                return "redirect:/quiz/index";
+            }
+
+            if ("COMPLETED".equals(quiz.getStatus())) {
+                return "redirect:/quiz/result?quizId=" + quizId;
+            }
+            if (!"IN_PROGRESS".equals(quiz.getStatus())) {
+                redirectAttributes.addFlashAttribute("error", "This quiz is no longer active.");
+                return "redirect:/quiz/index";
+            }
+
+            List<QuizQuestion> quizAnswers = quizQuestionService.getByQuizId(quizId);
+            List<Question> questions = loadQuestionsInOrder(quizAnswers);
+            int currentQuestionIndex = getCurrentQuestionIndex(quizAnswers);
+
+            if (currentQuestionIndex >= questions.size()) {
+                return "redirect:/quiz/complete?quizId=" + quizId;
+            }
+
+            Question currentQuestion = questions.get(currentQuestionIndex);
+            List<Choice> choices = questionService.getChoicesByQuestion(currentQuestion.getQuestion_id());
+
+            model.addAttribute("quiz", quiz);
+            model.addAttribute("question", currentQuestion);
+            model.addAttribute("choices", choices);
+            model.addAttribute("questionIndex", currentQuestionIndex);
+            model.addAttribute("totalQuestions", questions.size());
+
+            return "quiz/quiz-question";
+        } catch (Exception e) {
+            logger.error("Error loading quiz question for quizId: {}", quizId, e);
+            redirectAttributes.addFlashAttribute("error", "Unable to load quiz question. Please try again.");
+            return "redirect:/quiz/index";
         }
-
-        Question currentQuestion = questions.get(currentQuestionIndex);
-        
-        // Get choices for this question
-        List<Choice> choices = questionService.getChoicesByQuestion(currentQuestion.getQuestion_id());
-
-        model.addAttribute("quiz", currentQuiz);
-        model.addAttribute("question", currentQuestion);
-        model.addAttribute("choices", choices);
-        model.addAttribute("questionIndex", currentQuestionIndex);
-        model.addAttribute("totalQuestions", questions.size());
-
-        return "quiz/quiz-question";
     }
 
     @PostMapping("/answer")
-    public String submitAnswer(@RequestParam("selectedChoiceId") Integer selectedChoiceId,
-                              HttpServletRequest request,
-                              RedirectAttributes redirectAttributes) {
+    public String submitAnswer(@RequestParam("quizId") Integer quizId,
+                               @RequestParam("questionId") Integer questionId,
+                               @RequestParam("selectedChoiceId") Integer selectedChoiceId,
+                               HttpServletRequest request,
+                               RedirectAttributes redirectAttributes) {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
             return "redirect:/login";
         }
 
-        try {
-            Quiz currentQuiz = (Quiz) session.getAttribute("currentQuiz");
-            List<Question> questions = (List<Question>) session.getAttribute("quizQuestions");
-            Integer currentQuestionIndex = (Integer) session.getAttribute("currentQuestionIndex");
-            List<QuizQuestion> quizAnswers = (List<QuizQuestion>) session.getAttribute("quizAnswers");
+        User currentUser = (User) session.getAttribute("user");
 
-            if (currentQuiz == null || questions == null || currentQuestionIndex == null || quizAnswers == null) {
-                redirectAttributes.addFlashAttribute("error", "Quiz session expired");
+        try {
+            Quiz quiz = quizService.getById(quizId);
+            if (quiz == null || !Objects.equals(quiz.getUserId(), currentUser.getId())) {
+                redirectAttributes.addFlashAttribute("error", "Quiz not found or access denied.");
+                return "redirect:/quiz/index";
+            }
+            if (!"IN_PROGRESS".equals(quiz.getStatus())) {
+                redirectAttributes.addFlashAttribute("error", "This quiz is no longer active.");
                 return "redirect:/quiz/index";
             }
 
-            Question currentQuestion = questions.get(currentQuestionIndex);
+            boolean isCorrect = isCorrectChoice(questionId, selectedChoiceId);
+            boolean saved = quizQuestionService.saveAnswer(quizId, questionId, selectedChoiceId, isCorrect);
+            if (!saved) {
+                redirectAttributes.addFlashAttribute("error", "Unable to save answer. Please try again.");
+                return "redirect:/quiz/question?quizId=" + quizId;
+            }
 
-            QuizQuestion answer = new QuizQuestion();
-            answer.setQuizId(currentQuiz.getQuizId());
-            answer.setQuestionId(currentQuestion.getQuestion_id());
-            answer.setChoiceId(selectedChoiceId);
-            answer.setIs_marked(isCorrectChoice(currentQuestion.getQuestion_id(), selectedChoiceId) ? 1 : 0);
-            quizAnswers.add(answer);
-            session.setAttribute("quizAnswers", quizAnswers);
+            logger.debug("Recorded answer for question {} in quiz {}", questionId, quizId);
 
-            // Move to next question
-            session.setAttribute("currentQuestionIndex", currentQuestionIndex + 1);
+            List<QuizQuestion> quizAnswers = quizQuestionService.getByQuizId(quizId);
+            if (getCurrentQuestionIndex(quizAnswers) >= quiz.getTotalQuestions()) {
+                return "redirect:/quiz/complete?quizId=" + quizId;
+            }
 
-            logger.debug("Recorded answer for question {} in quiz {}", 
-                        currentQuestion.getQuestion_id(), currentQuiz.getQuizId());
-
-            return "redirect:/quiz/question";
+            return "redirect:/quiz/question?quizId=" + quizId;
         } catch (Exception e) {
-            logger.error("Error submitting answer", e);
+            logger.error("Error submitting answer for quizId: {}", quizId, e);
             redirectAttributes.addFlashAttribute("error", "Failed to submit answer. Please try again.");
-            return "redirect:/quiz/question";
+            return "redirect:/quiz/question?quizId=" + quizId;
         }
     }
 
     @GetMapping("/complete")
-    public String completeQuiz(HttpServletRequest request, Model model, RedirectAttributes redirectAttributes) {
+    public String completeQuiz(@RequestParam("quizId") Integer quizId,
+                               HttpServletRequest request,
+                               RedirectAttributes redirectAttributes) {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
             return "redirect:/login";
         }
 
-        try {
-            Quiz currentQuiz = (Quiz) session.getAttribute("currentQuiz");
-            List<QuizQuestion> quizAnswers = (List<QuizQuestion>) session.getAttribute("quizAnswers");
+        User currentUser = (User) session.getAttribute("user");
 
-            if (currentQuiz == null || quizAnswers == null) {
-                redirectAttributes.addFlashAttribute("error", "Quiz session expired");
+        try {
+            Quiz quiz = quizService.getById(quizId);
+            if (quiz == null || !Objects.equals(quiz.getUserId(), currentUser.getId())) {
+                redirectAttributes.addFlashAttribute("error", "Quiz not found or access denied.");
                 return "redirect:/quiz/index";
             }
 
-            // Calculate final score
-            int totalScore = calculateScore(quizAnswers);
+            if ("COMPLETED".equals(quiz.getStatus())) {
+                return "redirect:/quiz/result?quizId=" + quizId;
+            }
 
-            currentQuiz.setQuizTimeEnd(new Timestamp(System.currentTimeMillis()));
-            quizService.updateQuiz(currentQuiz.getQuizId(), currentQuiz.getQuizTimeEnd());
-            quizQuestionService.saveQQ(quizAnswers);
+            if (quizQuestionService.countAnswered(quizId) < quiz.getTotalQuestions()) {
+                return "redirect:/quiz/question?quizId=" + quizId;
+            }
 
-            // Clear quiz from session
-            session.removeAttribute("currentQuiz");
-            session.removeAttribute("quizQuestions");
-            session.removeAttribute("currentQuestionIndex");
-            session.removeAttribute("quizAnswers");
+            int totalScore = quizQuestionService.calScoreOne(quizId);
+            quizService.completeQuiz(quizId, new Timestamp(System.currentTimeMillis()), totalScore);
 
-            logger.info("Completed quiz {} with score {}", currentQuiz.getQuizId(), totalScore);
+            logger.info("Completed quiz {} with score {}", quizId, totalScore);
 
-            return "redirect:/quiz/result?quizId=" + currentQuiz.getQuizId();
+            return "redirect:/quiz/result?quizId=" + quizId;
         } catch (Exception e) {
-            logger.error("Error completing quiz", e);
+            logger.error("Error completing quiz {}", quizId, e);
             redirectAttributes.addFlashAttribute("error", "Failed to complete quiz. Please try again.");
             return "redirect:/quiz/index";
         }
@@ -247,9 +279,9 @@ public class QuizControllerImproved1 {
 
     @GetMapping("/result")
     public String showResult(@RequestParam("quizId") Integer quizId,
-                            HttpServletRequest request,
-                            Model model,
-                            RedirectAttributes redirectAttributes) {
+                             HttpServletRequest request,
+                             Model model,
+                             RedirectAttributes redirectAttributes) {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
             return "redirect:/login";
@@ -264,13 +296,15 @@ public class QuizControllerImproved1 {
                 return "redirect:/quiz/index";
             }
 
-            // Verify user owns this quiz
             if (currentUser == null || !Objects.equals(quiz.getUserId(), currentUser.getId())) {
                 redirectAttributes.addFlashAttribute("error", "Access denied or session expired");
                 return "redirect:/quiz/index";
             }
 
-            // Get quiz answers and calculate score
+            if ("IN_PROGRESS".equals(quiz.getStatus())) {
+                return "redirect:/quiz/question?quizId=" + quizId;
+            }
+
             int score = quizQuestionService.calScoreOne(quizId);
             List<QuizQuestion> quizAnswers = quizQuestionService.getByQuizId(quizId);
             List<QuestionChoice> questionChoices = new ArrayList<>();
@@ -283,7 +317,7 @@ public class QuizControllerImproved1 {
                 questionChoice.setChoiceList(questionService.getChoicesByQuestion(question.getQuestion_id()));
                 questionChoices.add(questionChoice);
             }
-            
+
             model.addAttribute("quiz", quiz);
             model.addAttribute("score", score);
             model.addAttribute("user", currentUser);
@@ -297,19 +331,34 @@ public class QuizControllerImproved1 {
         }
     }
 
+    private List<Question> loadQuestionsInOrder(List<QuizQuestion> quizAnswers) {
+        List<Integer> questionIds = quizAnswers.stream()
+                .map(QuizQuestion::getQuestionId)
+                .collect(Collectors.toList());
+        return questionService.getQuestionsInOrder(questionIds);
+    }
+
+    private int getCurrentQuestionIndex(List<QuizQuestion> quizAnswers) {
+        for (int i = 0; i < quizAnswers.size(); i++) {
+            if (quizAnswers.get(i).getChoiceId() == 0) {
+                return i;
+            }
+        }
+        return quizAnswers.size();
+    }
+
     private Map<String, Object> calculateUserStatistics(Integer userId) {
         Map<String, Object> stats = new HashMap<>();
-        
+
         try {
-            List<Quiz> userQuizzes = quizService.getByUser(userId);
-            
+            List<Quiz> userQuizzes = quizService.getCompletedByUser(userId);
             int totalQuizzes = userQuizzes.size();
-            
+
             stats.put("totalQuizzes", totalQuizzes);
             stats.put("completedQuizzes", totalQuizzes);
             stats.put("averageScore", 0.0);
             stats.put("totalPoints", 0);
-            
+
         } catch (Exception e) {
             logger.error("Error calculating user statistics", e);
             stats.put("totalQuizzes", 0);
@@ -317,18 +366,8 @@ public class QuizControllerImproved1 {
             stats.put("averageScore", 0.0);
             stats.put("totalPoints", 0);
         }
-        
-        return stats;
-    }
 
-    private int calculateScore(List<QuizQuestion> answers) {
-        int score = 0;
-        for (QuizQuestion answer : answers) {
-            if (isCorrectChoice(answer.getQuestionId(), answer.getChoiceId())) {
-                score++;
-            }
-        }
-        return score;
+        return stats;
     }
 
     private boolean isCorrectChoice(Integer questionId, Integer selectedChoiceId) {

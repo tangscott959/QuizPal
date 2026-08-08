@@ -30,6 +30,19 @@ public class QuizDao {
         return jdbcTemplate.query(query,rowMapper);
     }
 
+    public List<Quiz> getCompletedByUser(int id) {
+        String query = "SELECT * FROM quiz WHERE user_id = ? AND quiz_time_end IS NOT NULL AND status <> 'ABANDONED' " +
+                "ORDER BY quiz_time_start DESC";
+        return jdbcTemplate.query(query, rowMapper, id);
+    }
+
+    public Quiz getInProgressByUser(int userId) {
+        String query = "SELECT * FROM quiz WHERE user_id = ? AND status = 'IN_PROGRESS' AND quiz_time_end IS NULL " +
+                "ORDER BY quiz_time_start DESC LIMIT 1";
+        List<Quiz> quizzes = jdbcTemplate.query(query, rowMapper, userId);
+        return quizzes.isEmpty() ? null : quizzes.get(0);
+    }
+
     public List<Quiz> getByUser(int id) {
         String query = "SELECT * FROM quiz WHERE user_id = ? ORDER BY quiz_time_start DESC";
         return jdbcTemplate.query(query,rowMapper,id);
@@ -52,21 +65,33 @@ public class QuizDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con ->  {
             String sql="INSERT INTO quiz " +
-                    "(user_id,category_id,quiz_name,quiz_time_start,quiz_time_end) " +
-                    "VALUES(?,?,?,?,?)";
+                    "(user_id,category_id,quiz_name,quiz_time_start,quiz_time_end,total_questions,status) " +
+                    "VALUES(?,?,?,?,?,?,?)";
             PreparedStatement ps = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
             ps.setInt(1, q.getUserId());
             ps.setInt(2, q.getCategoryId());
             ps.setString(3,q.getQuizName());
             ps.setTimestamp(4,q.getQuizTimeStart());
             ps.setTimestamp(5,q.getQuizTimeEnd());
+            ps.setInt(6, q.getTotalQuestions());
+            ps.setString(7, q.getStatus());
             return ps;
         }, keyHolder);
         return Optional.ofNullable(keyHolder.getKey()).orElse(0).intValue();
     }
 
     public int updateQuiz(int quizId, Timestamp ts) {
-        String query = "Update quiz SET quiz_time_end =? WHERE quiz_id = ? ";
+        String query = "Update quiz SET quiz_time_end =?, status = 'COMPLETED' WHERE quiz_id = ? ";
         return jdbcTemplate.update(query,ts,quizId);
+    }
+
+    public int completeQuiz(int quizId, Timestamp endTime, int score) {
+        String query = "UPDATE quiz SET quiz_time_end = ?, status = 'COMPLETED', score = ? WHERE quiz_id = ?";
+        return jdbcTemplate.update(query, endTime, score, quizId);
+    }
+
+    public int abandonQuiz(int quizId, int userId) {
+        String query = "UPDATE quiz SET status = 'ABANDONED' WHERE quiz_id = ? AND user_id = ? AND status = 'IN_PROGRESS'";
+        return jdbcTemplate.update(query, quizId, userId);
     }
 }
