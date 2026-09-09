@@ -1,16 +1,16 @@
 # QuizPal
 
-QuizPal is a Spring Boot web quiz application with user login, Google OAuth2 sign-in, admin management, quiz categories, scoring, and persisted quiz history. The app uses JSP views, Spring MVC controllers, a service layer, JDBC DAOs, and MySQL.
+QuizPal is a Spring Boot web quiz application with form login, Google OAuth2 sign-in, admin management, quiz categories, scoring, and persisted quiz history. The app uses JSP views, Spring MVC controllers, a service layer, JDBC DAOs, and MySQL.
 
 ## Features
 
-- Multi-category quizzes for Mathematics, Science, History, and Geography.
-- User registration and login with BCrypt password hashing.
-- Optional Google OAuth2 sign-in.
-- Admin dashboard for users, questions, feedback, contacts, and quiz results.
-- Persisted quiz attempts and score history.
-- CSRF-protected forms through Spring Security.
-- Docker image build and EC2 deployment through GitHub Actions.
+- Multi-category quizzes for Mathematics, Science, History, and Geography
+- User registration and login with BCrypt password hashing
+- Optional Google OAuth2 sign-in
+- Admin dashboard for users, questions, feedback, contacts, and quiz results
+- Persisted quiz attempts and score history
+- CSRF-protected forms through Spring Security
+- Docker image build and EC2 deployment through GitHub Actions
 
 ## Tech Stack
 
@@ -68,9 +68,10 @@ cd QuizPal
 
 ### 2. Create And Seed The Database
 
+This drops and recreates `quiz_db_new`:
+
 ```bash
-mysql -u root -p -e "CREATE DATABASE quiz_db_new;"
-mysql -u root -p quiz_db_new < quiz_db_new_setup.sql
+mysql -u root -p < db/schema.sql
 ```
 
 Create a local database user:
@@ -109,8 +110,6 @@ export GOOGLE_CLIENT_SECRET="local-dev-client-secret"
 
 ### 4. Run The App
 
-The app is live at :http://98.89.26.67.
-https://quizpal.duckdns.org/login
 Windows:
 
 ```powershell
@@ -126,14 +125,12 @@ chmod +x mvnw
 
 Open `http://localhost:8080/login`.
 
-Sample login:
+Seeded local accounts (password for all: `password`):
 
 - Username: `student1`
-- Password: `password`
+- Username: `admin`
 
 ## Testing
-
-Run the test suite:
 
 ```bash
 ./mvnw test
@@ -218,18 +215,6 @@ If MySQL runs on the same EC2 host, do not use `localhost` in `DB_URL` from insi
 
 More deployment details are in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
-## Security Updates
-
-Recent hardening work includes:
-
-- Replaced legacy/plain password handling with BCrypt.
-- Added Spring Security form login and OAuth2 login flow.
-- Added `UserDetailsService` integration for app users.
-- Added CSRF tokens to JSP forms.
-- Moved secrets and database settings to environment variables.
-- Removed manual admin session checks in favor of Spring Security authorization rules.
-- Updated seeded sample users to use BCrypt password hashes.
-
 ## Database
 
 Primary tables include:
@@ -239,9 +224,11 @@ Primary tables include:
 - `question`
 - `choice`
 - `quiz`
-- `quiz_question`
+- `quiz_answer`
+- `contact`
+- `feedback`
 
-Seed data is provided in `quiz_db_new_setup.sql`.
+Schema and seed data: [db/schema.sql](db/schema.sql).
 
 ## Useful Commands
 
@@ -270,10 +257,6 @@ See the [docs/](docs/) folder:
 
 - [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md): Docker EC2 deployment guide
 - [docs/GOOGLE-OAUTH.md](docs/GOOGLE-OAUTH.md): Google Sign-In setup
-- [docs/AWS-SETUP-GUIDE.md](docs/AWS-SETUP-GUIDE.md): AWS EC2 setup
-- [docs/UBUNTU-24.04-SETUP.md](docs/UBUNTU-24.04-SETUP.md): Ubuntu server setup
-- [docs/IMPLEMENTATION_GUIDE.md](docs/IMPLEMENTATION_GUIDE.md): Implementation notes
-- `quiz_db_new_setup.sql`: schema and seed data
 
 ## License
 

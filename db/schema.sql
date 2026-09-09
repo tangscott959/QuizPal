@@ -1,20 +1,14 @@
--- Create new database for improved quiz application
--- MySQL Workbench Forward Engineering
+-- QuizPal schema and seed data for local setup.
+-- This script drops quiz_db_new if it exists.
 
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
--- -----------------------------------------------------
--- Create new database
--- -----------------------------------------------------
 DROP DATABASE IF EXISTS `quiz_db_new`;
 CREATE DATABASE `quiz_db_new` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `quiz_db_new`;
 
--- -----------------------------------------------------
--- Table `quiz_db_new`.`user`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `quiz_db_new`.`user` (
   `user_id` INT NOT NULL AUTO_INCREMENT,
   `user_name` VARCHAR(50) NOT NULL,
@@ -33,9 +27,6 @@ CREATE TABLE IF NOT EXISTS `quiz_db_new`.`user` (
   INDEX `idx_active` (`is_active` ASC))
 ENGINE = InnoDB;
 
--- -----------------------------------------------------
--- Table `quiz_db_new`.`category`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `quiz_db_new`.`category` (
   `category_id` INT NOT NULL AUTO_INCREMENT,
   `category_name` VARCHAR(100) NOT NULL,
@@ -47,9 +38,6 @@ CREATE TABLE IF NOT EXISTS `quiz_db_new`.`category` (
   UNIQUE INDEX `idx_category_name` (`category_name` ASC))
 ENGINE = InnoDB;
 
--- -----------------------------------------------------
--- Table `quiz_db_new`.`question`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `quiz_db_new`.`question` (
   `question_id` INT NOT NULL AUTO_INCREMENT,
   `category_id` INT NOT NULL,
@@ -71,9 +59,6 @@ CREATE TABLE IF NOT EXISTS `quiz_db_new`.`question` (
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
--- -----------------------------------------------------
--- Table `quiz_db_new`.`choice`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `quiz_db_new`.`choice` (
   `choice_id` INT NOT NULL AUTO_INCREMENT,
   `question_id` INT NOT NULL,
@@ -92,9 +77,6 @@ CREATE TABLE IF NOT EXISTS `quiz_db_new`.`choice` (
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
--- -----------------------------------------------------
--- Table `quiz_db_new`.`quiz`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `quiz_db_new`.`quiz` (
   `quiz_id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NOT NULL,
@@ -126,9 +108,6 @@ CREATE TABLE IF NOT EXISTS `quiz_db_new`.`quiz` (
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
--- -----------------------------------------------------
--- Table `quiz_db_new`.`quiz_answer`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `quiz_db_new`.`quiz_answer` (
   `answer_id` INT NOT NULL AUTO_INCREMENT,
   `quiz_id` INT NOT NULL,
@@ -161,9 +140,6 @@ CREATE TABLE IF NOT EXISTS `quiz_db_new`.`quiz_answer` (
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
--- -----------------------------------------------------
--- Table `quiz_db_new`.`contact`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `quiz_db_new`.`contact` (
   `contact_id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NULL,
@@ -186,9 +162,6 @@ CREATE TABLE IF NOT EXISTS `quiz_db_new`.`contact` (
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
--- -----------------------------------------------------
--- Table `quiz_db_new`.`feedback`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `quiz_db_new`.`feedback` (
   `feedback_id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NULL,
@@ -210,13 +183,8 @@ CREATE TABLE IF NOT EXISTS `quiz_db_new`.`feedback` (
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
--- -----------------------------------------------------
--- Views for common queries
--- -----------------------------------------------------
-
--- View for quiz results with user and category info
 CREATE OR REPLACE VIEW `quiz_db_new`.`quiz_results_view` AS
-SELECT 
+SELECT
     q.quiz_id,
     q.quiz_name,
     q.status,
@@ -235,9 +203,8 @@ FROM quiz q
 JOIN user u ON q.user_id = u.user_id
 JOIN category c ON q.category_id = c.category_id;
 
--- View for question statistics
 CREATE OR REPLACE VIEW `quiz_db_new`.`question_stats_view` AS
-SELECT 
+SELECT
     q.question_id,
     q.question_text,
     q.difficulty_level,
@@ -245,31 +212,25 @@ SELECT
     c.category_name,
     COUNT(qa.answer_id) AS times_answered,
     COUNT(CASE WHEN qa.is_correct = TRUE THEN 1 END) AS times_correct,
-    ROUND((COUNT(CASE WHEN qa.is_correct = TRUE THEN 1 END) / 
+    ROUND((COUNT(CASE WHEN qa.is_correct = TRUE THEN 1 END) /
            NULLIF(COUNT(qa.answer_id), 0)) * 100, 2) AS success_rate
 FROM question q
 JOIN category c ON q.category_id = c.category_id
 LEFT JOIN quiz_answer qa ON q.question_id = qa.question_id
 GROUP BY q.question_id, q.question_text, q.difficulty_level, q.points, c.category_name;
 
--- -----------------------------------------------------
--- Insert sample data
--- -----------------------------------------------------
-
--- Insert sample categories
 INSERT INTO category (category_name, description) VALUES
 ('Mathematics', 'Basic arithmetic and mathematical operations'),
 ('Science', 'General science questions'),
 ('History', 'World history and historical events'),
 ('Geography', 'Countries, capitals, and geographical features');
 
--- Insert sample users. All sample accounts use BCrypt-hashed password: password
+-- Seeded local accounts. Password for all three is: password
 INSERT INTO user (user_name, user_password, firstname, lastname, email, is_admin, is_active) VALUES
 ('admin', '$2a$06$DCq7YPn5Rq63x1Lad4cll.2yIhH87Kz8Nto9PO6j6ztDk5dCcGkWa', 'System', 'Administrator', 'admin@quiz.com', 1, 1),
 ('teacher1', '$2a$06$DCq7YPn5Rq63x1Lad4cll.2yIhH87Kz8Nto9PO6j6ztDk5dCcGkWa', 'John', 'Teacher', 'teacher@quiz.com', 0, 1),
 ('student1', '$2a$06$DCq7YPn5Rq63x1Lad4cll.2yIhH87Kz8Nto9PO6j6ztDk5dCcGkWa', 'Jane', 'Student', 'student@quiz.com', 0, 1);
 
--- Insert sample questions
 INSERT INTO question (category_id, question_text, question_type, difficulty_level, points) VALUES
 (1, 'What is 2 + 2?', 'MULTIPLE_CHOICE', 'EASY', 1),
 (1, 'What is 10 × 5?', 'MULTIPLE_CHOICE', 'EASY', 1),
@@ -293,7 +254,6 @@ INSERT INTO question (category_id, question_text, question_type, difficulty_leve
 (4, 'What is the smallest country in the world?', 'MULTIPLE_CHOICE', 'HARD', 3),
 (4, 'Which desert is the largest in the world?', 'MULTIPLE_CHOICE', 'HARD', 3);
 
--- Insert sample choices
 INSERT INTO choice (question_id, choice_text, is_correct, choice_order) VALUES
 (1, '3', FALSE, 1),
 (1, '4', TRUE, 2),
@@ -355,7 +315,6 @@ INSERT INTO choice (question_id, choice_text, is_correct, choice_order) VALUES
 (15, '1991', FALSE, 2),
 (15, '1985', FALSE, 3),
 (15, '1979', FALSE, 4),
--- Geography question choices
 (16, 'London', FALSE, 1),
 (16, 'Paris', TRUE, 2),
 (16, 'Berlin', FALSE, 3),

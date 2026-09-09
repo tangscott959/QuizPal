@@ -2,6 +2,14 @@
 
 QuizPal deploys from GitHub Actions to AWS EC2 as a Docker container. The workflow in `.github/workflows/deploy.yml` runs tests, publishes an image to GitHub Container Registry, then restarts the container on EC2 after pushes to `master`.
 
+## EC2 Host
+
+A typical host is Ubuntu 24.04 on a `t3.micro` instance. Use at least 16 GiB of root disk; 8 GiB is tight for Docker image layers. Security group ports:
+
+- SSH 22 from your IP
+- HTTP 80
+- HTTPS 443
+
 ## Pipeline
 
 1. Pull request to `master`: run Maven tests.
@@ -26,22 +34,9 @@ Add these under GitHub repository settings: `Settings -> Secrets and variables -
 
 ## One-Time EC2 Setup
 
-Install Docker and Nginx on Ubuntu:
+On a fresh Ubuntu host, run `scripts/setup-aws.sh`. It installs Docker and Nginx and configures a reverse proxy to `localhost:8080`.
 
-```bash
-sudo apt update
-sudo apt install -y ca-certificates curl gnupg nginx
-sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-sudo chmod a+r /etc/apt/keyrings/docker.gpg
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt update
-sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-sudo usermod -aG docker ubuntu
-sudo systemctl enable --now docker
-```
-
-Log out and back in after adding the `ubuntu` user to the `docker` group. The workflow also falls back to `sudo docker` if needed.
+Log out and back in after the `ubuntu` user is added to the `docker` group. The workflow also falls back to `sudo docker` if needed.
 
 ## Nginx Reverse Proxy
 
