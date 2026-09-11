@@ -4,6 +4,8 @@ QuizPal is a Spring Boot web quiz application with form login, Google OAuth2 sig
 
 Live demo: [https://quizpal.duckdns.org/login](https://quizpal.duckdns.org/login)
 
+The demo runs on an AWS EC2 instance using free-tier credits. It may go offline after those credits expire. The source, Docker image, and GitHub Actions pipeline stay in this repo, so you can still run QuizPal locally with the steps below.
+
 ## Features
 
 - Multi-category quizzes for Mathematics, Science, History, and Geography
