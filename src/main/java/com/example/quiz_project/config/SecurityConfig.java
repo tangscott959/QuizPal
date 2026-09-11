@@ -26,36 +26,37 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .userDetailsService(userDetailsService)
-            .authorizeRequests()
-                .antMatchers("/", "/login", "/register", "/error", "/accessdenied.jsp").permitAll()
-                .antMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
-                .antMatchers("/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
-                .antMatchers("/admin/**", "/adminquiz", "/adminquiz/**",
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/", "/login", "/register", "/error", "/accessdenied.jsp").permitAll()
+                .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
+                .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                .requestMatchers("/admin/**", "/adminquiz", "/adminquiz/**",
                         "/adminallusers", "/adminallusers/**",
                         "/adminresultdetail", "/adminresultdetail/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
-            .and()
-            .formLogin()
+            )
+            .formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
                 .successHandler(formLoginSuccessHandler)
                 .failureUrl("/login?error")
                 .permitAll()
-            .and()
-            .oauth2Login()
+            )
+            .oauth2Login(oauth -> oauth
                 .loginPage("/login")
                 .successHandler(oAuth2LoginSuccessHandler)
                 .failureUrl("/login?oauth_error=1")
-            .and()
-            .logout()
+            )
+            .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login?logout")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
                 .permitAll()
-            .and()
-            .exceptionHandling()
-                .accessDeniedPage("/accessdenied.jsp");
+            )
+            .exceptionHandling(ex -> ex
+                .accessDeniedPage("/accessdenied.jsp")
+            );
 
         return http.build();
     }

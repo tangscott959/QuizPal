@@ -16,8 +16,8 @@ QuizPal is a Spring Boot web quiz application with form login, Google OAuth2 sig
 
 Backend:
 
-- Java 8
-- Spring Boot 2.7.3
+- Java 17
+- Spring Boot 3.5.16
 - Spring MVC
 - Spring Security
 - Spring OAuth2 Client
@@ -54,7 +54,7 @@ QuizPal is a layered Spring MVC monolith:
 
 ### Prerequisites
 
-- Java 8
+- Java 17
 - Maven 3.6+ or the included Maven wrapper
 - MySQL 8+
 - Git
