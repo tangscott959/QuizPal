@@ -2,6 +2,8 @@
 
 QuizPal is a Spring Boot web quiz application with form login, Google OAuth2 sign-in, admin management, quiz categories, scoring, and persisted quiz history. The app uses JSP views, Spring MVC controllers, a service layer, JDBC DAOs, and MySQL.
 
+Live demo: [https://quizpal.duckdns.org/login](https://quizpal.duckdns.org/login)
+
 ## Features
 
 - Multi-category quizzes for Mathematics, Science, History, and Geography
